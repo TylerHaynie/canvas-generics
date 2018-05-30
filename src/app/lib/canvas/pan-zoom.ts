@@ -5,6 +5,7 @@ export class PanZoom {
 
     // canvas
     private canvasScaleStep: number = .10;
+    public set scaleStep(v) { this.canvasScaleStep = v; }
     private canvasScale: number = 1;
     public get scale() { return this.canvasScale; }
 
@@ -24,6 +25,12 @@ export class PanZoom {
     public get panX() { return this.totalPanningX; }
     private totalPanningY: number = 0;
     public get panY() { return this.totalPanningY; }
+    private panModifier: number = 1;
+    public set panSpeed(v) {
+        if (v <= 0) { this.panModifier = 1; }
+        else if (v > 2) { this.panModifier = 2; }
+        else { this.panModifier = v; }
+    }
 
     // scaling
     private pinchMoveStart: number = 0;
@@ -34,7 +41,6 @@ export class PanZoom {
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
         this.canvasInit();
-        this.registerEvents();
         this.registerEvents();
     }
 
@@ -170,18 +176,18 @@ export class PanZoom {
 
     private pointerMove(x, y) {
         this.updatePointerPosition(x, y);
-
-        // inefficient for large number of markers, consider a quadtree
+        // inefficient for large number of objects, consider a quadtree
         // check for interactions on canvas
         // {
-        //   ...
+        //    foreach
+        //    ...
         // }
 
         // are we panning?
         if (this.isPanning) {
             // movement delta
-            let dx = this.pointerPositionX - this.panStartX;
-            let dy = this.pointerPositionY - this.panStartY;
+            let dx = (this.pointerPositionX - this.panStartX) * this.panModifier;
+            let dy = (this.pointerPositionY - this.panStartY) * this.panModifier;
 
             // update panstart
             this.panStartX = this.pointerPositionX;
@@ -225,6 +231,7 @@ export class PanZoom {
             this.isScaling = false;
         }
 
+        document.body.style.cursor = 'default';
         this.isPanning = false;
     }
 
@@ -248,8 +255,14 @@ export class PanZoom {
     }
 
     private scaleDown(amount: number) {
-        this.canvasScale -= amount;
+        let newScaleAmount = this.canvasScale - amount;
+        if (!(newScaleAmount > 0.001)) {
+            return;
+        }
+
+        this.canvasScale = newScaleAmount;
         this.hasChanges = true;
+        console.log(this.canvasScale);
     }
 
     private resetView() {
