@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { PanZoom } from '../../lib/canvas/pan-zoom';
+import { QuadTree, Boundry, Point } from '../../lib/quadtree/quad-tree';
 
 interface iPoint {
   x: number;
@@ -27,22 +28,29 @@ export class OrbitalViewerComponent implements OnInit {
 
   private context: CanvasRenderingContext2D;
   private panZoom: PanZoom;
+  private bContinue = true;
 
+  // point
   private pointCount = 38;
   private pointSize = 15;
-  private pointSpeedModifier = .25;
+  private pointSpeedModifier = .12;
   private pointType: string = 'circle';
   private pointDefaultBackground: string = '#000';
   private pointHoverBackground: string = '#333';
 
-  private maxParticles: number = 600;
+  // quads
+  particleQuad: QuadTree;
+  pointQuad: QuadTree;
+
+  // particles
+  private maxParticles: number = 525;
   private particles: iPoint[] = [];
   private particleMaxRadius: number = 4.25;
-  private particleminRadius: number = .5;
+  private particleminRadius: number = .10;
   private maxParticleLifespan: number = 800;
   private minParticleLifespan: number = 200;
-  private particleFadeTime: number = 50;
-  private particleSpeedModifier: number = .35;
+  private particleFadeTime: number = 80;
+  private particleSpeedModifier: number = .05;
   private maxOpacity: number = .75;
   private colorArray: string[] = [
     '#5799e0',
@@ -56,45 +64,51 @@ export class OrbitalViewerComponent implements OnInit {
 
   ngOnInit() {
     this.context = (this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d');
+    let bounds = this.context.canvas.getBoundingClientRect();
 
     // setup pan and zoom
     this.panZoom = new PanZoom(this.context);
     this.panZoom.panSpeed = .70;
     this.panZoom.scaleStep = .05;
 
-    this.generatePoints();
+    // set up quad trees
+    let boundry: Boundry = new Boundry(0, 0, this.context.canvas.width, this.context.canvas.height);
+    this.particleQuad = new QuadTree(boundry, 4);
+    this.pointQuad = new QuadTree(boundry, 4);
 
+    this.generatePoints();
     this.draw();
   }
 
   //#region Drawing
   draw() {
-    this.context.save();
-    // clear before doing anything
-    this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
-    this.drawBackground();
-    this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
+    if (this.bContinue) {
+      this.context.save();
+      // clear before doing anything
+      this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
+      this.drawBackground();
+      this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
 
-    // draw particles
-    this.drawParticles();
+      // draw particles
+      this.drawParticles();
 
-    // update point locations
-    this.movepoints(this.points);
+      // update point locations
+      this.movepoints(this.points);
 
-    // draw connecting lines
-    this.drawLines();
+      // draw connecting lines
+      this.drawLines();
 
-    // draw main points
-    this.drawpoints();
+      // draw main points
+      this.drawpoints();
 
-    // do some hover stuff
-    this.checkMouseHover();
+      // do some hover stuff
+      this.checkMouseHover();
 
-    // drawing the graident on the top
-    this.drawForeground();
+      // drawing the graident on the top
+      this.drawForeground();
 
-    this.context.restore();
-
+      this.context.restore();
+    }
     requestAnimationFrame(() => this.draw());
   }
 
@@ -132,6 +146,12 @@ export class OrbitalViewerComponent implements OnInit {
   drawParticles() {
     if (this.particles.length !== this.maxParticles) {
       this.generateMissingParticles();
+
+      // update particles quad
+      this.particleQuad.clear();
+      for (let p of this.particles) {
+        this.particleQuad.insert(new Point(p.x, p.y, p));
+      }
     }
 
     this.movepoints(this.particles);
@@ -145,6 +165,9 @@ export class OrbitalViewerComponent implements OnInit {
           this.drawCircle(p.x, p.y, p.r, p.color, (step * p.lifetime));
         }
         else if (p.lifespan - p.lifetime < this.particleFadeTime) {
+
+          // this.bContinue = false;
+
           let step = p.opacity / this.particleFadeTime;
           this.drawCircle(p.x, p.y, p.r, p.color, step * (p.lifespan - p.lifetime));
         }
