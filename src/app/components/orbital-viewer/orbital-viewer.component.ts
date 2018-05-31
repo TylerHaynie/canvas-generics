@@ -254,9 +254,9 @@ export class OrbitalViewerComponent implements OnInit {
 
     // Add colors
     grd.addColorStop(0.000, 'rgba(0, 0, 0, 0.700)');
-    grd.addColorStop(0.250, 'rgba(0, 0, 0, 0.000)');
+    grd.addColorStop(0.10, 'rgba(0, 0, 0, 0.000)');
 
-    grd.addColorStop(0.750, 'rgba(0, 0, 0, 0.000)');
+    grd.addColorStop(0.90, 'rgba(0, 0, 0, 0.000)');
     grd.addColorStop(1.000, 'rgba(0, 0, 0, 0.700)');
 
     // Fill with gradient
