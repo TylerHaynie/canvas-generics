@@ -41,19 +41,19 @@ export class OrbitalViewerComponent implements OnInit {
   private pointHoverBackground: string = '#333';
 
   // quads
-  particleQuad: QuadTree;
-  pointQuad: QuadTree;
+  private particleQuad: QuadTree;
+  private pointQuad: QuadTree;
 
   // particles
-  private maxParticles: number = 1150;
+  private maxParticles: number = 1200;
   private particles: iPoint[] = [];
   private particleMaxRadius: number = 4.25;
-  private particleminRadius: number = .10;
+  private particleminRadius: number = .15;
   private maxParticleLifespan: number = 350;
   private minParticleLifespan: number = 250;
   private particleFadeTime: number = 125;
   private particleSpeedModifier: number = .18;
-  private maxOpacity: number = .75;
+  private maxOpacity: number = .70;
   private colorArray: string[] = [
     '#5799e0',
     '#5689e0',
@@ -69,8 +69,8 @@ export class OrbitalViewerComponent implements OnInit {
 
     // setup pan and zoom
     this.panZoom = new PanZoom(this.context);
-    this.panZoom.panSpeed = .70;
-    this.panZoom.scaleStep = .05;
+    this.panZoom.panningAllowed = false;
+    this.panZoom.minScale = 1.0;
 
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.context.canvas.width, this.context.canvas.height);

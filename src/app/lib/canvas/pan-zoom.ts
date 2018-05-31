@@ -16,6 +16,8 @@ export class PanZoom {
     public get pointerY() { return this.pointerPositionY; }
 
     // panning
+    private allowPanning: boolean = true;
+    public set panningAllowed(v) { this.allowPanning = v; }
     private panOffsetX: number = 0;
     private panOffsetY: number = 0;
     private isPanning = false;
@@ -33,6 +35,12 @@ export class PanZoom {
     }
 
     // scaling
+    private allowScaling: boolean = true;
+    public set scalingAllowed(v) { this.allowScaling = v; }
+    private maximumScale: number = 0;
+    public set maxScale(v) { this.maximumScale = v; }
+    private minimumScale: number = 0;
+    public set minScale(v) { this.minimumScale = v; }
     private pinchMoveStart: number = 0;
     private pinchMoveEnd: number = 0;
     private isScaling: boolean = false;
@@ -176,15 +184,8 @@ export class PanZoom {
 
     private pointerMove(x, y) {
         this.updatePointerPosition(x, y);
-        // inefficient for large number of objects, consider a quadtree
-        // check for interactions on canvas
-        // {
-        //    foreach
-        //    ...
-        // }
-
         // are we panning?
-        if (this.isPanning) {
+        if (this.isPanning && this.allowPanning) {
             // movement delta
             let dx = (this.pointerPositionX - this.panStartX) * this.panModifier;
             let dy = (this.pointerPositionY - this.panStartY) * this.panModifier;
@@ -204,24 +205,21 @@ export class PanZoom {
     private updatePointerPosition(x, y) {
         this.pointerPositionX = x - this.panOffsetX;
         this.pointerPositionY = y - this.panOffsetY;
-
-        // use this for an object localtion possibly
-        // this.pointerImagePositionX = (this.pointerPositionX - this.totalPanningX) / this.canvasScale;
-        // this.pointerImagePositionY = (this.pointerPositionY - this.totalPanningY) / this.canvasScale;
     }
 
     private pointerStop() {
-        if (this.isScaling) {
+        if (this.isScaling && this.allowScaling) {
             let pinchDifference = (Math.max(this.pinchMoveStart, this.pinchMoveEnd) - Math.min(this.pinchMoveStart, this.pinchMoveEnd)) / this.pinchScale;
 
             if (this.pinchMoveEnd > this.pinchMoveStart) {
                 // zooming in
-                this.canvasScale += pinchDifference;
-
+                // this.canvasScale += pinchDifference;
+                this.scaleUp(pinchDifference);
             }
             else if (this.pinchMoveEnd < this.pinchMoveStart) {
                 // zooming Out
-                this.canvasScale -= pinchDifference;
+                // this.canvasScale -= pinchDifference;
+                this.scaleDown(pinchDifference);
             }
 
             this.pinchMoveStart = 0;
@@ -250,19 +248,39 @@ export class PanZoom {
     }
 
     private scaleUp(amount: number) {
-        this.canvasScale += amount;
+        let newScale: number = this.canvasScale + amount;
+
+        if (this.maximumScale === 0) {
+            this.canvasScale = newScale;
+        }
+        else {
+            if (newScale > this.maximumScale) {
+                this.canvasScale = this.maximumScale;
+            }
+            else {
+                this.canvasScale = newScale;
+            }
+        }
+
         this.hasChanges = true;
     }
 
     private scaleDown(amount: number) {
-        let newScaleAmount = this.canvasScale - amount;
-        if (!(newScaleAmount > 0.001)) {
-            return;
+        let newScale: number = this.canvasScale - amount;
+
+        if (this.minimumScale === 0) {
+            this.canvasScale = newScale;
+        }
+        else {
+            if (newScale < this.minimumScale) {
+                this.canvasScale = this.minimumScale;
+            }
+            else {
+                this.canvasScale = newScale;
+            }
         }
 
-        this.canvasScale = newScaleAmount;
         this.hasChanges = true;
-        console.log(this.canvasScale);
     }
 
     private resetView() {
