@@ -1,5 +1,9 @@
 ## About this Project
-I wanted to make an interactive background and this is what I came up with. You can stop the main points by hovering over them with your mouse. You could expand the hover to animate the showing and hiding of unique content.
+This could be an interactive background for a login portal or anything else you can think of.
+
+I wanted to make an interactive background and this is what I came up with. You can move the mouse around to change color of items. I'll be expanding on this over time. 
+
+I wrote my first quadtree on this project. It turned out pretty well and greatly increased performance!
 
 ### Setting up the project
 * Open your terminal of choice and navigate to the root of the project folder.
