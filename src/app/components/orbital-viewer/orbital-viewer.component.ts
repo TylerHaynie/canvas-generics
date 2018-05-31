@@ -37,7 +37,7 @@ export class OrbitalViewerComponent implements OnInit {
   //#region Configuration
 
   // Pointer
-  private pointerRadius: number = 100;
+  private pointerRadius: number = 40;
 
   // points
   private pointCount = 100;
@@ -56,7 +56,7 @@ export class OrbitalViewerComponent implements OnInit {
   private lineWidth: number = .25;
 
   // particles
-  private maxParticles: number = 5000;
+  private maxParticles: number = 3500;
   private colorArray: string[] = ['#5799e0', '#5689e0', '#165572'];
   private particleSpeedModifier: number = .18;
   private particleMaxRadius: number = 4.25;
