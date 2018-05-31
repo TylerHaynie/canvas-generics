@@ -25,11 +25,10 @@ export class Boundry {
     }
 
     containsPoint(p: Point) {
-        if (p.x > this.x - this.w &&
-            p.x < this.x + this.w &&
-            p.y > this.y - this.h &&
-            p.y < this.y + this.h) {
-            return true;
+        if (p.x > this.x && p.x < this.x + this.w) {
+            if (p.y > this.y && p.y < this.y + this.h) {
+                return true;
+            }
         }
 
         return false;
@@ -63,10 +62,10 @@ export class QuadTree {
     isDivided: boolean = false;
 
     // sub divisions
-    northWest: QuadTree;
-    northEast: QuadTree;
-    southWest: QuadTree;
-    southEast: QuadTree;
+    topLeft: QuadTree;
+    topRight: QuadTree;
+    bottomLeft: QuadTree;
+    bottomRight: QuadTree;
 
     constructor(b: Boundry, c: number) {
         this.boundry = b;
@@ -89,12 +88,18 @@ export class QuadTree {
         // Otherwise, subdivide and then add the point to whichever quad it will fit in
         if (!this.isDivided) {
             this.subdivide();
+
+            // move the points to their new quads
+            for (let x = this.points.length; x > 0; x--) {
+                this.insert(this.points[x - 1]);
+                this.points.splice(x, 1);
+            }
         }
 
-        if (this.northWest.insert(p)) { return true; }
-        if (this.northEast.insert(p)) { return true; }
-        if (this.southWest.insert(p)) { return true; }
-        if (this.southEast.insert(p)) { return true; }
+        if (this.topLeft.insert(p)) { return true; }
+        if (this.topRight.insert(p)) { return true; }
+        if (this.bottomLeft.insert(p)) { return true; }
+        if (this.bottomRight.insert(p)) { return true; }
 
         // something went wrong
         return false;
@@ -106,21 +111,21 @@ export class QuadTree {
         let w = this.boundry.w;
         let h = this.boundry.h;
 
-        // NorthEast
-        let neBounds = new Boundry(x + w / 2, y, w / 2, h / 2);
-        this.northEast = new QuadTree(neBounds, this.capicity);
+        // topLeft
+        let tlBounds = new Boundry(x, y, w / 2, h / 2);
+        this.topLeft = new QuadTree(tlBounds, this.capicity);
 
-        // NorthWest
-        let nwBounds = new Boundry(x, y, w / 2, h / 2);
-        this.northWest = new QuadTree(nwBounds, this.capicity);
+        // topRight
+        let trBounds = new Boundry(x + w / 2, y, w / 2, h / 2);
+        this.topRight = new QuadTree(trBounds, this.capicity);
 
-        // SouthEast
-        let seBounds = new Boundry(w / 2, h / 2, w / 2, h / 2);
-        this.southEast = new QuadTree(seBounds, this.capicity);
+        // bottomLeft
+        let blBounds = new Boundry(x, y + h / 2, w / 2, h / 2);
+        this.bottomLeft = new QuadTree(blBounds, this.capicity);
 
-        // SouthWest
-        let swBounds = new Boundry(x, y + h / 2, w / 2, h / 2);
-        this.southWest = new QuadTree(swBounds, this.capicity);
+        // bottomRight
+        let brBounds = new Boundry(x + w / 2, y + h / 2, w / 2, h / 2);
+        this.bottomRight = new QuadTree(brBounds, this.capicity);
 
         this.isDivided = true;
     }
@@ -147,19 +152,19 @@ export class QuadTree {
         }
 
         // add points from children
-        for (let p of this.northWest.queryBoundry(b)) {
+        for (let p of this.topLeft.queryBoundry(b)) {
             pointsInRange.push(p);
         }
 
-        for (let p of this.northEast.queryBoundry(b)) {
+        for (let p of this.topRight.queryBoundry(b)) {
             pointsInRange.push(p);
         }
 
-        for (let p of this.southWest.queryBoundry(b)) {
+        for (let p of this.bottomLeft.queryBoundry(b)) {
             pointsInRange.push(p);
         }
 
-        for (let p of this.southEast.queryBoundry(b)) {
+        for (let p of this.bottomRight.queryBoundry(b)) {
             pointsInRange.push(p);
         }
 
@@ -169,10 +174,19 @@ export class QuadTree {
     public clear() {
         this.points = [];
         this.isDivided = false;
-        this.northEast = null;
-        this.northWest = null;
-        this.southEast = null;
-        this.southWest = null;
     }
 
+    public debugQuad(context: CanvasRenderingContext2D) {
+        context.strokeStyle = '#eee';
+        context.lineWidth = .5;
+
+        context.strokeRect(this.boundry.x, this.boundry.y, this.boundry.w, this.boundry.h);
+
+        if (this.isDivided) {
+            this.topLeft.debugQuad(context);
+            this.topRight.debugQuad(context);
+            this.bottomLeft.debugQuad(context);
+            this.bottomRight.debugQuad(context);
+        }
+    }
 }

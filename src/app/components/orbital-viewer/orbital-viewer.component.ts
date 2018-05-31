@@ -28,7 +28,7 @@ export class OrbitalViewerComponent implements OnInit {
 
   private context: CanvasRenderingContext2D;
   private panZoom: PanZoom;
-  private bContinue = true;
+  private paused = false;
 
   // point
   private pointCount = 38;
@@ -43,15 +43,15 @@ export class OrbitalViewerComponent implements OnInit {
   pointQuad: QuadTree;
 
   // particles
-  private maxParticles: number = 525;
+  private maxParticles: number = 10;
   private particles: iPoint[] = [];
-  private particleMaxRadius: number = 4.25;
-  private particleminRadius: number = .10;
-  private maxParticleLifespan: number = 800;
-  private minParticleLifespan: number = 200;
-  private particleFadeTime: number = 80;
-  private particleSpeedModifier: number = .05;
-  private maxOpacity: number = .75;
+  private particleMaxRadius: number = 4;
+  private particleminRadius: number = 4;
+  private maxParticleLifespan: number = 1800;
+  private minParticleLifespan: number = 1800;
+  private particleFadeTime: number = 1;
+  private particleSpeedModifier: number = 1;
+  private maxOpacity: number = 1;
   private colorArray: string[] = [
     '#5799e0',
     '#5689e0',
@@ -73,16 +73,27 @@ export class OrbitalViewerComponent implements OnInit {
 
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.context.canvas.width, this.context.canvas.height);
-    this.particleQuad = new QuadTree(boundry, 4);
-    this.pointQuad = new QuadTree(boundry, 4);
+    this.particleQuad = new QuadTree(boundry, 1);
 
     this.generatePoints();
+    this.registerEvents();
     this.draw();
+  }
+
+  registerEvents() {
+    this.context.canvas.onkeydown = (e: KeyboardEvent) => {
+      if (e.key === 'p' || e.key === 'P') {
+        this.paused = !this.paused;
+        if (this.paused) {
+          this.debugSnap();
+        }
+      }
+    };
   }
 
   //#region Drawing
   draw() {
-    if (this.bContinue) {
+    if (!this.paused) {
       this.context.save();
       // clear before doing anything
       this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
@@ -93,19 +104,19 @@ export class OrbitalViewerComponent implements OnInit {
       this.drawParticles();
 
       // update point locations
-      this.movepoints(this.points);
+      // this.movepoints(this.points);
 
-      // draw connecting lines
-      this.drawLines();
+      // // draw connecting lines
+      // this.drawLines();
 
-      // draw main points
-      this.drawpoints();
+      // // draw main points
+      // this.drawpoints();
 
-      // do some hover stuff
-      this.checkMouseHover();
+      // // do some hover stuff
+      // this.checkMouseHover();
 
-      // drawing the graident on the top
-      this.drawForeground();
+      // // drawing the graident on the top
+      // this.drawForeground();
 
       this.context.restore();
     }
@@ -144,17 +155,21 @@ export class OrbitalViewerComponent implements OnInit {
   }
 
   drawParticles() {
-    if (this.particles.length !== this.maxParticles) {
+    if (this.particles.length - 1 !== this.maxParticles) {
       this.generateMissingParticles();
-
-      // update particles quad
-      this.particleQuad.clear();
-      for (let p of this.particles) {
-        this.particleQuad.insert(new Point(p.x, p.y, p));
-      }
     }
 
     this.movepoints(this.particles);
+
+    // update particles quadp
+    this.particleQuad.clear();
+    for (let p of this.particles) {
+      this.particleQuad.insert(new Point(p.x, p.y, p));
+    }
+
+    this.context.save();
+    this.particleQuad.debugQuad(this.context);
+    this.context.restore();
 
     for (let x = this.particles.length - 1; x > 0; x--) {
       let p = this.particles[x];
@@ -165,9 +180,6 @@ export class OrbitalViewerComponent implements OnInit {
           this.drawCircle(p.x, p.y, p.r, p.color, (step * p.lifetime));
         }
         else if (p.lifespan - p.lifetime < this.particleFadeTime) {
-
-          // this.bContinue = false;
-
           let step = p.opacity / this.particleFadeTime;
           this.drawCircle(p.x, p.y, p.r, p.color, step * (p.lifespan - p.lifetime));
         }
@@ -199,8 +211,9 @@ export class OrbitalViewerComponent implements OnInit {
   }
 
   generateMissingParticles() {
+    console.log('generating');
 
-    for (let x = this.particles.length; x < this.maxParticles; x++) {
+    for (let x = this.particles.length - 1; x < this.maxParticles; x++) {
       let p = <iPoint>{
         x: Math.random() * (this.context.canvas.width - this.particleMaxRadius),
         y: Math.random() * (this.context.canvas.height - this.particleMaxRadius),
@@ -402,5 +415,9 @@ export class OrbitalViewerComponent implements OnInit {
     }
 
     return withinBounds;
+  }
+
+  private debugSnap() {
+    console.log(this.particleQuad);
   }
 }
