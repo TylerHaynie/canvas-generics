@@ -176,17 +176,17 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    public debugQuad(context: CanvasRenderingContext2D) {
-        context.strokeStyle = '#eee';
-        context.lineWidth = .5;
+    public debugQuad(context: CanvasRenderingContext2D, color: string) {
+        context.strokeStyle = color;
+        context.lineWidth = .25;
 
         context.strokeRect(this.boundry.x, this.boundry.y, this.boundry.w, this.boundry.h);
 
         if (this.isDivided) {
-            this.topLeft.debugQuad(context);
-            this.topRight.debugQuad(context);
-            this.bottomLeft.debugQuad(context);
-            this.bottomRight.debugQuad(context);
+            this.topLeft.debugQuad(context, color);
+            this.topRight.debugQuad(context, color);
+            this.bottomLeft.debugQuad(context, color);
+            this.bottomRight.debugQuad(context, color);
         }
     }
 }

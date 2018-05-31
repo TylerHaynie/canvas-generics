@@ -29,6 +29,7 @@ export class OrbitalViewerComponent implements OnInit {
   private context: CanvasRenderingContext2D;
   private panZoom: PanZoom;
   private paused = false;
+  private debugMode = true;
 
   // point
   private pointCount = 38;
@@ -43,14 +44,14 @@ export class OrbitalViewerComponent implements OnInit {
   pointQuad: QuadTree;
 
   // particles
-  private maxParticles: number = 10;
+  private maxParticles: number = 350;
   private particles: iPoint[] = [];
-  private particleMaxRadius: number = 4;
-  private particleminRadius: number = 4;
-  private maxParticleLifespan: number = 1800;
-  private minParticleLifespan: number = 1800;
-  private particleFadeTime: number = 1;
-  private particleSpeedModifier: number = 1;
+  private particleMaxRadius: number = 4.25;
+  private particleminRadius: number = .25;
+  private maxParticleLifespan: number = 350;
+  private minParticleLifespan: number = 250;
+  private particleFadeTime: number = 125;
+  private particleSpeedModifier: number = .25;
   private maxOpacity: number = 1;
   private colorArray: string[] = [
     '#5799e0',
@@ -74,6 +75,7 @@ export class OrbitalViewerComponent implements OnInit {
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.context.canvas.width, this.context.canvas.height);
     this.particleQuad = new QuadTree(boundry, 1);
+    this.pointQuad = new QuadTree(boundry, 1);
 
     this.generatePoints();
     this.registerEvents();
@@ -100,7 +102,8 @@ export class OrbitalViewerComponent implements OnInit {
       this.drawBackground();
       this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
 
-      // draw particles
+      // update and draw particles
+      this.updateParticleQuad();
       this.drawParticles();
 
       // update point locations
@@ -109,15 +112,25 @@ export class OrbitalViewerComponent implements OnInit {
       // // draw connecting lines
       // this.drawLines();
 
-      // // draw main points
+      // update and draw main points
+      // this.updatePointsQuad();
       // this.drawpoints();
 
       // // do some hover stuff
-      // this.checkMouseHover();
+      this.checkMouseHover();
 
       // // drawing the graident on the top
       // this.drawForeground();
 
+      // this.context.save();
+      if (this.debugMode) {
+        this.context.save();
+        this.particleQuad.debugQuad(this.context, '#7c7c7c');
+        // this.pointQuad.debugQuad(this.context, '#c60000');
+        this.context.restore();
+      }
+
+      // this.context.restore();
       this.context.restore();
     }
     requestAnimationFrame(() => this.draw());
@@ -160,16 +173,6 @@ export class OrbitalViewerComponent implements OnInit {
     }
 
     this.movepoints(this.particles);
-
-    // update particles quadp
-    this.particleQuad.clear();
-    for (let p of this.particles) {
-      this.particleQuad.insert(new Point(p.x, p.y, p));
-    }
-
-    this.context.save();
-    this.particleQuad.debugQuad(this.context);
-    this.context.restore();
 
     for (let x = this.particles.length - 1; x > 0; x--) {
       let p = this.particles[x];
@@ -230,6 +233,14 @@ export class OrbitalViewerComponent implements OnInit {
     }
   }
 
+  updateParticleQuad() {
+    // update particles quad
+    this.particleQuad.clear();
+    for (let p of this.particles) {
+      this.particleQuad.insert(new Point(p.x, p.y, p));
+    }
+  }
+
   generatePoints() {
     for (let x = 0; x < this.pointCount; x++) {
       let s = <iPoint>{
@@ -239,16 +250,27 @@ export class OrbitalViewerComponent implements OnInit {
         vx: this.randomWithNegative() * this.pointSpeedModifier,
         vy: this.randomWithNegative() * this.pointSpeedModifier,
         fillColor: this.pointDefaultBackground,
-        lineColor: '#fff',
+        lineColor: '#aaa',
         shadowColor: '#49d3ff',
         fillOpacity: 1
       };
 
       this.points.push(s);
     }
+
+
+  }
+
+  updatePointsQuad() {
+    // update points quad
+    this.pointQuad.clear();
+    for (let p of this.points) {
+      this.pointQuad.insert(new Point(p.x, p.y, p));
+    }
   }
 
   drawLines() {
+    this.context.save();
     this.context.strokeStyle = '#3d6a89';
     this.context.lineWidth = .25;
     this.context.beginPath();
@@ -269,6 +291,7 @@ export class OrbitalViewerComponent implements OnInit {
 
     }
     this.context.stroke();
+    this.context.restore();
   }
 
   drawpoints() {
@@ -336,6 +359,11 @@ export class OrbitalViewerComponent implements OnInit {
   checkMouseHover() {
     let mx = this.panZoom.pointerX;
     let my = this.panZoom.pointerY;
+
+    // TODO: query quad tree
+
+
+
 
     this.points.forEach(point => {
       if (this.pointerOverCircle(point.x, point.y, point.r)) {
