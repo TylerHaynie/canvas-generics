@@ -32,6 +32,8 @@ export class OrbitalViewerComponent implements OnInit {
   private pointSize = 15;
   private pointSpeedModifier = .25;
   private pointType: string = 'circle';
+  private pointDefaultBackground: string = '#000';
+  private pointHoverBackground: string = '#333';
 
   private maxParticles: number = 600;
   private particles: iPoint[] = [];
@@ -67,18 +69,30 @@ export class OrbitalViewerComponent implements OnInit {
 
   //#region Drawing
   draw() {
-
+    this.context.save();
     // clear before doing anything
     this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
-
-    this.context.save();
     this.drawBackground();
     this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
 
-    this.doSomeCoolStuff();
+    // draw particles
+    this.drawParticles();
 
+    // update point locations
+    this.movepoints(this.points);
+
+    // draw connecting lines
+    this.drawLines();
+
+    // draw main points
+    this.drawpoints();
+
+    // do some hover stuff
+    this.checkMouseHover();
+
+    // drawing the graident on the top
     this.drawForeground();
-    // this.drawMousePointer();
+
     this.context.restore();
 
     requestAnimationFrame(() => this.draw());
@@ -113,16 +127,6 @@ export class OrbitalViewerComponent implements OnInit {
     let py = this.panZoom.pointerY;
 
     this.drawCircle(px, py, 45, '#444', 0.5, 1, '#000');
-  }
-
-  doSomeCoolStuff() {
-    // draw particles
-    this.drawParticles();
-
-    this.movepoints(this.points);
-    this.drawLines();
-    this.drawpoints();
-    this.checkMouseHover();
   }
 
   drawParticles() {
@@ -198,7 +202,7 @@ export class OrbitalViewerComponent implements OnInit {
         r: this.pointSize,
         vx: this.randomWithNegative() * this.pointSpeedModifier,
         vy: this.randomWithNegative() * this.pointSpeedModifier,
-        fillColor: this.randomGray('0', '0'),
+        fillColor: this.pointDefaultBackground,
         lineColor: '#fff',
         shadowColor: '#49d3ff',
         fillOpacity: 1
@@ -301,10 +305,12 @@ export class OrbitalViewerComponent implements OnInit {
       if (this.pointerOverCircle(point.x, point.y, point.r)) {
         point.vx = 0;
         point.vy = 0;
+        point.fillColor = this.pointHoverBackground;
       }
       else if (point.vx === 0 && point.vy === 0) {
         point.vx = this.randomWithNegative() * this.pointSpeedModifier;
         point.vy = this.randomWithNegative() * this.pointSpeedModifier;
+        point.fillColor = this.pointDefaultBackground;
       }
     });
   }
