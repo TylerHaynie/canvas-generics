@@ -44,7 +44,7 @@ export class OrbitalViewerComponent implements OnInit {
   pointQuad: QuadTree;
 
   // particles
-  private maxParticles: number = 350;
+  private maxParticles: number = 150;
   private particles: iPoint[] = [];
   private particleMaxRadius: number = 4.25;
   private particleminRadius: number = .25;
@@ -65,7 +65,6 @@ export class OrbitalViewerComponent implements OnInit {
 
   ngOnInit() {
     this.context = (this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d');
-    let bounds = this.context.canvas.getBoundingClientRect();
 
     // setup pan and zoom
     this.panZoom = new PanZoom(this.context);
@@ -103,8 +102,8 @@ export class OrbitalViewerComponent implements OnInit {
       this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
 
       // update and draw particles
-      this.updateParticleQuad();
       this.drawParticles();
+      this.updateParticleQuad();
 
       // update point locations
       // this.movepoints(this.points);
@@ -113,8 +112,8 @@ export class OrbitalViewerComponent implements OnInit {
       // this.drawLines();
 
       // update and draw main points
-      // this.updatePointsQuad();
       // this.drawpoints();
+      // this.updatePointsQuad();
 
       // // do some hover stuff
       this.checkMouseHover();
@@ -214,7 +213,6 @@ export class OrbitalViewerComponent implements OnInit {
   }
 
   generateMissingParticles() {
-    console.log('generating');
 
     for (let x = this.particles.length - 1; x < this.maxParticles; x++) {
       let p = <iPoint>{
@@ -235,7 +233,7 @@ export class OrbitalViewerComponent implements OnInit {
 
   updateParticleQuad() {
     // update particles quad
-    this.particleQuad.clear();
+    this.particleQuad.clear(this.context.canvas.width, this.context.canvas.height);
     for (let p of this.particles) {
       this.particleQuad.insert(new Point(p.x, p.y, p));
     }
@@ -263,7 +261,7 @@ export class OrbitalViewerComponent implements OnInit {
 
   updatePointsQuad() {
     // update points quad
-    this.pointQuad.clear();
+    this.pointQuad.clear(this.context.canvas.width, this.context.canvas.height);
     for (let p of this.points) {
       this.pointQuad.insert(new Point(p.x, p.y, p));
     }
@@ -362,9 +360,6 @@ export class OrbitalViewerComponent implements OnInit {
 
     // TODO: query quad tree
 
-
-
-
     this.points.forEach(point => {
       if (this.pointerOverCircle(point.x, point.y, point.r)) {
         point.vx = 0;
@@ -409,7 +404,6 @@ export class OrbitalViewerComponent implements OnInit {
     let minIndex = a.indexOf(min);
     let maxIndex = a.indexOf(max);
     let range = a.substring(minIndex, maxIndex + 1);
-    console.log(range);
     let c = range[Math.floor(Math.random() * range.length)];
     return `#${c}${c}${c}`;
   }
@@ -447,5 +441,6 @@ export class OrbitalViewerComponent implements OnInit {
 
   private debugSnap() {
     console.log(this.particleQuad);
+    console.log(this.pointQuad);
   }
 }

@@ -171,7 +171,9 @@ export class QuadTree {
         return pointsInRange;
     }
 
-    public clear() {
+    public clear(w: number, h: number) {
+        this.boundry.w = w;
+        this.boundry.h = h;
         this.points = [];
         this.isDivided = false;
     }
