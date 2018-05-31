@@ -2,16 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { PanZoom } from '../../lib/canvas/pan-zoom';
 
 
-interface iSquare {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  vx: number;
-  vy: number;
-}
-
-interface iParticle {
+interface iPoint {
   x: number;
   y: number;
   r: number;
@@ -21,6 +12,10 @@ interface iParticle {
   lifetime: number;
   lifespan: number;
   opacity: number;
+  fillColor: string;
+  lineColor: string;
+  shadowColor: string;
+  fillOpacity: number;
 }
 
 @Component({
@@ -35,24 +30,27 @@ export class OrbitalViewerComponent implements OnInit {
   private hasChanges: boolean = false;
   private panZoom: PanZoom;
 
-  private squareCount = 100;
-  private squareSize = 25;
-  private squareSpeedModifier = .3;
+  private pointCount = 38;
+  private pointSize = 15;
+  private pointSpeedModifier = .25;
+  private pointType: string = 'circle';
 
-  private maxParticles: number = 350;
-  private particles: iParticle[] = [];
-  private particleRadius: number = 2;
+  private maxParticles: number = 600;
+  private particles: iPoint[] = [];
+  private particleMaxRadius: number = 4.25;
+  private particleminRadius: number = .5;
   private maxParticleLifespan: number = 800;
   private minParticleLifespan: number = 200;
   private particleFadeTime: number = 50;
-  private maxOpacity: number = .80;
+  private particleSpeedModifier: number = .35;
+  private maxOpacity: number = .75;
   private colorArray: string[] = [
     '#5799e0',
     '#5689e0',
     '#165572'
   ];
 
-  squares: iSquare[] = [];
+  points: iPoint[] = [];
 
   constructor() { }
 
@@ -64,7 +62,7 @@ export class OrbitalViewerComponent implements OnInit {
     this.panZoom.panSpeed = .70;
     this.panZoom.scaleStep = .05;
 
-    this.generateSquares();
+    this.generatePoints();
 
     this.hasChanges = true;
     this.draw();
@@ -83,6 +81,8 @@ export class OrbitalViewerComponent implements OnInit {
 
       this.doSomeCoolStuff();
 
+      this.drawForeground();
+      // this.drawMousePointer();
       this.context.restore();
       this.hasChanges = false;
     }
@@ -91,26 +91,43 @@ export class OrbitalViewerComponent implements OnInit {
 
   drawBackground() {
     let bounds = this.context.canvas.getBoundingClientRect();
+    this.context.fillStyle = '#000';
+    this.context.fillRect(bounds.left, bounds.top, bounds.width, bounds.height);
+  }
+
+  drawForeground() {
+    let bounds = this.context.canvas.getBoundingClientRect();
 
     // Create gradient
     let grd = this.context.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
 
     // Add colors
-    grd.addColorStop(0.500, 'rgba(0, 0, 0, 1.000)');
-    grd.addColorStop(1.000, '#071142');
+    grd.addColorStop(0.000, 'rgba(0, 0, 0, 0.700)');
+    grd.addColorStop(0.250, 'rgba(0, 0, 0, 0.000)');
+
+    grd.addColorStop(0.750, 'rgba(0, 0, 0, 0.000)');
+    grd.addColorStop(1.000, 'rgba(0, 0, 0, 0.700)');
 
     // Fill with gradient
     this.context.fillStyle = grd;
     this.context.fillRect(bounds.left, bounds.top, bounds.width, bounds.height);
   }
 
+  drawMousePointer() {
+    let px = this.panZoom.pointerX;
+    let py = this.panZoom.pointerY;
+
+    this.drawCircle(px, py, 45, '#444', 0.5, 1, '#000');
+  }
+
   doSomeCoolStuff() {
     // draw particles
     this.drawParticles();
 
-    this.moveSquares();
+    this.movepoints(this.points);
     this.drawLines();
-    this.drawSquares();
+    this.drawpoints();
+    this.checkMouseHover();
   }
 
   drawParticles() {
@@ -118,7 +135,7 @@ export class OrbitalViewerComponent implements OnInit {
       this.generateMissingParticles();
     }
 
-    this.moveParticles();
+    this.movepoints(this.particles);
 
     for (let x = this.particles.length - 1; x > 0; x--) {
       let p = this.particles[x];
@@ -144,26 +161,31 @@ export class OrbitalViewerComponent implements OnInit {
     }
   }
 
-  drawCircle(x: number, y: number, r: number, c: string, a: number = 1) {
+  drawCircle(x: number, y: number, r: number, c: string, a: number = 1, lw: number = 0, lc: string = '') {
     this.context.save();
     this.context.globalAlpha = a;
     this.context.beginPath();
     this.context.fillStyle = c;
     this.context.arc(x, y, r, 0, 2 * Math.PI);
     this.context.fill();
+    if (lw > 0) {
+      this.context.strokeStyle = lc;
+      this.context.stroke();
+    }
+
     this.context.restore();
   }
 
   generateMissingParticles() {
 
     for (let x = this.particles.length; x < this.maxParticles; x++) {
-      let p = <iParticle>{
-        x: Math.random() * (this.context.canvas.width - this.particleRadius),
-        y: Math.random() * (this.context.canvas.height - this.particleRadius),
-        r: this.particleRadius,
-        vx: this.randomWithNegative() * this.squareSpeedModifier,
-        vy: this.randomWithNegative() * this.squareSpeedModifier,
-        color: this.randomColor(),
+      let p = <iPoint>{
+        x: Math.random() * (this.context.canvas.width - this.particleMaxRadius),
+        y: Math.random() * (this.context.canvas.height - this.particleMaxRadius),
+        r: this.randomNumberBetween(this.particleminRadius, this.particleMaxRadius),
+        vx: this.randomWithNegative() * this.particleSpeedModifier,
+        vy: this.randomWithNegative() * this.particleSpeedModifier,
+        color: this.randomColorFromArray(this.colorArray),
         opacity: this.randomNumberBetween(1, this.maxOpacity * 100) / 100,
         lifespan: this.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan),
         lifetime: 0
@@ -173,18 +195,21 @@ export class OrbitalViewerComponent implements OnInit {
     }
   }
 
-  generateSquares() {
-    for (let x = 0; x < this.squareCount; x++) {
-      let s = <iSquare>{
-        x: Math.random() * (this.context.canvas.width - this.squareSize),
-        y: Math.random() * (this.context.canvas.height - this.squareSize),
-        w: this.squareSize,
-        h: this.squareSize,
-        vx: this.randomWithNegative() * this.squareSpeedModifier,
-        vy: this.randomWithNegative() * this.squareSpeedModifier
+  generatePoints() {
+    for (let x = 0; x < this.pointCount; x++) {
+      let s = <iPoint>{
+        x: Math.random() * (this.context.canvas.width - this.pointSize),
+        y: Math.random() * (this.context.canvas.height - this.pointSize),
+        r: this.pointSize,
+        vx: this.randomWithNegative() * this.pointSpeedModifier,
+        vy: this.randomWithNegative() * this.pointSpeedModifier,
+        fillColor: this.randomGray('0', '0'),
+        lineColor: '#fff',
+        shadowColor: '#49d3ff',
+        fillOpacity: 1
       };
 
-      this.squares.push(s);
+      this.points.push(s);
     }
   }
 
@@ -192,105 +217,100 @@ export class OrbitalViewerComponent implements OnInit {
     this.context.strokeStyle = '#3d6a89';
     this.context.lineWidth = .25;
     this.context.beginPath();
-    for (let x = 0; x < this.squares.length; x++) {
+    for (let x = 0; x < this.points.length; x++) {
       // current square and next square
-      let s = this.squares[x];
-      let ns = this.squares[x + 1];
+      let s = this.points[x];
+      let ns = this.points[x + 1];
 
       if (ns) {
-        this.context.moveTo(s.x + s.w / 2, s.y + s.h / 2);
-        this.context.lineTo(ns.x + ns.w / 2, ns.y + ns.h / 2);
+        this.context.moveTo(s.x + s.r / 2, s.y + s.r / 2);
+        this.context.lineTo(ns.x + ns.r / 2, ns.y + ns.r / 2);
       }
       else {
-        let fs = this.squares[0];
-        this.context.moveTo(s.x + s.w / 2, s.y + s.h / 2);
-        this.context.lineTo(fs.x + fs.w / 2, fs.y + fs.h / 2);
+        let fs = this.points[0];
+        this.context.moveTo(s.x + s.r / 2, s.y + s.r / 2);
+        this.context.lineTo(fs.x + fs.r / 2, fs.y + fs.r / 2);
       }
 
     }
     this.context.stroke();
   }
 
-  drawSquares() {
-    this.squares.forEach(square => {
+  drawpoints() {
+    this.context.save();
+    this.points.forEach(point => {
 
       // bottom square
-      this.context.fillStyle = '#999';
-      this.context.strokeStyle = '#33ccff';
-      this.context.shadowBlur = 10;
-      this.context.shadowColor = '#33ccff';
-      this.context.fillRect(square.x, square.y, square.h, square.w);
-      this.context.strokeRect(square.x, square.y, square.h, square.w);
+      this.context.globalAlpha = point.fillOpacity;
+      this.context.fillStyle = point.fillColor;
+      this.context.strokeStyle = point.lineColor;
+      this.context.shadowBlur = 6;
+      this.context.shadowColor = point.shadowColor;
 
-      // small square
-      // let msW = square.w / 2;
-      // let msH = square.w / 2;
+      if (this.pointType === 'square') {
+        this.context.fillRect(point.x, point.y, point.r, point.r);
+        this.context.strokeRect(point.x, point.y, point.r, point.r);
+      }
 
-      // this.context.fillStyle = '#111';
-      // this.context.shadowBlur = 5;
-      // this.context.shadowColor = '#000';
-      // this.context.fillRect(square.x + (msW / 2), square.y + (msH / 2), msW, msH);
-
-      // this.context.beginPath();
-      // this.context.arc(square.x, square.y, 10, 0, 2 * Math.PI);
-      // this.context.fill();
+      if (this.pointType === 'circle') {
+        this.drawCircle(
+          point.x + (this.pointSize / 2),
+          point.y + (this.pointSize / 2),
+          this.pointSize, point.fillColor,
+          point.fillOpacity,
+          .25,
+          point.lineColor
+        );
+      }
     });
+    this.context.restore();
   }
 
-  moveSquares() {
-    this.squares.forEach(square => {
-      let posX = square.x + Math.random() * 5;
-      let posY = square.y + Math.random() * 5;
+  movepoints(points: iPoint[]) {
+    points.forEach((point) => {
+      let posX = point.x + Math.random() * 5;
+      let posY = point.y + Math.random() * 5;
       let bounds = this.context.canvas.getBoundingClientRect();
 
-      if (posX + square.w >= bounds.right) {
-        square.vx = -square.vx;
+      if (posX + point.r >= bounds.right) {
+        point.vx = -point.vx;
       }
       else if (posX <= bounds.left) {
-        square.vx = Math.abs(square.vx);
+        point.vx = Math.abs(point.vx);
       }
 
-      if (posY + square.h >= bounds.bottom) {
-        square.vy = -square.vy;
+      if (posY + point.r >= bounds.bottom) {
+        point.vy = -point.vy;
       }
       else if (posY <= bounds.top) {
-        square.vy = Math.abs(square.vy);
+        point.vy = Math.abs(point.vy);
       }
 
-      square.x = square.x + square.vx;
-      square.y = square.y + square.vy;
+      point.x = point.x + point.vx;
+      point.y = point.y + point.vy;
     });
   }
 
-  moveParticles() {
-    this.particles.forEach(p => {
-      let posX = p.x + Math.random() * 5;
-      let posY = p.y + Math.random() * 5;
-      let bounds = this.context.canvas.getBoundingClientRect();
-
-      if (posX + p.r >= bounds.right) {
-        p.vx = -p.vx;
-      }
-      else if (posX <= bounds.left) {
-        p.vx = Math.abs(p.vx);
-      }
-
-      if (posY + p.r >= bounds.bottom) {
-        p.vy = -p.vy;
-      }
-      else if (posY <= bounds.top) {
-        p.vy = Math.abs(p.vy);
-      }
-
-      p.x = p.x + p.vx;
-      p.y = p.y + p.vy;
+  wigglePoints(points: iPoint[]) {
+    this.points.forEach(point => {
+      point.x = point.x + this.randomWithNegative();
+      point.y = point.y + this.randomWithNegative();
     });
   }
 
-  wiggleSquares() {
-    this.squares.forEach(square => {
-      square.x = square.x + this.randomWithNegative();
-      square.y = square.y + this.randomWithNegative();
+  checkMouseHover() {
+    let mx = this.panZoom.pointerX;
+    let my = this.panZoom.pointerY;
+
+    this.points.forEach(point => {
+      if (this.pointerOverCircle(point.x, point.y, point.r)) {
+        point.vx = 0;
+        point.vy = 0;
+      }
+      else if (point.vx === 0 && point.vy === 0) {
+        point.vx = this.randomWithNegative() * this.pointSpeedModifier;
+        point.vy = this.randomWithNegative() * this.pointSpeedModifier;
+      }
     });
   }
 
@@ -299,11 +319,64 @@ export class OrbitalViewerComponent implements OnInit {
     return (((Math.random() * 200) - 100) / 100);
   }
 
-  randomColor() {
+  randomColorFromArray(colorArray: string[]) {
     return this.colorArray[Math.floor(Math.random() * this.colorArray.length)];
+  }
+
+  randomColor(min = '0', max = 'f'): string {
+    let a = '0123456789abcdef';
+
+    let minIndex = a.indexOf(min);
+    let maxIndex = a.indexOf(max);
+    let range = a.substring(minIndex, maxIndex);
+
+    let color: string = '#';
+    for (let x = 0; x < 6; x++) {
+      color += range[Math.floor(Math.random() * range.length)];
+    }
+
+    return color;
+  }
+
+  randomGray(min = '0', max = 'f'): string {
+    let a = '0123456789abcdef';
+
+    let minIndex = a.indexOf(min);
+    let maxIndex = a.indexOf(max);
+    let range = a.substring(minIndex, maxIndex + 1);
+    console.log(range);
+    let c = range[Math.floor(Math.random() * range.length)];
+    return `#${c}${c}${c}`;
   }
 
   randomNumberBetween(n1, n2) {
     return Math.floor(Math.random() * Math.max(n1, n2)) + Math.min(n1, n2);
+  }
+
+  private pointerOverCircle(x: number, y: number, r: number): boolean {
+    let withinBounds: boolean = false;
+
+    // change radius if you want a wider range
+    let pointerPoint = {
+      radius: 1,
+      x: this.panZoom.pointerX,
+      y: this.panZoom.pointerY
+    };
+
+    let circle2 = {
+      radius: r,
+      x: x,
+      y: y
+    };
+
+    let dx = pointerPoint.x - circle2.x;
+    let dy = pointerPoint.y - circle2.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < pointerPoint.radius + circle2.radius) {
+      withinBounds = true;
+    }
+
+    return withinBounds;
   }
 }
