@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { PanZoom } from '../../lib/canvas/pan-zoom';
 
-
 interface iPoint {
   x: number;
   y: number;
@@ -27,7 +26,6 @@ export class OrbitalViewerComponent implements OnInit {
   @ViewChild('c') canvasRef: ElementRef;
 
   private context: CanvasRenderingContext2D;
-  private hasChanges: boolean = false;
   private panZoom: PanZoom;
 
   private pointCount = 38;
@@ -64,28 +62,25 @@ export class OrbitalViewerComponent implements OnInit {
 
     this.generatePoints();
 
-    this.hasChanges = true;
     this.draw();
   }
 
   //#region Drawing
   draw() {
-    // only draw when we need to
-    if (this.hasChanges || this.panZoom.isDirty) {
-      // clear before doing anything
-      this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
 
-      this.context.save();
-      this.drawBackground();
-      this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
+    // clear before doing anything
+    this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
 
-      this.doSomeCoolStuff();
+    this.context.save();
+    this.drawBackground();
+    this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
 
-      this.drawForeground();
-      // this.drawMousePointer();
-      this.context.restore();
-      this.hasChanges = false;
-    }
+    this.doSomeCoolStuff();
+
+    this.drawForeground();
+    // this.drawMousePointer();
+    this.context.restore();
+
     requestAnimationFrame(() => this.draw());
   }
 
