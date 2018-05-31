@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { PanZoom } from '../../lib/canvas/pan-zoom';
-import { QuadTree, Boundry, Point } from '../../lib/quadtree/quad-tree';
+import { QuadTree, Boundry, QuadPoint } from '../../lib/quadtree/quad-tree';
 
 interface iPoint {
   x: number;
@@ -29,8 +29,10 @@ export class OrbitalViewerComponent implements OnInit {
   private context: CanvasRenderingContext2D;
   private panZoom: PanZoom;
   private paused = false;
+  private frameStep: boolean = false;
   private debugParticles = false;
   private debugPoints = false;
+  private pointerRadius: number = 100;
 
   // point
   private pointCount = 38;
@@ -45,13 +47,13 @@ export class OrbitalViewerComponent implements OnInit {
   private pointQuad: QuadTree;
 
   // particles
-  private maxParticles: number = 1200;
+  private maxParticles: number = 4000;
   private particles: iPoint[] = [];
   private particleMaxRadius: number = 4.25;
   private particleminRadius: number = .15;
-  private maxParticleLifespan: number = 350;
-  private minParticleLifespan: number = 250;
-  private particleFadeTime: number = 125;
+  private maxParticleLifespan: number = 330;
+  private minParticleLifespan: number = 175;
+  private particleFadeTime: number = 85;
   private particleSpeedModifier: number = .18;
   private maxOpacity: number = .70;
   private colorArray: string[] = [
@@ -75,7 +77,7 @@ export class OrbitalViewerComponent implements OnInit {
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.context.canvas.width, this.context.canvas.height);
     this.particleQuad = new QuadTree(boundry, 1);
-    this.pointQuad = new QuadTree(boundry, 1);
+    // this.pointQuad = new QuadTree(boundry, 1);
 
     this.generatePoints();
     this.registerEvents();
@@ -84,9 +86,17 @@ export class OrbitalViewerComponent implements OnInit {
 
   registerEvents() {
     this.context.canvas.onkeydown = (e: KeyboardEvent) => {
+
       if (e.key === 'p' || e.key === 'P') {
         this.paused = !this.paused;
         if (this.paused) {
+          this.debugSnap();
+        }
+      }
+
+      if (e.key === '>' || e.key === '.') {
+        this.frameStep = !this.frameStep;
+        if (this.frameStep) {
           this.debugSnap();
         }
       }
@@ -95,29 +105,32 @@ export class OrbitalViewerComponent implements OnInit {
 
   //#region Drawing
   draw() {
-    if (!this.paused) {
+    if (!this.paused || this.frameStep) {
       this.context.save();
       // clear before doing anything
       this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
       this.drawBackground();
-      this.context.setTransform(this.panZoom.scale, 0, 0, this.panZoom.scale, this.panZoom.panX, this.panZoom.panY);
+
+      // TODO: this needs to change
+      this.panZoom.update();
 
       // update and draw particles
       this.drawParticles();
-      this.updateParticleQuad();
 
       // draw connecting lines under points
       this.drawLines();
 
-      // update and draw main points
+      // // update and draw main points
       this.drawpoints();
-      this.updatePointsQuad();
+      // this.updatePointsQuad();
 
-      // update point locations
-      this.movepoints(this.points);
+      // // update point locations
+      // this.movepoints(this.points);
 
       // do some hover stuff
-      this.checkMouseHover();
+      if (!this.panZoom.pointerOffCanvas) {
+        this.checkMouseHover();
+      }
 
       // drawing the graident on the top
       this.drawForeground();
@@ -135,8 +148,8 @@ export class OrbitalViewerComponent implements OnInit {
         this.context.restore();
       }
 
-      // this.context.restore();
       this.context.restore();
+      this.frameStep = false;
     }
     requestAnimationFrame(() => this.draw());
   }
@@ -237,14 +250,6 @@ export class OrbitalViewerComponent implements OnInit {
     }
   }
 
-  updateParticleQuad() {
-    // update particles quad
-    this.particleQuad.clear(this.context.canvas.width, this.context.canvas.height);
-    for (let p of this.particles) {
-      this.particleQuad.insert(new Point(p.x, p.y, p));
-    }
-  }
-
   generatePoints() {
     for (let x = 0; x < this.pointCount; x++) {
       let s = <iPoint>{
@@ -261,15 +266,13 @@ export class OrbitalViewerComponent implements OnInit {
 
       this.points.push(s);
     }
-
-
   }
 
   updatePointsQuad() {
     // update points quad
     this.pointQuad.clear(this.context.canvas.width, this.context.canvas.height);
     for (let p of this.points) {
-      this.pointQuad.insert(new Point(p.x, p.y, p));
+      this.pointQuad.insert(new QuadPoint(p.x, p.y, p));
     }
   }
 
@@ -329,6 +332,9 @@ export class OrbitalViewerComponent implements OnInit {
   }
 
   movepoints(points: iPoint[]) {
+    // clear the quad
+    this.particleQuad.clear(this.context.canvas.width, this.context.canvas.height);
+
     points.forEach((point) => {
       let posX = point.x + Math.random() * 5;
       let posY = point.y + Math.random() * 5;
@@ -350,6 +356,9 @@ export class OrbitalViewerComponent implements OnInit {
 
       point.x = point.x + point.vx;
       point.y = point.y + point.vy;
+
+      // add updated point to quad
+      this.particleQuad.insert({ x: point.x, y: point.y, data: point });
     });
   }
 
@@ -361,23 +370,29 @@ export class OrbitalViewerComponent implements OnInit {
   }
 
   checkMouseHover() {
+    this.context.save();
     let mx = this.panZoom.pointerX;
     let my = this.panZoom.pointerY;
 
-    // TODO: query quad tree
+    this.context.fillStyle = '#555';
+    this.context.globalAlpha = .25;
 
-    this.points.forEach(point => {
-      if (this.pointerOverCircle(point.x, point.y, point.r)) {
-        point.vx = 0;
-        point.vy = 0;
-        point.fillColor = this.pointHoverBackground;
-      }
-      else if (point.vx === 0 && point.vy === 0) {
-        point.vx = this.randomWithNegative() * this.pointSpeedModifier;
-        point.vy = this.randomWithNegative() * this.pointSpeedModifier;
-        point.fillColor = this.pointDefaultBackground;
-      }
-    });
+    // debug pointer
+    // this.context.fillRect(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
+    // this.drawCircle(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, '#444', 0.5, 1, '#000');
+
+    let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
+    let pointsInRange: QuadPoint[] = this.particleQuad.queryBoundry(b);
+
+    if (pointsInRange.length > 0) {
+      pointsInRange.forEach(p => {
+        let ip = <iPoint>(p.data);
+        ip.opacity = 1;
+        ip.color = '#ff5ede';
+      });
+    }
+
+    this.context.restore();
   }
 
   // returns number from -1 to 1

@@ -1,6 +1,6 @@
 // built by referencing https://en.wikipedia.org/wiki/Quadtree
 
-export class Point {
+export class QuadPoint {
     x: number;
     y: number;
     data: any;
@@ -24,7 +24,7 @@ export class Boundry {
         this.h = h;
     }
 
-    containsPoint(p: Point) {
+    containsPoint(p: QuadPoint) {
         if (p.x > this.x && p.x < this.x + this.w) {
             if (p.y > this.y && p.y < this.y + this.h) {
                 return true;
@@ -56,7 +56,7 @@ export class QuadTree {
     capicity: number;
 
     // This quad's points
-    points: Point[] = [];
+    points: QuadPoint[] = [];
 
     // division flag
     isDivided: boolean = false;
@@ -72,7 +72,7 @@ export class QuadTree {
         this.capicity = c;
     }
 
-    public insert(p: Point) {
+    public insert(p: QuadPoint) {
         // Ignore objects that do not belong in this quad tree
         if (!this.boundry.containsPoint(p)) {
             // point does not belong here
@@ -130,9 +130,9 @@ export class QuadTree {
         this.isDivided = true;
     }
 
-    public queryBoundry(b: Boundry): Point[] {
+    public queryBoundry(b: Boundry): QuadPoint[] {
         // Prepare an array of results
-        let pointsInRange: Point[] = [];
+        let pointsInRange: QuadPoint[] = [];
 
         // leave if the boundry does not intersect this quad
         if (!this.boundry.intersects(b)) {

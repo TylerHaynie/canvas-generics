@@ -14,9 +14,12 @@ export class PanZoom {
     public get pointerX() { return this.pointerPositionX; }
     private pointerPositionY: number = 0;
     public get pointerY() { return this.pointerPositionY; }
+    private pointerOff: boolean = true;
+    public get pointerOffCanvas() { return this.pointerOff; }
 
     // panning
     private allowPanning: boolean = true;
+    private pannableModifier: number = 1;
     public set panningAllowed(v) { this.allowPanning = v; }
     private panOffsetX: number = 0;
     private panOffsetY: number = 0;
@@ -50,6 +53,7 @@ export class PanZoom {
         this.context = context;
         this.canvasInit();
         this.registerEvents();
+        // this.update();
     }
 
     zoomIn() {
@@ -58,6 +62,15 @@ export class PanZoom {
 
     zoomOut() {
         this.scaleDown(this.canvasScaleStep);
+    }
+
+    update() {
+        if (this.hasChanges) {
+            // this.context.translate(this.pointerPositionX, this.pointerPositionY);
+            this.context.setTransform(this.canvasScale, 0, 0, this.canvasScale, this.totalPanningX, this.totalPanningY);
+            // this.context.translate(-this.pointerPositionX, -this.pointerPositionX);
+        }
+        // requestAnimationFrame(() => this.update());
     }
 
     private canvasInit() {
@@ -198,6 +211,19 @@ export class PanZoom {
             this.totalPanningX += dx;
             this.totalPanningY += dy;
 
+
+            // TODO: check for pan set amount after zooming in
+
+            // let pannableWidth = this.context.canvas.width * this.pannableModifier;
+            // if (this.totalPanningX > pannableWidth) {
+            //     this.totalPanningX = pannableWidth;
+            // }
+
+            // let pannableHeight = this.context.canvas.height * this.pannableModifier;
+            // if (this.totalPanningY > pannableHeight) {
+            //     this.totalPanningY = pannableHeight;
+            // }
+
             this.hasChanges = true;
         }
     }
@@ -205,6 +231,7 @@ export class PanZoom {
     private updatePointerPosition(x, y) {
         this.pointerPositionX = x - this.panOffsetX;
         this.pointerPositionY = y - this.panOffsetY;
+        this.pointerOff = false;
     }
 
     private pointerStop() {
@@ -231,6 +258,7 @@ export class PanZoom {
 
         document.body.style.cursor = 'default';
         this.isPanning = false;
+        this.pointerOff = true;
     }
 
     //#endregion
