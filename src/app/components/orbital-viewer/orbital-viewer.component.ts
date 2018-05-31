@@ -29,13 +29,14 @@ export class OrbitalViewerComponent implements OnInit {
   private context: CanvasRenderingContext2D;
   private panZoom: PanZoom;
   private paused = false;
-  private debugMode = true;
+  private debugParticles = false;
+  private debugPoints = false;
 
   // point
   private pointCount = 38;
   private pointSize = 15;
-  private pointSpeedModifier = .12;
-  private pointType: string = 'circle';
+  private pointSpeedModifier = .08;
+  private pointType: string = 'square';
   private pointDefaultBackground: string = '#000';
   private pointHoverBackground: string = '#333';
 
@@ -44,15 +45,15 @@ export class OrbitalViewerComponent implements OnInit {
   pointQuad: QuadTree;
 
   // particles
-  private maxParticles: number = 150;
+  private maxParticles: number = 1150;
   private particles: iPoint[] = [];
   private particleMaxRadius: number = 4.25;
-  private particleminRadius: number = .25;
+  private particleminRadius: number = .10;
   private maxParticleLifespan: number = 350;
   private minParticleLifespan: number = 250;
   private particleFadeTime: number = 125;
-  private particleSpeedModifier: number = .25;
-  private maxOpacity: number = 1;
+  private particleSpeedModifier: number = .18;
+  private maxOpacity: number = .75;
   private colorArray: string[] = [
     '#5799e0',
     '#5689e0',
@@ -105,27 +106,32 @@ export class OrbitalViewerComponent implements OnInit {
       this.drawParticles();
       this.updateParticleQuad();
 
-      // update point locations
-      // this.movepoints(this.points);
-
-      // // draw connecting lines
-      // this.drawLines();
+      // draw connecting lines under points
+      this.drawLines();
 
       // update and draw main points
-      // this.drawpoints();
-      // this.updatePointsQuad();
+      this.drawpoints();
+      this.updatePointsQuad();
 
-      // // do some hover stuff
+      // update point locations
+      this.movepoints(this.points);
+
+      // do some hover stuff
       this.checkMouseHover();
 
-      // // drawing the graident on the top
-      // this.drawForeground();
+      // drawing the graident on the top
+      this.drawForeground();
 
-      // this.context.save();
-      if (this.debugMode) {
+      // debug
+      if (this.debugParticles) {
         this.context.save();
-        this.particleQuad.debugQuad(this.context, '#7c7c7c');
-        // this.pointQuad.debugQuad(this.context, '#c60000');
+        this.particleQuad.debugQuad(this.context, '#777');
+        this.context.restore();
+      }
+
+      if (this.debugPoints) {
+        this.context.save();
+        this.pointQuad.debugQuad(this.context, '#c60000');
         this.context.restore();
       }
 
