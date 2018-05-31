@@ -1,27 +1,10 @@
-# OrbitalPoints
+## About this Project
+I wanted to make an interactive background and this is what I came up with. You can stop the main points by hovering over them with your mouse. You could expand the hover to animate the showing and hiding of unique content.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.3.
-
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### Setting up the project
+* Open your terminal of choice and navigate to the root of the project folder.
+* Run `npm install` to download all of the required packages. If you don't have `npm` you can download it from [nodejs.org](https://nodejs.org)
+* After all packages are downloaded, you should be able to run `ng serve` in your terminal.  
+This will launch a development server and watch for file changes. 
+* Navigate to `http://localhost:4200/`. 
+The app will automatically reload if you save any changes made to source while the server is running.
