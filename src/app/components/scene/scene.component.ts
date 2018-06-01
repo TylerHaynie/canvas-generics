@@ -159,16 +159,20 @@ export class sceneComponent implements OnInit {
   //#region Interaction
 
   checkMouseHover() {
+    // current mouse location
     let mx = this.panZoom.pointerX;
     let my = this.panZoom.pointerY;
 
     // debug pointer
     // this.context.fillRect(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
+
+    // boundry around mouse
     let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
 
     // check points
     let pointsInRange: QuadPoint[] = this.pointQuad.searchBoundry(b);
 
+    // update points in range
     if (pointsInRange.length > 0) {
       pointsInRange.forEach(p => {
         let ip = <iPoint>(p.data);
@@ -180,6 +184,7 @@ export class sceneComponent implements OnInit {
     // check particles
     let particlesInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
 
+    // update particles in range
     if (particlesInRange.length > 0) {
       particlesInRange.forEach(p => {
         let ip = <iPoint>(p.data);
@@ -228,6 +233,7 @@ export class sceneComponent implements OnInit {
         this.context.restore();
       }
 
+      // debug
       if (this.debugPoints) {
         this.context.save();
         this.pointQuad.debugQuad(this.context, '#c60000');
@@ -265,45 +271,54 @@ export class sceneComponent implements OnInit {
   }
 
   drawParticles() {
+    // replace particles that were removed
     if (this.particles.length - 1 !== this.maxParticles) {
       this.generateMissingParticles();
     }
 
     // clear the quad
-    this.particleQuad.clear(this.context.canvas.width, this.context.canvas.height);
+    this.particleQuad.clear();
 
+    // update point location
     this.utils.movepoints(this.context.canvas.getBoundingClientRect(), this.particles);
 
     for (let x = this.particles.length - 1; x > 0; x--) {
       let p = this.particles[x];
       if (p.lifetime < p.lifespan) {
+
+        // fad in particle
         if (p.lifetime < this.particleFadeTime) {
           let step = p.alpha / this.particleFadeTime;
-
           this.utils.drawCircle(this.context, p.x, p.y, p.r, p.color, (step * p.lifetime));
         }
+
+        // fade out particle
         else if (p.lifespan - p.lifetime < this.particleFadeTime) {
           let step = p.alpha / this.particleFadeTime;
           this.utils.drawCircle(this.context, p.x, p.y, p.r, p.color, step * (p.lifespan - p.lifetime));
         }
+
+        // draw it normally
         else {
           this.utils.drawCircle(this.context, p.x, p.y, p.r, p.color, p.alpha);
         }
 
+        // increase particle lifetime by 1
         p.lifetime += 1;
       }
       else {
+        // if the particle is too old we remove it
         this.particles.splice(x, 1);
       }
 
-      // add updated point to quad
+      // add updated particle to quad
       this.particleQuad.insert({ x: p.x, y: p.y, data: p });
     }
   }
 
   drawpoints() {
     // clear the quad
-    this.pointQuad.clear(this.context.canvas.width, this.context.canvas.height);
+    this.pointQuad.clear();
 
     // update point locations
     this.utils.movepoints(this.context.canvas.getBoundingClientRect(), this.points);
@@ -367,6 +382,8 @@ export class sceneComponent implements OnInit {
       }
 
     }
+
+    // draw the lines
     this.context.stroke();
     this.context.restore();
   }
