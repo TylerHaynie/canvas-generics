@@ -167,7 +167,7 @@ export class sceneComponent implements OnInit {
     let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
 
     // check points
-    let pointsInRange: QuadPoint[] = this.pointQuad.queryBoundry(b);
+    let pointsInRange: QuadPoint[] = this.pointQuad.searchBoundry(b);
 
     if (pointsInRange.length > 0) {
       pointsInRange.forEach(p => {
@@ -178,7 +178,7 @@ export class sceneComponent implements OnInit {
     }
 
     // check particles
-    let particlesInRange: QuadPoint[] = this.particleQuad.queryBoundry(b);
+    let particlesInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
 
     if (particlesInRange.length > 0) {
       particlesInRange.forEach(p => {

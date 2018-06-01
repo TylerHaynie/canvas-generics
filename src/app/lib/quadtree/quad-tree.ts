@@ -130,7 +130,7 @@ export class QuadTree {
         this.isDivided = true;
     }
 
-    public queryBoundry(b: Boundry): QuadPoint[] {
+    public searchBoundry(b: Boundry): QuadPoint[] {
         // Prepare an array of results
         let pointsInRange: QuadPoint[] = [];
 
@@ -152,19 +152,19 @@ export class QuadTree {
         }
 
         // add points from children
-        for (let p of this.topLeft.queryBoundry(b)) {
+        for (let p of this.topLeft.searchBoundry(b)) {
             pointsInRange.push(p);
         }
 
-        for (let p of this.topRight.queryBoundry(b)) {
+        for (let p of this.topRight.searchBoundry(b)) {
             pointsInRange.push(p);
         }
 
-        for (let p of this.bottomLeft.queryBoundry(b)) {
+        for (let p of this.bottomLeft.searchBoundry(b)) {
             pointsInRange.push(p);
         }
 
-        for (let p of this.bottomRight.queryBoundry(b)) {
+        for (let p of this.bottomRight.searchBoundry(b)) {
             pointsInRange.push(p);
         }
 
@@ -174,6 +174,12 @@ export class QuadTree {
     public clear(w: number, h: number) {
         this.boundry.w = w;
         this.boundry.h = h;
+
+        this.topLeft = undefined;
+        this.topRight = undefined;
+        this.bottomLeft = undefined;
+        this.bottomRight = undefined;
+
         this.points = [];
         this.isDivided = false;
     }
