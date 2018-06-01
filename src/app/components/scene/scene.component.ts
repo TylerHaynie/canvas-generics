@@ -5,11 +5,11 @@ import { Utils } from '../../lib/canvas/utils';
 import { iPoint } from '../../lib/canvas/iPoint';
 
 @Component({
-  selector: 'app-orbital-viewer',
-  templateUrl: './orbital-viewer.component.html',
-  styleUrls: ['./orbital-viewer.component.css']
+  selector: 'app-scene',
+  templateUrl: './scene.component.html',
+  styleUrls: ['./scene.component.css']
 })
-export class OrbitalViewerComponent implements OnInit {
+export class sceneComponent implements OnInit {
   @ViewChild('c') canvasRef: ElementRef;
 
   //#region Variables
@@ -37,11 +37,11 @@ export class OrbitalViewerComponent implements OnInit {
   //#region Configuration
 
   // Pointer
-  private pointerRadius: number = 40;
+  private pointerRadius: number = 55;
 
   // points
-  private pointCount = 100;
-  private pointSize = 15;
+  private pointCount = 50;
+  private pointSize = 12;
   private pointSpeedModifier = .2;
   private pointType: string = 'square';
   private pointDefaultBackground: string = '#000';
@@ -56,7 +56,7 @@ export class OrbitalViewerComponent implements OnInit {
   private lineWidth: number = .25;
 
   // particles
-  private maxParticles: number = 3500;
+  private maxParticles: number = 4900;
   private colorArray: string[] = ['#5799e0', '#5689e0', '#165572'];
   private particleSpeedModifier: number = .18;
   private particleMaxRadius: number = 4.25;
