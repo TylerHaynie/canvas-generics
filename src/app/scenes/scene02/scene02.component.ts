@@ -24,6 +24,9 @@ export class Scene02Component implements OnInit {
   draw() {
     this.cw.saveContext();
 
+    // do some cool stuff
+    // ...
+    //
 
     this.cw.restoreContext();
   }

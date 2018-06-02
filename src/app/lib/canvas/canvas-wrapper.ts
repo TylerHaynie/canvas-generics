@@ -9,6 +9,7 @@ import { ImageDataUtility } from './utilities/image-data-utility';
 import { PatternUtility } from './utilities/pattern-utility';
 import { KeyboardManager } from './managers/keyboard-manager';
 import { WindowManager } from './managers/window-manager';
+import { HelperUtility } from './utilities/helper-utility';
 
 export class CanvasWrapper {
 
@@ -18,7 +19,10 @@ export class CanvasWrapper {
     public get keyboardManager() { return this._keyboardManager; }
 
     public set pauseKeys(v: string[]) { this._pauseKeys = v; }
-    public set frameForwardKeys(v: string[]) { this._pauseKeys = v; }
+    public set frameForwardKeys(v: string[]) { this.frameForwardKeys = v; }
+
+    public set enableGrid(v) { this._enableGrid = v; }
+    public set trackMouse(v) { this._trackMouse = v; }
 
     public get randoms() { return this.randomUtil; }
     public get colors() { return this.colorUtil; }
@@ -27,6 +31,7 @@ export class CanvasWrapper {
     public get graident() { return this.graidentUtility; }
     public get imageData() { return this.imageDataUtility; }
     public get pattern() { return this.patternUtility; }
+    public get helper() { return this.helperUtility; }
 
     public get bounds() { return this._context.canvas.getBoundingClientRect(); }
     public get width() { return this._context.canvas.width; }
@@ -38,9 +43,13 @@ export class CanvasWrapper {
 
     // control
     private _pauseKeys: string[] = ['p', 'P'];
-    private _frameForwardKey: string[] = ['>', '.'];
+    private _frameForwardKeys: string[] = ['>', '.'];
     private paused = false;
     private frameStep: boolean = false;
+
+    // visual
+    private _enableGrid: boolean = true;
+    private _trackMouse: boolean = true;
 
     // utils
     private randomUtil: RandomUtility;
@@ -50,6 +59,7 @@ export class CanvasWrapper {
     private graidentUtility: GraidentUtility;
     private imageDataUtility: ImageDataUtility;
     private patternUtility: PatternUtility;
+    private helperUtility: HelperUtility;
 
     // managers
     private _panZoomManager: PanZoomManager;
@@ -95,6 +105,7 @@ export class CanvasWrapper {
         this.graidentUtility = new GraidentUtility(this._context);
         this.imageDataUtility = new ImageDataUtility(this._context);
         this.patternUtility = new PatternUtility(this._context);
+        this.helperUtility = new HelperUtility(this._context);
     }
 
     private setupCanvas() {
@@ -113,6 +124,16 @@ export class CanvasWrapper {
         if (!this.paused || this.frameStep) {
             this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
             this.saveContext();
+
+            // draw grid
+            if (this._enableGrid) {
+                this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30, 1);
+            }
+
+            // track mouse
+            if (this._trackMouse) {
+                this.helperUtility.trackMouse(this.mouseManager.mouseX, this.mouseManager.mouseY, 'rgba(35, 35, 35, .80)', 1);
+            }
 
             // update the managers
             // ** Order matters! **
@@ -148,7 +169,7 @@ export class CanvasWrapper {
                     this.paused = !this.paused;
                 }
 
-                if (this._frameForwardKey.includes(kbm.key)) {
+                if (this._frameForwardKeys.includes(kbm.key)) {
                     this.frameStep = !this.frameStep;
                 }
             }
