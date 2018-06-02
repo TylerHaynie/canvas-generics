@@ -173,7 +173,10 @@ export class QuadTree {
         return pointsInRange;
     }
 
-    public clear() {
+    public reset(w: number, h: number) {
+        this.boundry.w = w;
+        this.boundry.h = h;
+
         this.topLeft = undefined;
         this.topRight = undefined;
         this.bottomLeft = undefined;

@@ -97,71 +97,11 @@ export class sceneComponent implements OnInit {
 
   //#endregion
 
-  //#region Generation
-
-  generateMissingParticles() {
-
-    for (let x = this.particles.length - 1; x < this.maxParticles; x++) {
-      let p = <iParticle>{
-        point: {
-          x: Math.random() * (this.cw.width - this.particleMaxRadius),
-          y: Math.random() * (this.cw.height - this.particleMaxRadius)
-        },
-        radius: this.cw.randoms.randomNumberBetween(this.particleminRadius, this.particleMaxRadius),
-        speed: {
-          vx: this.cw.randoms.randomWithNegative() * this.particleSpeedModifier,
-          vy: this.cw.randoms.randomWithNegative() * this.particleSpeedModifier
-        },
-        color: {
-          color: this.cw.colors.randomColorFromArray(this.colorArray),
-          alpha: this.cw.randoms.randomNumberBetween(1, this.maxOpacity * 100) / 100
-        },
-        maximumLifeTime: this.cw.randoms.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan),
-        currentLifeTime: 0
-      };
-
-      this.particles.push(p);
-    }
-  }
-
-  generatePoints() {
-    for (let x = 0; x < this.pointCount; x++) {
-
-      let p = <iParticle>{
-        point: {
-          x: Math.random() * (this.cw.width - this.pointSize),
-          y: Math.random() * (this.cw.height - this.pointSize),
-        },
-        radius: this.pointSize,
-        speed: {
-          vx: this.cw.randoms.randomWithNegative() * this.pointSpeedModifier,
-          vy: this.cw.randoms.randomWithNegative() * this.pointSpeedModifier
-        },
-        color: {
-          color: this.pointDefaultBackground,
-          alpha: 1
-        },
-        outlineColor: {
-          color: this.pointOutline,
-          alpha: 1
-        },
-        outlineWidth: .25,
-        shadow: {
-          shadowColor: this.pointShadowColor,
-          shadowBlur: this.pointShadowBlur
-        },
-      };
-
-      this.points.push(p);
-    }
-  }
-
-  //#endregion
-
   //#region Drawing
 
   draw() {
     this.cw.saveContext();
+    console.log(`Mouse: (${this.cw.mouseManager.mouseX}, ${this.cw.mouseManager.mouseY})`);
 
     this.drawBackground();
 
@@ -255,13 +195,13 @@ export class sceneComponent implements OnInit {
     }
 
     // update particle locations
-    this.cw.particles.moveParticles(this.cw.bounds, this.particles);
+    this.cw.particles.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.particles);
 
     // apply fade to new or dying particles
     this.cw.particles.particleFader(this.particleFadeTime, this.particles);
 
     // clear the quad
-    this.particleQuad.clear();
+    this.particleQuad.reset(this.cw.width, this.cw.height);
 
     // add particles then add them to the quad
     this.particles.forEach(p => {
@@ -272,10 +212,10 @@ export class sceneComponent implements OnInit {
 
   drawpoints() {
     // clear the quad
-    this.pointQuad.clear();
+    this.pointQuad.reset(this.cw.width, this.cw.height);
 
     // update point locations
-    this.cw.particles.moveParticles(this.cw.bounds, this.points);
+    this.cw.particles.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.points);
 
     this.points.forEach(p => {
       if (this.pointType === 'circle') {
@@ -337,6 +277,67 @@ export class sceneComponent implements OnInit {
 
   //#endregion
 
+  //#region Generation
+
+  generateMissingParticles() {
+
+    for (let x = this.particles.length - 1; x < this.maxParticles; x++) {
+      let p = <iParticle>{
+        point: {
+          x: Math.random() * (this.cw.width - this.particleMaxRadius),
+          y: Math.random() * (this.cw.height - this.particleMaxRadius)
+        },
+        radius: this.cw.randoms.randomNumberBetween(this.particleminRadius, this.particleMaxRadius),
+        speed: {
+          vx: this.cw.randoms.randomWithNegative() * this.particleSpeedModifier,
+          vy: this.cw.randoms.randomWithNegative() * this.particleSpeedModifier
+        },
+        color: {
+          color: this.cw.colors.randomColorFromArray(this.colorArray),
+          alpha: this.cw.randoms.randomNumberBetween(1, this.maxOpacity * 100) / 100
+        },
+        maximumLifeTime: this.cw.randoms.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan),
+        currentLifeTime: 0
+      };
+
+      this.particles.push(p);
+    }
+  }
+
+  generatePoints() {
+    for (let x = 0; x < this.pointCount; x++) {
+
+      let p = <iParticle>{
+        point: {
+          x: Math.random() * (this.cw.width - this.pointSize),
+          y: Math.random() * (this.cw.height - this.pointSize),
+        },
+        radius: this.pointSize,
+        speed: {
+          vx: this.cw.randoms.randomWithNegative() * this.pointSpeedModifier,
+          vy: this.cw.randoms.randomWithNegative() * this.pointSpeedModifier
+        },
+        color: {
+          color: this.pointDefaultBackground,
+          alpha: 1
+        },
+        outlineColor: {
+          color: this.pointOutline,
+          alpha: 1
+        },
+        outlineWidth: .25,
+        shadow: {
+          shadowColor: this.pointShadowColor,
+          shadowBlur: this.pointShadowBlur
+        },
+      };
+
+      this.points.push(p);
+    }
+  }
+
+  //#endregion
+
   //#region Interaction
 
   checkParticleHover() {
@@ -347,6 +348,7 @@ export class sceneComponent implements OnInit {
 
       // boundry around mouse
       let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
+      // console.log(b);
 
       // check points
       let pointsInRange: QuadPoint[] = this.pointQuad.searchBoundry(b);
@@ -362,6 +364,8 @@ export class sceneComponent implements OnInit {
 
       // check particles
       let particlesInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
+
+      // console.log(particlesInRange);
 
       // update particles in range
       if (particlesInRange.length > 0) {
