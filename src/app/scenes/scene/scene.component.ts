@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-// import { PanZoom } from '../../lib/canvas/pan-zoom';
 import { QuadTree, Boundry, QuadPoint } from '../../lib/quadtree/quad-tree';
 import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
 import { iParticle } from '../../lib/canvas/interfaces/iParticle';
@@ -54,18 +53,21 @@ export class sceneComponent implements OnInit {
 
   // points
   private pointCount = 20;
-  private pointSize = 15;
-  private pointSpeedModifier = .17;
-  private pointType: string = 'circle'; // circle or square
+  private pointSize = 25;
+  private pointSpeedModifier = .5;
+  private pointType: string = 'square'; // circle or square
   private pointDefaultBackground: string = '#0E1019';
   private pointHoverBackground: string = '#0E1019';
   private pointOutline: string = '#87DAFF';
   private pointShadowColor: string = '#87DAFF';
   private pointShadowBlur = 6;
+  private fieldSize = 50;
 
   // connecting lines
-  private lineColor: string = '#313947';
-  private lineWidth: number = .25;
+
+  private activeParticleColor = '#5dfc9e';
+  private lineColor: string = '#5dfc9e';
+  private lineWidth: number = .5;
   private lineAlpha: number = .75;
 
   // particles
@@ -119,7 +121,7 @@ export class sceneComponent implements OnInit {
     this.drawParticles();
 
     // draw connecting lines under points
-    this.drawConnectingLines();
+    // this.drawConnectingLines();
 
     // update and draw main points
     this.drawpoints();
@@ -221,25 +223,110 @@ export class sceneComponent implements OnInit {
     this.cw.particles.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.points);
 
     this.points.forEach(p => {
+
+      // look for nearby particles
+      let b: Boundry = new Boundry(p.point.x - (p.radius + this.fieldSize) / 2, p.point.y - (p.radius + this.fieldSize) / 2, p.radius + this.fieldSize, p.radius + this.fieldSize);
+      let pointsInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
+
+      // debug
+      let r = <iRectangle>{
+        point: { x: b.x, y: b.y },
+        size: { width: b.w, height: b.h },
+        outline: { color: 'red', alpha: 1 }
+      };
+
+      this.cw.shapes.drawRectangle(r);
+
+      // look for nearbypoints
+      this.pointParticleInteraction({ x: p.point.x, y: p.point.y }, pointsInRange);
+
       if (this.pointType === 'circle') {
         this.cw.shapes.drawCircle(p);
       }
       else if (this.pointType === 'square') {
         let r = <iRectangle>{
-          point: p.point,
+          point: { x: p.point.x, y: p.point.y },
           color: p.color,
           outline: p.outlineColor,
           shadow: p.shadow,
-          size: {
-            width: p.radius * Math.PI / 2,
-            height: p.radius * Math.PI / 2
-          }
+          size: { width: p.radius, height: p.radius }
         };
         this.cw.shapes.drawRectangle(r);
       }
 
       // add updated point to quad
-      this.pointQuad.insert({ x: p.point.x, y: p.point.y, data: p });
+      this.pointQuad.insert({ x: p.point.x + (p.radius / 2), y: p.point.y + (p.radius / 2), data: p });
+
+      // debug
+      // let r = <iRectangle>{
+      //   point: { x: p.point.x, y: p.point.y },
+      //   size: { width: (<iParticle>p).radius, height: (<iParticle>p).radius },
+      //   outline: { color: 'red', alpha: 1 }
+      // };
+
+      // this.cw.shapes.drawRectangle(r);
+    });
+
+    this.checkPointInteractWithPoint();
+  }
+
+  private pointParticleInteraction(startPoint: { x: number, y: number }, qp: QuadPoint[]) {
+    let lines: Line[] = [];
+
+    qp.forEach(point => {
+      let ip = <iParticle>(point.data);
+      ip.color.color = this.activeParticleColor;
+      ip.currentLifeTime = ip.maximumLifeTime - this.particleFadeTime - 15;
+
+      // lines
+      let line: Line = new Line();
+      line.color = this.lineColor;
+      line.lineWidth = this.lineWidth;
+      line.alpha = this.lineAlpha;
+
+      let segment = new LineSegment({ x: startPoint.x, y: startPoint.y });
+      segment.addPoint({ x: ip.point.x + ip.radius / 2, y: ip.point.y + ip.radius / 2 });
+
+      line.addSegment(segment);
+      lines.push(line);
+    });
+
+    lines.forEach(line => {
+      this.cw.shapes.drawLine(line);
+    });
+  }
+
+  checkPointInteractWithPoint() {
+    this.points.forEach(self => {
+      // look for overlapping points
+      let b: Boundry = new Boundry(self.point.x - (self.radius / 2), self.point.y - (self.radius / 2), self.radius * 2, self.radius * 2);
+      let pointsInRange: QuadPoint[] = this.pointQuad.searchBoundry(b);
+
+      // let r = <iRectangle>{
+      //   point: { x: b.x, y: b.y },
+      //   size: { width: b.w, height: b.h },
+      //   outline: { color: 'yellow', alpha: 1 }
+      // };
+
+      // this.cw.shapes.drawRectangle(r);
+
+      if (pointsInRange.length > 0) {
+        pointsInRange.forEach(other => {
+          if (other.data !== self) {
+            let op = <iParticle>(other.data);
+            op.color.color = 'white';
+            self.color.color = 'white';
+
+            // op.speed.vx += .01;
+            // op.speed.vy += .01;
+
+            // self.speed.vx += .01;
+            // self.speed.vy += .01;
+
+          }
+        });
+      }
+
     });
 
   }
