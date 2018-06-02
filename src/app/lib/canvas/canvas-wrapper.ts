@@ -7,6 +7,8 @@ import { ShapeUtility } from './utilities/shape-utility';
 import { GraidentUtility } from './utilities/graident-utility';
 import { ImageDataUtility } from './utilities/image-data-utility';
 import { PatternUtility } from './utilities/pattern-utility';
+import { KeyboardManager } from './managers/keyboard-manager';
+import { WindowManager } from './managers/window-manager';
 
 export class CanvasWrapper {
     // context
@@ -14,6 +16,11 @@ export class CanvasWrapper {
     private drawCallback: () => void;
 
     // control
+    private _pauseKeys: string[] = ['p', 'q'];
+    private _frameForwardKey: string[] = ['>', '.'];
+    public set pauseKey(v: string[]) { this._pauseKeys = v; }
+    public set frameForwardKey(v: string[]) { this._pauseKeys = v; }
+
     private paused = false;
     private frameStep: boolean = false;
 
@@ -29,10 +36,13 @@ export class CanvasWrapper {
     // managers
     private _panZoomManager: PanZoomManager;
     private _mouseManager: MouseManager;
+    private _keyboardManager: KeyboardManager;
+    private _WindowManager: WindowManager;
 
     // public properties
     public get mouseManager() { return this._mouseManager; }
     public get panZoomManager() { return this._panZoomManager; }
+    public get keyboardManager() { return this._keyboardManager; }
 
     public get randoms() { return this.randomUtil; }
     public get colors() { return this.colorUtil; }
@@ -50,17 +60,40 @@ export class CanvasWrapper {
         this._context = context;
         this.drawCallback = drawCallback;
 
-        this.registerComponents();
-
-        this.setupUtils();
+        this.setupManagers();
+        this.setupUtilities();
         this.setupCanvas();
-        this.registerEvents();
 
-        this.fitCanvasToContainer();
+        this._WindowManager.resize();
     }
 
-    public start() {
+    start() {
         this.draw();
+    }
+
+    saveContext() {
+        this._context.save();
+    }
+
+    restoreContext() {
+        this._context.restore();
+    }
+
+    private setupManagers() {
+        this._WindowManager = new WindowManager(this._context);
+        this._mouseManager = new MouseManager(this._context);
+        this._keyboardManager = new KeyboardManager(this._context);
+        this._panZoomManager = new PanZoomManager(this._context, this._mouseManager);
+    }
+
+    private setupUtilities() {
+        this.randomUtil = new RandomUtility();
+        this.colorUtil = new ColorUtility();
+        this.particleUtil = new ParticleUtility();
+        this.shapeUtil = new ShapeUtility(this._context);
+        this.graidentUtility = new GraidentUtility(this._context);
+        this.imageDataUtility = new ImageDataUtility(this._context);
+        this.patternUtility = new PatternUtility(this._context);
     }
 
     private setupCanvas() {
@@ -72,49 +105,18 @@ export class CanvasWrapper {
         this._context.imageSmoothingEnabled = false; // everything else
     }
 
-    private setupUtils() {
-        this.randomUtil = new RandomUtility();
-        this.colorUtil = new ColorUtility();
-        this.particleUtil = new ParticleUtility();
-        this.shapeUtil = new ShapeUtility(this._context);
-        this.graidentUtility = new GraidentUtility(this._context);
-        this.imageDataUtility = new ImageDataUtility(this._context);
-        this.patternUtility = new PatternUtility(this._context);
-    }
-
-    private registerEvents() {
-        const cv = this._context.canvas;
-
-        window.onresize = () => {
-            this.fitCanvasToContainer();
-        };
-
-        cv.onkeydown = (e: KeyboardEvent) => {
-            if (e.key === 'p' || e.key === 'P') {
-                this.paused = !this.paused;
-            }
-
-            if (e.key === '>' || e.key === '.') {
-                this.frameStep = !this.frameStep;
-            }
-        };
-
-    }
-
-    private registerComponents() {
-        this._mouseManager = new MouseManager(this._context);
-        this._panZoomManager = new PanZoomManager(this._mouseManager);
-    }
-
     private draw() {
+        // check for key input
+        this.checkKeys();
+
         if (!this.paused || this.frameStep) {
             this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
             this.saveContext();
 
             // update the managers
             // ** Order matters! **
-            this.panZoomManager.update();
-            this.mouseManager.update();
+            this._panZoomManager.update();
+            this._mouseManager.update();
 
             // if pan zoom has changed we need to update the context
             if (this._panZoomManager.isDirty) {
@@ -127,25 +129,29 @@ export class CanvasWrapper {
             this.restoreContext();
             this.frameStep = false;
         }
+
+        // update keyboard
+        this._keyboardManager.update();
+
         // do it all again
         requestAnimationFrame(() => this.start());
     }
 
-    saveContext() {
-        this._context.save();
+    private checkKeys() {
+        let kbm = this._keyboardManager;
+
+        if (kbm.isDirty) {
+            if (kbm.hasKeyDown) {
+                if (this._pauseKeys.includes(kbm.key)) {
+                    this.paused = !this.paused;
+                }
+
+                if (this._frameForwardKey.includes(kbm.key)) {
+                    this.frameStep = !this.frameStep;
+                }
+            }
+        }
+
     }
 
-    restoreContext() {
-        this._context.restore();
-    }
-
-    private fitCanvasToContainer() {
-        // Make it visually fill the positioned parent
-        this._context.canvas.style.width = '100%';
-        this._context.canvas.style.height = '100%';
-
-        // ...then set the internal size to match
-        this._context.canvas.width = this._context.canvas.offsetWidth;
-        this._context.canvas.height = this._context.canvas.offsetHeight;
-    }
 }

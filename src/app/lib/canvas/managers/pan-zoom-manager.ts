@@ -47,8 +47,8 @@ export class PanZoomManager {
     private isPinching: boolean = false;
     private pinchScale: number = 50;
 
-    constructor(mouseManager: MouseManager) {
-        this.context = mouseManager.context;
+    constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
+        this.context = context;
         this.mouseManager = mouseManager;
 
         this.resetView();

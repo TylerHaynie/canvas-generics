@@ -1,26 +1,33 @@
 export class MouseManager {
-    private _context: CanvasRenderingContext2D;
-    public get context() { return this._context; }
-    private hasChanges: boolean = false;
+
+    //#region Public Properties
+
     public get isDirty() { return this.hasChanges; }
-    private needsDefault: boolean = false;
+    public get mouseX() { return this.mousePositionX; }
+    public get mouseY() { return this.mousePositionY; }
+    public get mouseOffCanvas() { return this.mouseOff; }
+    public get scrollDirection() { return this.scrollingDirection; }
+    public get leftMouseState() { return this.leftMousePosition; }
+    public get mouseMoving() { return this.isMoving; }
+
+    //#endregion
+
+    //#region private variables
+    private _context: CanvasRenderingContext2D;
+    private hasChanges: boolean = false;
 
     // mouse
     private mousePositionX: number = undefined;
-    public get mouseX() { return this.mousePositionX; }
     private mousePositionY: number = undefined;
-    public get mouseY() { return this.mousePositionY; }
     private mouseOff: boolean = true;
-    public get mouseOffCanvas() { return this.mouseOff; }
     private clickLocation: { x: number, y: number };
     private scrollingDirection: string = 'none';
-    public get scrollDirection() { return this.scrollingDirection; }
 
     // mouse flags
     private leftMousePosition: string = 'up';
-    public get leftMouseState() { return this.leftMousePosition; }
     isMoving: boolean = false;
-    public get mouseMoving() { return this.isMoving; }
+
+    //#endregion
 
     constructor(context: CanvasRenderingContext2D) {
         this._context = context;

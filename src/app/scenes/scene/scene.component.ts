@@ -56,7 +56,7 @@ export class sceneComponent implements OnInit {
   private pointCount = 20;
   private pointSize = 15;
   private pointSpeedModifier = .17;
-  private pointType: string = 'circle';             // circle or square
+  private pointType: string = 'circle'; // circle or square
   private pointDefaultBackground: string = '#0E1019';
   private pointHoverBackground: string = '#0E1019';
   private pointOutline: string = '#87DAFF';
@@ -71,7 +71,6 @@ export class sceneComponent implements OnInit {
   // particles
   private maxParticles: number = 3500;
   private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
-  // private colorArray: string[] = ['#5799e0', '#5689e0', '#165572'];
   private particleSpeedModifier: number = .05;
   private particleMaxRadius: number = 4.25;
   private particleminRadius: number = .15;
