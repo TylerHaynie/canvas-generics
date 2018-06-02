@@ -1,6 +1,5 @@
 export class WindowManager {
     private context: CanvasRenderingContext2D;
-    private hasChanges: boolean = true;
 
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;

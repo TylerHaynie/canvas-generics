@@ -129,9 +129,7 @@ export class sceneComponent implements OnInit {
 
     // debug
     if (this.debugParticles) {
-      this.cw.saveContext();
       this.particleQuad.debugQuad(this.cw, '#777');
-      this.cw.restoreContext();
     }
 
     // debug

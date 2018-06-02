@@ -8,7 +8,7 @@ export class KeyboardManager {
     public get altPressed() { return this.altKeyPressed; }
 
     private context: CanvasRenderingContext2D;
-    private hasChanges: boolean = true;
+    private hasChanges: boolean = false;
 
     private isKeyDown: boolean = true;
     private keyPressed: string;

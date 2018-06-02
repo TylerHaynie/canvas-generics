@@ -11,16 +11,34 @@ import { KeyboardManager } from './managers/keyboard-manager';
 import { WindowManager } from './managers/window-manager';
 
 export class CanvasWrapper {
+
+    // public properties
+    public get mouseManager() { return this._mouseManager; }
+    public get panZoomManager() { return this._panZoomManager; }
+    public get keyboardManager() { return this._keyboardManager; }
+
+    public set pauseKeys(v: string[]) { this._pauseKeys = v; }
+    public set frameForwardKeys(v: string[]) { this._pauseKeys = v; }
+
+    public get randoms() { return this.randomUtil; }
+    public get colors() { return this.colorUtil; }
+    public get particles() { return this.particleUtil; }
+    public get shapes() { return this.shapeUtil; }
+    public get graident() { return this.graidentUtility; }
+    public get imageData() { return this.imageDataUtility; }
+    public get pattern() { return this.patternUtility; }
+
+    public get bounds() { return this._context.canvas.getBoundingClientRect(); }
+    public get width() { return this._context.canvas.width; }
+    public get height() { return this._context.canvas.height; }
+
     // context
     private _context: CanvasRenderingContext2D;
     private drawCallback: () => void;
 
     // control
-    private _pauseKeys: string[] = ['p', 'q'];
+    private _pauseKeys: string[] = ['p', 'P'];
     private _frameForwardKey: string[] = ['>', '.'];
-    public set pauseKey(v: string[]) { this._pauseKeys = v; }
-    public set frameForwardKey(v: string[]) { this._pauseKeys = v; }
-
     private paused = false;
     private frameStep: boolean = false;
 
@@ -38,23 +56,6 @@ export class CanvasWrapper {
     private _mouseManager: MouseManager;
     private _keyboardManager: KeyboardManager;
     private _WindowManager: WindowManager;
-
-    // public properties
-    public get mouseManager() { return this._mouseManager; }
-    public get panZoomManager() { return this._panZoomManager; }
-    public get keyboardManager() { return this._keyboardManager; }
-
-    public get randoms() { return this.randomUtil; }
-    public get colors() { return this.colorUtil; }
-    public get particles() { return this.particleUtil; }
-    public get shapes() { return this.shapeUtil; }
-    public get graident() { return this.graidentUtility; }
-    public get imageData() { return this.imageDataUtility; }
-    public get pattern() { return this.patternUtility; }
-
-    public get bounds() { return this._context.canvas.getBoundingClientRect(); }
-    public get width() { return this._context.canvas.width; }
-    public get height() { return this._context.canvas.height; }
 
     constructor(context: CanvasRenderingContext2D, drawCallback: () => void) {
         this._context = context;
@@ -142,6 +143,7 @@ export class CanvasWrapper {
 
         if (kbm.isDirty) {
             if (kbm.hasKeyDown) {
+                console.log(kbm.key);
                 if (this._pauseKeys.includes(kbm.key)) {
                     this.paused = !this.paused;
                 }
