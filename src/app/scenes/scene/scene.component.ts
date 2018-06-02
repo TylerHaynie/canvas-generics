@@ -101,7 +101,6 @@ export class sceneComponent implements OnInit {
 
   draw() {
     this.cw.saveContext();
-    console.log(`Mouse: (${this.cw.mouseManager.mouseX}, ${this.cw.mouseManager.mouseY})`);
 
     this.drawBackground();
 
@@ -348,7 +347,6 @@ export class sceneComponent implements OnInit {
 
       // boundry around mouse
       let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
-      // console.log(b);
 
       // check points
       let pointsInRange: QuadPoint[] = this.pointQuad.searchBoundry(b);
@@ -365,8 +363,6 @@ export class sceneComponent implements OnInit {
       // check particles
       let particlesInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
 
-      // console.log(particlesInRange);
-
       // update particles in range
       if (particlesInRange.length > 0) {
         particlesInRange.forEach(p => {
@@ -381,10 +377,4 @@ export class sceneComponent implements OnInit {
 
   //#endregion
 
-  //#region debug
-  private debugSnap() {
-    console.log(this.particleQuad);
-    console.log(this.pointQuad);
-  }
-  //#endregion
 }
