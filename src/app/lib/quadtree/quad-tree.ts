@@ -1,3 +1,5 @@
+import { CanvasWrapper } from '../canvas/canvas-wrapper';
+import { iRectangle } from '../canvas/interfaces/iRectangle';
 // built by referencing https://en.wikipedia.org/wiki/Quadtree
 
 export class QuadPoint {
@@ -181,17 +183,30 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    public debugQuad(context: CanvasRenderingContext2D, color: string) {
-        context.strokeStyle = color;
-        context.lineWidth = .25;
+    public debugQuad(canvasWrapper: CanvasWrapper, color: string, alpha: number = 1, lineWidth: number = .25) {
+        let rect = <iRectangle>{
+            point: {
+                x: this.boundry.x,
+                y: this.boundry.y
+            },
+            size: {
+                width: this.boundry.w,
+                height: this.boundry.h
+            },
+            outline: {
+                color: color,
+                alpha: alpha,
+                lineWidth: lineWidth
+            }
+        };
 
-        context.strokeRect(this.boundry.x, this.boundry.y, this.boundry.w, this.boundry.h);
+        canvasWrapper.shapes.drawRectangle(rect);
 
         if (this.isDivided) {
-            this.topLeft.debugQuad(context, color);
-            this.topRight.debugQuad(context, color);
-            this.bottomLeft.debugQuad(context, color);
-            this.bottomRight.debugQuad(context, color);
+            this.topLeft.debugQuad(canvasWrapper, color, alpha, lineWidth);
+            this.topRight.debugQuad(canvasWrapper, color, alpha, lineWidth);
+            this.bottomLeft.debugQuad(canvasWrapper, color, alpha, lineWidth);
+            this.bottomRight.debugQuad(canvasWrapper, color, alpha, lineWidth);
         }
     }
 }
