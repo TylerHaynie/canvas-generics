@@ -10,6 +10,7 @@ import { PatternUtility } from './utilities/pattern-utility';
 import { KeyboardManager } from './managers/keyboard-manager';
 import { WindowManager } from './managers/window-manager';
 import { HelperUtility } from './utilities/helper-utility';
+import { MathUtility } from './utilities/math-utility';
 
 export class CanvasWrapper {
 
@@ -32,6 +33,7 @@ export class CanvasWrapper {
     public get imageData() { return this.imageDataUtility; }
     public get pattern() { return this.patternUtility; }
     public get helper() { return this.helperUtility; }
+    public get math() { return this.mathUtility; }
 
     public get bounds() { return this._context.canvas.getBoundingClientRect(); }
     public get width() { return this._context.canvas.width; }
@@ -60,6 +62,7 @@ export class CanvasWrapper {
     private imageDataUtility: ImageDataUtility;
     private patternUtility: PatternUtility;
     private helperUtility: HelperUtility;
+    private mathUtility: MathUtility;
 
     // managers
     private _panZoomManager: PanZoomManager;
@@ -106,6 +109,7 @@ export class CanvasWrapper {
         this.imageDataUtility = new ImageDataUtility(this._context);
         this.patternUtility = new PatternUtility(this._context);
         this.helperUtility = new HelperUtility(this._context);
+        this.mathUtility = new MathUtility();
     }
 
     private setupCanvas() {

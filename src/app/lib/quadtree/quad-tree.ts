@@ -173,6 +173,12 @@ export class QuadTree {
         return pointsInRange;
     }
 
+
+
+    // searchRayCrossing() {
+
+    // }
+
     public reset(w: number, h: number) {
         this.boundry.w = w;
         this.boundry.h = h;
