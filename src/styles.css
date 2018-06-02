@@ -13,3 +13,11 @@ html, body {
 #wrapper {
     height: 100vh;
 }
+
+.view {
+    height: 100%;
+}
+
+canvas {
+    background-color: #1f1f1f;
+}

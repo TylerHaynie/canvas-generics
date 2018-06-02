@@ -11,11 +11,11 @@ import { Line } from '../../lib/canvas/objects/line/line';
 import { LineSegment } from '../../lib/canvas/objects/line/line-segment';
 
 @Component({
-  selector: 'app-scene',
-  templateUrl: './scene.component.html',
-  styleUrls: ['./scene.component.css']
+  selector: 'app-scene01',
+  templateUrl: './scene01.component.html',
+  styleUrls: ['./scene01.component.css']
 })
-export class sceneComponent implements OnInit {
+export class scene01Component implements OnInit {
   @ViewChild('c') canvasRef: ElementRef;
 
   //#region Variables
