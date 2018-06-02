@@ -6,7 +6,7 @@ import { ParticleUtility } from './utilities/particle-utility';
 import { ShapeUtility } from './utilities/shape-utility';
 import { GraidentUtility } from './utilities/graident-utility';
 import { ImageDataUtility } from './utilities/image-data-utility';
-import { PatternUtility } from './utilities/patternUtility';
+import { PatternUtility } from './utilities/pattern-utility';
 
 export class CanvasWrapper {
     // context

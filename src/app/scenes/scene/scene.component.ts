@@ -23,7 +23,7 @@ export class sceneComponent implements OnInit {
 
   private cw: CanvasWrapper;
   // private panZoom: PanZoom;
-  private debugParticles = false;
+  private debugParticles = true;
   private debugPoints = false;
 
   // point
@@ -61,7 +61,7 @@ export class sceneComponent implements OnInit {
   private lineAlpha: number = .75;
 
   // particles
-  private maxParticles: number = 2500;
+  private maxParticles: number = 250;
   private colorArray: string[] = ['#5799e0', '#5689e0', '#165572'];
   private particleSpeedModifier: number = .18;
   private particleMaxRadius: number = 4.25;
@@ -111,10 +111,10 @@ export class sceneComponent implements OnInit {
     this.drawParticles();
 
     // draw connecting lines under points
-    this.drawConnectingLines();
+    // this.drawConnectingLines();
 
     // update and draw main points
-    this.drawpoints();
+    // this.drawpoints();
 
     // drawing the graident on the top
     this.drawForeground();
@@ -128,9 +128,7 @@ export class sceneComponent implements OnInit {
 
     // debug
     if (this.debugPoints) {
-      this.cw.saveContext();
       this.pointQuad.debugQuad(this.cw, '#c60000');
-      this.cw.restoreContext();
     }
 
     this.cw.restoreContext();

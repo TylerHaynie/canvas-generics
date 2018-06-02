@@ -11,12 +11,6 @@ export class ShapeUtility {
     drawRectangle(rect: iRectangle) {
         this.context.save();
 
-        // does it have a color
-        if (rect.color) {
-            this.context.globalAlpha = rect.color.modifiedAlpha ? rect.color.modifiedAlpha : rect.color.alpha;
-            this.context.fillStyle = rect.color.color;
-        }
-
         // does it have a shadow
         if (rect.shadow) {
             this.context.shadowBlur = rect.shadow.shadowBlur;
@@ -24,9 +18,13 @@ export class ShapeUtility {
         }
 
         // draw the solid rect
-        this.context.fillRect(rect.point.x, rect.point.y, rect.size.width, rect.size.height);
+        if (rect.color) {
+            this.context.globalAlpha = rect.color.modifiedAlpha ? rect.color.modifiedAlpha : rect.color.alpha;
+            this.context.fillStyle = rect.color.color;
+            this.context.fillRect(rect.point.x, rect.point.y, rect.size.width, rect.size.height);
+        }
 
-        // does it have an outline
+        // draw the outline
         if (rect.outline) {
             this.context.lineWidth = rect.outline.lineWidth;
             this.context.globalAlpha = rect.outline.modifiedAlpha ? rect.outline.modifiedAlpha : rect.outline.alpha;
@@ -45,20 +43,19 @@ export class ShapeUtility {
         // create the circle
         this.context.arc(circle.point.x, circle.point.y, circle.radius, 0, 2 * Math.PI);
 
-        // does it have a color
-        if (circle.color) {
-            this.context.globalAlpha = circle.color.modifiedAlpha ? circle.color.modifiedAlpha : circle.color.alpha;
-            this.context.fillStyle = circle.color.color;
-        }
-
         // does it have a shadow
         if (circle.shadow) {
             this.context.shadowBlur = circle.shadow.shadowBlur;
             this.context.shadowColor = circle.shadow.shadowColor;
         }
 
-        // fill the circle
-        this.context.fill();
+        // draw solid circle
+        if (circle.color) {
+            this.context.globalAlpha = circle.color.modifiedAlpha ? circle.color.modifiedAlpha : circle.color.alpha;
+            this.context.fillStyle = circle.color.color;
+
+            this.context.fill();
+        }
 
         // does it have an outline
         if (circle.outline) {
