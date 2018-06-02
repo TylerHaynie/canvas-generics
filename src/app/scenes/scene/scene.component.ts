@@ -23,7 +23,7 @@ export class sceneComponent implements OnInit {
 
   private cw: CanvasWrapper;
   // private panZoom: PanZoom;
-  private debugParticles = true;
+  private debugParticles = false;
   private debugPoints = false;
 
   // point
@@ -43,27 +43,36 @@ export class sceneComponent implements OnInit {
   // Pointer
   private pointerRadius: number = 55;
 
+  // background and foreground
+  private backgroundColor: string = '#0C101E';
+  private foregroundColorStartColor: string = 'rgba(12, 16, 30, 0.000)';
+  private foregroundColorEndColor: string = 'rgba(0, 0, 0, 0.750)';
+  private foregroundStart1: number = .250; // where the top graident starts
+  private foregroundEnd1: number = 0.000; // where the top graident ends
+  private foregroundStart2: number = .750; // where the bottom graident starts
+  private foregroundEnd2: number = 1.000; // where the bottom graident ends
+
   // points
-  private pointCount = 50;
-  private pointSize = 12;
-  private pointSpeedModifier = .2;
-  private pointType: string = 'square';
-  private pointDefaultBackground: string = '#000';
-  private pointHoverBackground: string = '#333';
-  private pointOutline: string = '#49d3ff';
-  private pointShadowColor: string = '#49d3ff';
+  private pointCount = 20;
+  private pointSize = 15;
+  private pointSpeedModifier = .17;
+  private pointType: string = 'circle';             // circle or square
+  private pointDefaultBackground: string = '#0E1019';
+  private pointHoverBackground: string = '#0E1019';
+  private pointOutline: string = '#87DAFF';
+  private pointShadowColor: string = '#87DAFF';
   private pointShadowBlur = 6;
-  private pointHighlightColor = '#d121ad';
 
   // connecting lines
-  private lineColor: string = '#3d6a89';
+  private lineColor: string = '#313947';
   private lineWidth: number = .25;
   private lineAlpha: number = .75;
 
   // particles
-  private maxParticles: number = 250;
-  private colorArray: string[] = ['#5799e0', '#5689e0', '#165572'];
-  private particleSpeedModifier: number = .18;
+  private maxParticles: number = 3500;
+  private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
+  // private colorArray: string[] = ['#5799e0', '#5689e0', '#165572'];
+  private particleSpeedModifier: number = .05;
   private particleMaxRadius: number = 4.25;
   private particleminRadius: number = .15;
   private maxParticleLifespan: number = 330;
@@ -111,10 +120,10 @@ export class sceneComponent implements OnInit {
     this.drawParticles();
 
     // draw connecting lines under points
-    // this.drawConnectingLines();
+    this.drawConnectingLines();
 
     // update and draw main points
-    // this.drawpoints();
+    this.drawpoints();
 
     // drawing the graident on the top
     this.drawForeground();
@@ -147,7 +156,7 @@ export class sceneComponent implements OnInit {
         height: bounds.height
       },
       color: {
-        color: '#000'
+        color: this.backgroundColor
       }
     };
 
@@ -161,11 +170,11 @@ export class sceneComponent implements OnInit {
     let grd = this.cw.graident.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
 
     // Add colors
-    grd.addColorStop(0.000, 'rgba(0, 0, 0, 0.700)');
-    grd.addColorStop(0.10, 'rgba(0, 0, 0, 0.000)');
+    grd.addColorStop(this.foregroundEnd1, this.foregroundColorEndColor);
+    grd.addColorStop(this.foregroundStart1, this.foregroundColorStartColor);
 
-    grd.addColorStop(0.90, 'rgba(0, 0, 0, 0.000)');
-    grd.addColorStop(1.000, 'rgba(0, 0, 0, 0.700)');
+    grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
+    grd.addColorStop(1.000, this.foregroundColorEndColor);
 
     // Fill with gradient
     let foreGround = <iRectangle>{
@@ -354,7 +363,7 @@ export class sceneComponent implements OnInit {
         pointsInRange.forEach(p => {
           let ip = <iParticle>(p.data);
           ip.color.alpha = 1;
-          ip.color.color = this.pointHighlightColor;
+          ip.color.color = this.pointHoverBackground;
         });
       }
 
