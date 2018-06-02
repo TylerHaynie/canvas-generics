@@ -54,21 +54,22 @@ export class sceneComponent implements OnInit {
   // points
   private pointCount = 20;
   private pointSize = 25;
-  private pointSpeedModifier = .5;
+  private pointSpeedModifier = 1;
+  private drawPointToParticleLines: boolean = true;
+  private fieldSize = 80;
   private pointType: string = 'square'; // circle or square
   private pointDefaultBackground: string = '#0E1019';
+  private pointOutline: string = '#2D3047';
   private pointHoverBackground: string = '#0E1019';
-  private pointOutline: string = '#87DAFF';
-  private pointShadowColor: string = '#87DAFF';
+  private pointShadowColor: string = '#2D3047';
   private pointShadowBlur = 6;
-  private fieldSize = 50;
+  private pointerCollideColor: string = '#A9353E';
 
   // connecting lines
-
-  private activeParticleColor = '#5dfc9e';
-  private lineColor: string = '#5dfc9e';
   private lineWidth: number = .5;
-  private lineAlpha: number = .75;
+  private lineAlpha: number = .18;
+  private activeParticleColor = '#FF9B71';
+  private lineColor: string = '#313947';
 
   // particles
   private maxParticles: number = 3500;
@@ -82,6 +83,7 @@ export class sceneComponent implements OnInit {
 
   private maxOpacity: number = .70;
   private particleHighlightColor: string = '#ff2dd4';
+  // private particleHighlightColor: string = '#5e5d52';
 
   //#endregion
 
@@ -225,20 +227,26 @@ export class sceneComponent implements OnInit {
     this.points.forEach(p => {
 
       // look for nearby particles
-      let b: Boundry = new Boundry(p.point.x - (p.radius + this.fieldSize) / 2, p.point.y - (p.radius + this.fieldSize) / 2, p.radius + this.fieldSize, p.radius + this.fieldSize);
+      let b: Boundry = new Boundry(
+        p.point.x - ((p.radius + (this.fieldSize / 2)) / 2),
+        p.point.y - ((p.radius + (this.fieldSize / 2)) / 2),
+        (p.radius) * 2 + (this.fieldSize / 2),
+        (p.radius) * 2 + (this.fieldSize / 2)
+      );
+
       let pointsInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
 
       // debug
-      let r = <iRectangle>{
-        point: { x: b.x, y: b.y },
-        size: { width: b.w, height: b.h },
-        outline: { color: 'red', alpha: 1 }
-      };
+      // let r = <iRectangle>{
+      //   point: { x: b.x, y: b.y },
+      //   size: { width: b.w, height: b.h },
+      //   outline: { color: 'red', alpha: 1 }
+      // };
 
-      this.cw.shapes.drawRectangle(r);
+      // this.cw.shapes.drawRectangle(r);
 
       // look for nearbypoints
-      this.pointParticleInteraction({ x: p.point.x, y: p.point.y }, pointsInRange);
+      this.pointParticleInteraction({ x: p.point.x + (p.radius / 2), y: p.point.y + (p.radius / 2) }, pointsInRange);
 
       if (this.pointType === 'circle') {
         this.cw.shapes.drawCircle(p);
@@ -279,16 +287,19 @@ export class sceneComponent implements OnInit {
       ip.currentLifeTime = ip.maximumLifeTime - this.particleFadeTime - 15;
 
       // lines
-      let line: Line = new Line();
-      line.color = this.lineColor;
-      line.lineWidth = this.lineWidth;
-      line.alpha = this.lineAlpha;
+      if (this.drawPointToParticleLines) {
+        let line: Line = new Line();
+        line.color = this.lineColor;
+        line.lineWidth = this.lineWidth;
+        line.alpha = this.lineAlpha;
 
-      let segment = new LineSegment({ x: startPoint.x, y: startPoint.y });
-      segment.addPoint({ x: ip.point.x + ip.radius / 2, y: ip.point.y + ip.radius / 2 });
+        let segment = new LineSegment({ x: startPoint.x, y: startPoint.y });
+        segment.addPoint({ x: ip.point.x + ip.radius / 2, y: ip.point.y + ip.radius / 2 });
 
-      line.addSegment(segment);
-      lines.push(line);
+        line.addSegment(segment);
+        lines.push(line);
+      }
+
     });
 
     lines.forEach(line => {
@@ -314,8 +325,8 @@ export class sceneComponent implements OnInit {
         pointsInRange.forEach(other => {
           if (other.data !== self) {
             let op = <iParticle>(other.data);
-            op.color.color = 'white';
-            self.color.color = 'white';
+            op.color.color = this.pointerCollideColor;
+            self.color.color = this.pointerCollideColor;
 
             // op.speed.vx += .01;
             // op.speed.vy += .01;
