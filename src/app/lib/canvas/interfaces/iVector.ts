@@ -1,4 +1,4 @@
-export interface iPoint{
+export interface iVector{
     x: number;
     y: number;
 }

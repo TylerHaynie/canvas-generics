@@ -1,15 +1,15 @@
-import { iPoint } from '../../interfaces/iPoint';
+import { iVector } from '../../interfaces/iVector';
 
 export class LineSegment {
-    startPoint: iPoint;
-    points: iPoint[];
+    startVector: iVector;
+    vectors: iVector[];
 
-    constructor(startPoint: iPoint) {
-        this.startPoint = startPoint;
-        this.points = [];
+    constructor(startVector: iVector) {
+        this.startVector = startVector;
+        this.vectors = [];
     }
 
-    addPoint(point: iPoint) {
-        this.points.push(point);
+    addVector(vector: iVector) {
+        this.vectors.push(vector);
     }
 }

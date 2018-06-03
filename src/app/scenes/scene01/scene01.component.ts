@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { QuadTree, Boundry, QuadPoint } from '../../lib/quadtree/quad-tree';
+import { QuadTree, Boundry, Quadvector } from '../../lib/quadtree/quad-tree';
 import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
 import { iParticle } from '../../lib/canvas/interfaces/iParticle';
 import { RandomUtility } from '../../lib/canvas/utilities/random-utility';
@@ -23,14 +23,14 @@ export class scene01Component implements OnInit {
   private cw: CanvasWrapper;
   // private panZoom: PanZoom;
   private debugParticles = false;
-  private debugPoints = false;
+  private debugvectors = false;
 
-  // point
-  private points: iParticle[] = [];
+  // vector
+  private vectors: iParticle[] = [];
 
   // quads
   private particleQuad: QuadTree;
-  private pointQuad: QuadTree;
+  private vectorQuad: QuadTree;
 
   // particles
   private particles: iParticle[] = [];
@@ -39,8 +39,8 @@ export class scene01Component implements OnInit {
 
   //#region Configuration
 
-  // Pointer
-  private pointerRadius: number = 55;
+  // vectorer
+  private vectorerRadius: number = 55;
 
   // background and foreground
   private backgroundColor: string = '#0C101E';
@@ -51,19 +51,19 @@ export class scene01Component implements OnInit {
   private foregroundStart2: number = .750; // where the bottom graident starts
   private foregroundEnd2: number = 1.000; // where the bottom graident ends
 
-  // points
-  private pointCount = 20;
-  private pointSize = 25;
-  private pointSpeedModifier = 1;
-  private drawPointToParticleLines: boolean = true;
+  // vectors
+  private vectorCount = 20;
+  private vectorSize = 25;
+  private vectorSpeedModifier = 1;
+  private drawvectorToParticleLines: boolean = true;
   private fieldSize = 80;
-  private pointType: string = 'square'; // circle or square
-  private pointDefaultBackground: string = '#0E1019';
-  private pointOutline: string = '#2D3047';
-  private pointHoverBackground: string = '#0E1019';
-  private pointShadowColor: string = '#2D3047';
-  private pointShadowBlur = 6;
-  private pointerCollideColor: string = '#A9353E';
+  private vectorType: string = 'square'; // circle or square
+  private vectorDefaultBackground: string = '#0E1019';
+  private vectorOutline: string = '#2D3047';
+  private vectorHoverBackground: string = '#0E1019';
+  private vectorShadowColor: string = '#2D3047';
+  private vectorShadowBlur = 6;
+  private vectorerCollideColor: string = '#A9353E';
 
   // connecting lines
   private lineWidth: number = .5;
@@ -99,9 +99,9 @@ export class scene01Component implements OnInit {
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.particleQuad = new QuadTree(boundry, 1);
-    this.pointQuad = new QuadTree(boundry, 1);
+    this.vectorQuad = new QuadTree(boundry, 1);
 
-    this.generatePoints();
+    this.generatevectors();
 
     // start the draw loop
     this.cw.start();
@@ -122,11 +122,11 @@ export class scene01Component implements OnInit {
     // update and draw particles
     this.drawParticles();
 
-    // draw connecting lines under points
+    // draw connecting lines under vectors
     // this.drawConnectingLines();
 
-    // update and draw main points
-    this.drawpoints();
+    // update and draw main vectors
+    this.drawvectors();
 
     // drawing the graident on the top
     this.drawForeground();
@@ -137,8 +137,8 @@ export class scene01Component implements OnInit {
     }
 
     // debug
-    if (this.debugPoints) {
-      this.pointQuad.debugQuad(this.cw, '#c60000');
+    if (this.debugvectors) {
+      this.vectorQuad.debugQuad(this.cw, '#c60000');
     }
 
     this.cw.restoreContext();
@@ -148,7 +148,7 @@ export class scene01Component implements OnInit {
     let bounds = this.cw.bounds;
 
     let background = <iRectangle>{
-      point: {
+      vector: {
         x: bounds.left,
         y: bounds.top
       },
@@ -161,7 +161,7 @@ export class scene01Component implements OnInit {
       }
     };
 
-    this.cw.shapes.drawRectangle(background);
+    this.cw.shape.drawRectangle(background);
   }
 
   drawForeground() {
@@ -179,7 +179,7 @@ export class scene01Component implements OnInit {
 
     // Fill with gradient
     let foreGround = <iRectangle>{
-      point: {
+      vector: {
         x: bounds.left,
         y: bounds.top
       },
@@ -192,7 +192,7 @@ export class scene01Component implements OnInit {
       }
     };
 
-    this.cw.shapes.drawRectangle(foreGround);
+    this.cw.shape.drawRectangle(foreGround);
   }
 
   drawParticles() {
@@ -202,99 +202,99 @@ export class scene01Component implements OnInit {
     }
 
     // update particle locations
-    this.cw.particles.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.particles);
+    this.cw.particle.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.particles);
 
     // apply fade to new or dying particles
-    this.cw.particles.particleFader(this.particleFadeTime, this.particles);
+    this.cw.particle.particleFader(this.particleFadeTime, this.particles);
 
     // clear the quad
     this.particleQuad.reset(this.cw.width, this.cw.height);
 
     // add particles then add them to the quad
     this.particles.forEach(p => {
-      this.particleQuad.insert({ x: p.point.x, y: p.point.y, data: p });
-      this.cw.shapes.drawCircle(p);
+      this.particleQuad.insert({ x: p.vector.x, y: p.vector.y, data: p });
+      this.cw.shape.drawCircle(p);
     });
   }
 
-  drawpoints() {
+  drawvectors() {
     // clear the quad
-    this.pointQuad.reset(this.cw.width, this.cw.height);
+    this.vectorQuad.reset(this.cw.width, this.cw.height);
 
-    // update point locations
-    this.cw.particles.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.points);
+    // update vector locations
+    this.cw.particle.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.vectors);
 
-    this.points.forEach(p => {
+    this.vectors.forEach(p => {
 
       // look for nearby particles
       let b: Boundry = new Boundry(
-        p.point.x - ((p.radius + (this.fieldSize / 2)) / 2),
-        p.point.y - ((p.radius + (this.fieldSize / 2)) / 2),
+        p.vector.x - ((p.radius + (this.fieldSize / 2)) / 2),
+        p.vector.y - ((p.radius + (this.fieldSize / 2)) / 2),
         (p.radius) * 2 + (this.fieldSize / 2),
         (p.radius) * 2 + (this.fieldSize / 2)
       );
 
-      let pointsInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
+      let vectorsInRange: Quadvector[] = this.particleQuad.searchBoundry(b);
 
       // debug
       // let r = <iRectangle>{
-      //   point: { x: b.x, y: b.y },
+      //   vector: { x: b.x, y: b.y },
       //   size: { width: b.w, height: b.h },
       //   outline: { color: 'red', alpha: 1 }
       // };
 
-      // this.cw.shapes.drawRectangle(r);
+      // this.cw.shape.drawRectangle(r);
 
-      // look for nearbypoints
-      this.pointParticleInteraction({ x: p.point.x + (p.radius / 2), y: p.point.y + (p.radius / 2) }, pointsInRange);
+      // look for nearbyvectors
+      this.vectorParticleInteraction({ x: p.vector.x + (p.radius / 2), y: p.vector.y + (p.radius / 2) }, vectorsInRange);
 
-      if (this.pointType === 'circle') {
-        this.cw.shapes.drawCircle(p);
+      if (this.vectorType === 'circle') {
+        this.cw.shape.drawCircle(p);
       }
-      else if (this.pointType === 'square') {
+      else if (this.vectorType === 'square') {
         let r = <iRectangle>{
-          point: { x: p.point.x, y: p.point.y },
+          vector: { x: p.vector.x, y: p.vector.y },
           color: p.color,
           outline: p.outlineColor,
           shadow: p.shadow,
           size: { width: p.radius, height: p.radius }
         };
-        this.cw.shapes.drawRectangle(r);
+        this.cw.shape.drawRectangle(r);
       }
 
-      // add updated point to quad
-      this.pointQuad.insert({ x: p.point.x + (p.radius / 2), y: p.point.y + (p.radius / 2), data: p });
+      // add updated vector to quad
+      this.vectorQuad.insert({ x: p.vector.x + (p.radius / 2), y: p.vector.y + (p.radius / 2), data: p });
 
       // debug
       // let r = <iRectangle>{
-      //   point: { x: p.point.x, y: p.point.y },
+      //   vector: { x: p.vector.x, y: p.vector.y },
       //   size: { width: (<iParticle>p).radius, height: (<iParticle>p).radius },
       //   outline: { color: 'red', alpha: 1 }
       // };
 
-      // this.cw.shapes.drawRectangle(r);
+      // this.cw.shape.drawRectangle(r);
     });
 
-    this.checkPointInteractWithPoint();
+    this.checkvectorInteractWithvector();
   }
 
-  private pointParticleInteraction(startPoint: { x: number, y: number }, qp: QuadPoint[]) {
+  private vectorParticleInteraction(startVector: { x: number, y: number }, qp: Quadvector[]) {
     let lines: Line[] = [];
 
-    qp.forEach(point => {
-      let ip = <iParticle>(point.data);
+    qp.forEach(vector => {
+      let ip = <iParticle>(vector.data);
       ip.color.color = this.activeParticleColor;
       ip.currentLifeTime = ip.maximumLifeTime - this.particleFadeTime - 15;
 
       // lines
-      if (this.drawPointToParticleLines) {
+      if (this.drawvectorToParticleLines) {
         let line: Line = new Line();
         line.color = this.lineColor;
         line.lineWidth = this.lineWidth;
         line.alpha = this.lineAlpha;
 
-        let segment = new LineSegment({ x: startPoint.x, y: startPoint.y });
-        segment.addPoint({ x: ip.point.x + ip.radius / 2, y: ip.point.y + ip.radius / 2 });
+        let segment = new LineSegment({ x: startVector.x, y: startVector.y });
+        segment.addVector({ x: ip.vector.x + ip.radius / 2, y: ip.vector.y + ip.radius / 2 });
 
         line.addSegment(segment);
         lines.push(line);
@@ -303,30 +303,30 @@ export class scene01Component implements OnInit {
     });
 
     lines.forEach(line => {
-      this.cw.shapes.drawLine(line);
+      this.cw.shape.drawLine(line);
     });
   }
 
-  checkPointInteractWithPoint() {
-    this.points.forEach(self => {
-      // look for overlapping points
-      let b: Boundry = new Boundry(self.point.x - (self.radius / 2), self.point.y - (self.radius / 2), self.radius * 2, self.radius * 2);
-      let pointsInRange: QuadPoint[] = this.pointQuad.searchBoundry(b);
+  checkvectorInteractWithvector() {
+    this.vectors.forEach(self => {
+      // look for overlapping vectors
+      let b: Boundry = new Boundry(self.vector.x - (self.radius / 2), self.vector.y - (self.radius / 2), self.radius * 2, self.radius * 2);
+      let vectorsInRange: Quadvector[] = this.vectorQuad.searchBoundry(b);
 
       // let r = <iRectangle>{
-      //   point: { x: b.x, y: b.y },
+      //   vector: { x: b.x, y: b.y },
       //   size: { width: b.w, height: b.h },
       //   outline: { color: 'yellow', alpha: 1 }
       // };
 
-      // this.cw.shapes.drawRectangle(r);
+      // this.cw.shape.drawRectangle(r);
 
-      if (pointsInRange.length > 0) {
-        pointsInRange.forEach(other => {
+      if (vectorsInRange.length > 0) {
+        vectorsInRange.forEach(other => {
           if (other.data !== self) {
             let op = <iParticle>(other.data);
-            op.color.color = this.pointerCollideColor;
-            self.color.color = this.pointerCollideColor;
+            op.color.color = this.vectorerCollideColor;
+            self.color.color = this.vectorerCollideColor;
 
             // op.speed.vx += .01;
             // op.speed.vy += .01;
@@ -345,26 +345,26 @@ export class scene01Component implements OnInit {
   drawConnectingLines() {
     let lines: Line[] = [];
 
-    for (let x = 0; x < this.points.length; x++) {
+    for (let x = 0; x < this.vectors.length; x++) {
       let line: Line = new Line();
       line.color = this.lineColor;
       line.lineWidth = this.lineWidth;
       line.alpha = this.lineAlpha;
 
       // this square
-      let s = this.points[x];
+      let s = this.vectors[x];
       // next square
-      let ns = this.points[x + 1];
+      let ns = this.vectors[x + 1];
 
-      let segment = new LineSegment({ x: s.point.x + s.radius / 2, y: s.point.y + s.radius / 2 });
+      let segment = new LineSegment({ x: s.vector.x + s.radius / 2, y: s.vector.y + s.radius / 2 });
 
       if (ns) {
-        segment.addPoint({ x: ns.point.x + ns.radius / 2, y: ns.point.y + ns.radius / 2 });
+        segment.addVector({ x: ns.vector.x + ns.radius / 2, y: ns.vector.y + ns.radius / 2 });
       }
       else {
         // connect back to the first
-        let fp = this.points[0];
-        segment.addPoint({ x: fp.point.x + fp.radius / 2, y: fp.point.y + fp.radius / 2 });
+        let fp = this.vectors[0];
+        segment.addVector({ x: fp.vector.x + fp.radius / 2, y: fp.vector.y + fp.radius / 2 });
       }
 
       line.addSegment(segment);
@@ -372,7 +372,7 @@ export class scene01Component implements OnInit {
     }
 
     lines.forEach(line => {
-      this.cw.shapes.drawLine(line);
+      this.cw.shape.drawLine(line);
     });
   }
 
@@ -384,20 +384,20 @@ export class scene01Component implements OnInit {
 
     for (let x = this.particles.length - 1; x < this.maxParticles; x++) {
       let p = <iParticle>{
-        point: {
+        vector: {
           x: Math.random() * (this.cw.width - this.particleMaxRadius),
           y: Math.random() * (this.cw.height - this.particleMaxRadius)
         },
-        radius: this.cw.randoms.randomNumberBetween(this.particleminRadius, this.particleMaxRadius),
+        radius: this.cw.random.randomNumberBetween(this.particleminRadius, this.particleMaxRadius),
         speed: {
-          vx: this.cw.randoms.randomWithNegative() * this.particleSpeedModifier,
-          vy: this.cw.randoms.randomWithNegative() * this.particleSpeedModifier
+          vx: this.cw.random.randomWithNegative() * this.particleSpeedModifier,
+          vy: this.cw.random.randomWithNegative() * this.particleSpeedModifier
         },
         color: {
-          color: this.cw.colors.randomColorFromArray(this.colorArray),
-          alpha: this.cw.randoms.randomNumberBetween(1, this.maxOpacity * 100) / 100
+          color: this.cw.color.randomColorFromArray(this.colorArray),
+          alpha: this.cw.random.randomNumberBetween(1, this.maxOpacity * 100) / 100
         },
-        maximumLifeTime: this.cw.randoms.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan),
+        maximumLifeTime: this.cw.random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan),
         currentLifeTime: 0
       };
 
@@ -405,35 +405,35 @@ export class scene01Component implements OnInit {
     }
   }
 
-  generatePoints() {
-    for (let x = 0; x < this.pointCount; x++) {
+  generatevectors() {
+    for (let x = 0; x < this.vectorCount; x++) {
 
       let p = <iParticle>{
-        point: {
-          x: Math.random() * (this.cw.width - this.pointSize),
-          y: Math.random() * (this.cw.height - this.pointSize),
+        vector: {
+          x: Math.random() * (this.cw.width - this.vectorSize),
+          y: Math.random() * (this.cw.height - this.vectorSize),
         },
-        radius: this.pointSize,
+        radius: this.vectorSize,
         speed: {
-          vx: this.cw.randoms.randomWithNegative() * this.pointSpeedModifier,
-          vy: this.cw.randoms.randomWithNegative() * this.pointSpeedModifier
+          vx: this.cw.random.randomWithNegative() * this.vectorSpeedModifier,
+          vy: this.cw.random.randomWithNegative() * this.vectorSpeedModifier
         },
         color: {
-          color: this.pointDefaultBackground,
+          color: this.vectorDefaultBackground,
           alpha: 1
         },
         outlineColor: {
-          color: this.pointOutline,
+          color: this.vectorOutline,
           alpha: 1
         },
         outlineWidth: .25,
         shadow: {
-          shadowColor: this.pointShadowColor,
-          shadowBlur: this.pointShadowBlur
+          shadowColor: this.vectorShadowColor,
+          shadowBlur: this.vectorShadowBlur
         },
       };
 
-      this.points.push(p);
+      this.vectors.push(p);
     }
   }
 
@@ -448,22 +448,22 @@ export class scene01Component implements OnInit {
       let my = this.cw.mouseManager.mouseY;
 
       // boundry around mouse
-      let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
+      let b: Boundry = new Boundry(mx - (this.vectorerRadius / 2), my - (this.vectorerRadius / 2), this.vectorerRadius, this.vectorerRadius);
 
-      // check points
-      let pointsInRange: QuadPoint[] = this.pointQuad.searchBoundry(b);
+      // check vectors
+      let vectorsInRange: Quadvector[] = this.vectorQuad.searchBoundry(b);
 
-      // update points in range
-      if (pointsInRange.length > 0) {
-        pointsInRange.forEach(p => {
+      // update vectors in range
+      if (vectorsInRange.length > 0) {
+        vectorsInRange.forEach(p => {
           let ip = <iParticle>(p.data);
           ip.color.alpha = 1;
-          ip.color.color = this.pointHoverBackground;
+          ip.color.color = this.vectorHoverBackground;
         });
       }
 
       // check particles
-      let particlesInRange: QuadPoint[] = this.particleQuad.searchBoundry(b);
+      let particlesInRange: Quadvector[] = this.particleQuad.searchBoundry(b);
 
       // update particles in range
       if (particlesInRange.length > 0) {

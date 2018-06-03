@@ -100,15 +100,15 @@ export class PanZoomManager {
 
         // // mouse events
         // cv.onmousemove = (e) => {
-        //     this.pointerMove(e.clientX, e.clientY);
+        //     this.vectorerMove(e.clientX, e.clientY);
         // };
 
         // cv.onmousedown = (e) => {
-        //     this.pointerDown(e.clientX, e.clientY);
+        //     this.vectorerDown(e.clientX, e.clientY);
         // };
 
         // cv.onmouseup = (e) => {
-        //     this.pointerStop();
+        //     this.vectorerStop();
         // };
 
         // cv.onmousewheel = (e) => {
@@ -121,11 +121,11 @@ export class PanZoomManager {
         // };
 
         // cv.onmouseout = (e) => {
-        //     this.pointerStop();
+        //     this.vectorerStop();
         // };
 
         // cv.onmouseleave = (e) => {
-        //     this.pointerStop();
+        //     this.vectorerStop();
         // };
 
         // touch events
@@ -134,7 +134,7 @@ export class PanZoomManager {
         // }, false);
 
         // cv.addEventListener('touchend', (e) => {
-        //     this.pointerStop();
+        //     this.vectorerStop();
         // }, false);
 
         // cv.addEventListener('touchmove', (e) => {
@@ -142,7 +142,7 @@ export class PanZoomManager {
         // }, false);
 
         // cv.addEventListener('touchcancel', (e) => {
-        //     this.pointerStop();
+        //     this.vectorerStop();
         // }, false);
 
     }
@@ -162,10 +162,10 @@ export class PanZoomManager {
     //     if (e.changedTouches.length === 1) {
     //         if ((e.changedTouches[0].clientX < 0 || e.changedTouches[0].clientY < 0) ||
     //             (e.changedTouches[0].clientX > this.context.canvas.width || e.changedTouches[0].clientY > this.context.canvas.height)) {
-    //             this.pointerStop();
+    //             this.vectorerStop();
     //         }
     //         else {
-    //             this.pointerMove(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    //             this.vectorerMove(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
     //         }
     //     }
     //     // gesture
@@ -183,7 +183,7 @@ export class PanZoomManager {
 
     // private touchEnd(e: TouchEvent) {
     //     if (e.changedTouches.length === 1) {
-    //         this.pointerStop();
+    //         this.vectorerStop();
     //     }
     // }
 

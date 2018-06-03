@@ -10,8 +10,8 @@ export class ParticleUtility {
 
     moveParticles(bounds: {x: number, y: number, w: number, h: number}, particles: iParticle[]) {
         particles.forEach(p => {
-            let posX = p.point.x + Math.random() * 5;
-            let posY = p.point.y + Math.random() * 5;
+            let posX = p.vector.x + Math.random() * 5;
+            let posY = p.vector.y + Math.random() * 5;
 
             // reverse x direction
             if (posX + p.radius >= bounds.w) {
@@ -29,16 +29,16 @@ export class ParticleUtility {
                 p.speed.vy = Math.abs(p.speed.vy);
             }
 
-            // update point with speed
-            p.point.x = p.point.x + p.speed.vx;
-            p.point.y = p.point.y + p.speed.vy;
+            // update vector with speed
+            p.vector.x = p.vector.x + p.speed.vx;
+            p.vector.y = p.vector.y + p.speed.vy;
         });
     }
 
     wiggleParticles(particles: iParticle[]) {
         particles.forEach(p => {
-            p.point.x = p.point.x + this.randomUtil.randomWithNegative();
-            p.point.y = p.point.y + this.randomUtil.randomWithNegative();
+            p.vector.x = p.vector.x + this.randomUtil.randomWithNegative();
+            p.vector.y = p.vector.y + this.randomUtil.randomWithNegative();
         });
     }
 

@@ -1,10 +1,10 @@
 import { iSpeed } from './iSpeed';
 import { iShadow } from './iShadow';
 import { iColor } from './iColor';
-import { iPoint } from './iPoint';
+import { iVector } from './iVector';
 
 export interface iParticle extends iSpeed {
-    point: iPoint;
+    vector: iVector;
     radius: number;
     color: iColor;
 

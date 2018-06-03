@@ -1,4 +1,4 @@
-import { iPoint } from '../interfaces/iPoint';
+import { iVector } from '../interfaces/iVector';
 export class RandomUtility {
     /// returns a random number between -1 and 1
     randomWithNegative() {
@@ -10,9 +10,9 @@ export class RandomUtility {
         return Math.floor(Math.random() * Math.max(n1, n2)) + Math.min(n1, n2);
     }
 
-    randomPointInBounds(w: number, h: number): iPoint {
+    randomvectorInBounds(w: number, h: number): iVector {
         let rx = Math.random() * w;
         let ry = Math.random() * h;
-        return <iPoint>{ x: rx, y: ry };
+        return <iVector>{ x: rx, y: ry };
     }
 }

@@ -10,7 +10,7 @@ import { PatternUtility } from './utilities/pattern-utility';
 import { KeyboardManager } from './managers/keyboard-manager';
 import { WindowManager } from './managers/window-manager';
 import { HelperUtility } from './utilities/helper-utility';
-import { MathUtility } from './utilities/math-utility';
+import { VectorUtility } from './utilities/vector-utility';
 
 export class CanvasWrapper {
 
@@ -25,15 +25,15 @@ export class CanvasWrapper {
     public set enableGrid(v) { this._enableGrid = v; }
     public set trackMouse(v) { this._trackMouse = v; }
 
-    public get randoms() { return this.randomUtil; }
-    public get colors() { return this.colorUtil; }
-    public get particles() { return this.particleUtil; }
-    public get shapes() { return this.shapeUtil; }
+    public get random() { return this.randomUtil; }
+    public get color() { return this.colorUtil; }
+    public get particle() { return this.particleUtil; }
+    public get shape() { return this.shapeUtil; }
     public get graident() { return this.graidentUtility; }
     public get imageData() { return this.imageDataUtility; }
     public get pattern() { return this.patternUtility; }
     public get helper() { return this.helperUtility; }
-    public get math() { return this.mathUtility; }
+    public get vector() { return this.vectorUtility; }
 
     public get bounds() { return this._context.canvas.getBoundingClientRect(); }
     public get width() { return this._context.canvas.width; }
@@ -62,7 +62,7 @@ export class CanvasWrapper {
     private imageDataUtility: ImageDataUtility;
     private patternUtility: PatternUtility;
     private helperUtility: HelperUtility;
-    private mathUtility: MathUtility;
+    private vectorUtility: VectorUtility;
 
     // managers
     private _panZoomManager: PanZoomManager;
@@ -109,7 +109,7 @@ export class CanvasWrapper {
         this.imageDataUtility = new ImageDataUtility(this._context);
         this.patternUtility = new PatternUtility(this._context);
         this.helperUtility = new HelperUtility(this._context);
-        this.mathUtility = new MathUtility();
+        this.vectorUtility = new VectorUtility();
     }
 
     private setupCanvas() {

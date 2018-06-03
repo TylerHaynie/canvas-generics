@@ -21,7 +21,7 @@ export class ShapeUtility {
         if (rect.color) {
             this.context.globalAlpha = rect.color.modifiedAlpha ? rect.color.modifiedAlpha : rect.color.alpha;
             this.context.fillStyle = rect.color.color;
-            this.context.fillRect(rect.point.x, rect.point.y, rect.size.width, rect.size.height);
+            this.context.fillRect(rect.vector.x, rect.vector.y, rect.size.width, rect.size.height);
         }
 
         // draw the outline
@@ -29,7 +29,7 @@ export class ShapeUtility {
             this.context.lineWidth = rect.outline.lineWidth;
             this.context.globalAlpha = rect.outline.modifiedAlpha ? rect.outline.modifiedAlpha : rect.outline.alpha;
             this.context.strokeStyle = rect.outline.color;
-            this.context.strokeRect(rect.point.x, rect.point.y, rect.size.width, rect.size.height);
+            this.context.strokeRect(rect.vector.x, rect.vector.y, rect.size.width, rect.size.height);
         }
 
         this.context.restore();
@@ -41,7 +41,7 @@ export class ShapeUtility {
         this.context.globalAlpha = 0;
 
         // create the circle
-        this.context.arc(circle.point.x, circle.point.y, circle.radius, 0, 2 * Math.PI);
+        this.context.arc(circle.vector.x, circle.vector.y, circle.radius, 0, 2 * Math.PI);
 
         // does it have a shadow
         if (circle.shadow) {
@@ -74,9 +74,9 @@ export class ShapeUtility {
         this.context.beginPath();
 
         line.segments.forEach(segment => {
-            this.context.moveTo(segment.startPoint.x, segment.startPoint.y);
-            segment.points.forEach(point => {
-                this.context.lineTo(point.x, point.y);
+            this.context.moveTo(segment.startVector.x, segment.startVector.y);
+            segment.vectors.forEach(vector => {
+                this.context.lineTo(vector.x, vector.y);
             });
         });
 

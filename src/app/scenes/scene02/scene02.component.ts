@@ -5,12 +5,11 @@ import { iCircle } from '../../lib/canvas/interfaces/iCircle';
 import { Line } from '../../lib/canvas/objects/line/line';
 import { LineSegment } from '../../lib/canvas/objects/line/line-segment';
 import { QuadTree, Boundry } from '../../lib/quadtree/quad-tree';
-import { iPoint } from '../../lib/canvas/interfaces/iPoint';
-import { Math } from '../../lib/canvas/utilities/math';
+import { iVector } from '../../lib/canvas/interfaces/iVector';
 
 interface Ray {
-  a: iPoint;
-  b: iPoint;
+  a: iVector;
+  b: iVector;
 }
 
 @Component({
@@ -24,7 +23,7 @@ export class Scene02Component implements OnInit {
 
   private squares: iRectangle[] = [];
   private qtSquares: QuadTree;
-  private focalPoint: iCircle;
+  private focalvector: iCircle;
 
   constructor() { }
 
@@ -36,15 +35,18 @@ export class Scene02Component implements OnInit {
     let b: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.qtSquares = new QuadTree(b, 1);
 
-    this.setFocalPoint();
+    this.setFocalvector();
     this.generateSquares();
+
+    this.testLineIntersection();
+
     // start the draw loop
     this.cw.start();
   }
 
-  setFocalPoint() {
-    this.focalPoint = <iCircle>{
-      point: { x: this.cw.width / 2, y: this.cw.height / 2 },
+  setFocalvector() {
+    this.focalvector = <iCircle>{
+      vector: { x: this.cw.width / 2, y: this.cw.height / 2 },
       radius: 2,
       color: { color: 'red', alpha: 1 }
     };
@@ -61,7 +63,7 @@ export class Scene02Component implements OnInit {
   generateSquares() {
     for (let x = 0; x < 10; x++) {
       this.squares.push(<iRectangle>{
-        point: this.cw.randoms.randomPointInBounds(this.cw.width, this.cw.height),
+        vector: this.cw.random.randomvectorInBounds(this.cw.width, this.cw.height),
         size: { width: 30, height: 30 },
         color: { color: '#888', alpha: 1 }
       });
@@ -69,10 +71,29 @@ export class Scene02Component implements OnInit {
   }
 
   doSomething() {
+
     this.drawSquares();
     this.drawMousePosition();
-    this.drawFocalPoint();
+    this.drawFocalvector();
     this.castRay();
+  }
+
+  testLineIntersection() {
+    // should be true
+    let pa = <iVector>{ x: 0, y: 0 };
+    let pb = <iVector>{ x: 3, y: 3 };
+    let pc = <iVector>{ x: 3, y: 0 };
+    let pd = <iVector>{ x: 0, y: 3 };
+
+    console.log(this.cw.vector.lineIntersects(pa, pb, pc, pd));
+
+    // should be false
+    let pa2 = <iVector>{ x: 0, y: 0 };
+    let pb2 = <iVector>{ x: 3, y: 3 };
+    let pc2 = <iVector>{ x: 3, y: 0 };
+    let pd2 = <iVector>{ x: 6, y: 3 };
+
+    console.log(this.cw.vector.lineIntersects(pa2, pb2, pc2, pd2));
   }
 
   drawSquares() {
@@ -80,8 +101,8 @@ export class Scene02Component implements OnInit {
     this.qtSquares.reset(this.cw.width, this.cw.height);
 
     this.squares.forEach(square => {
-      this.cw.shapes.drawRectangle(square);
-      this.qtSquares.insert({ x: square.point.x, y: square.point.y, data: square });
+      this.cw.shape.drawRectangle(square);
+      this.qtSquares.insert({ x: square.vector.x, y: square.vector.y, data: square });
     });
   }
 
@@ -89,7 +110,7 @@ export class Scene02Component implements OnInit {
     let mm = this.cw.mouseManager;
     if (!mm.mouseOffCanvas) {
       let mp = <iCircle>{
-        point: { x: mm.mouseX, y: mm.mouseY },
+        vector: { x: mm.mouseX, y: mm.mouseY },
         radius: 2,
         color: {
           alpha: 1,
@@ -97,12 +118,12 @@ export class Scene02Component implements OnInit {
         }
       };
 
-      this.cw.shapes.drawCircle(mp);
+      this.cw.shape.drawCircle(mp);
     }
   }
 
-  drawFocalPoint() {
-    this.cw.shapes.drawCircle(this.focalPoint);
+  drawFocalvector() {
+    this.cw.shape.drawCircle(this.focalvector);
   }
 
   castRay() {
@@ -114,34 +135,50 @@ export class Scene02Component implements OnInit {
     line.lineWidth = .5;
     line.alpha = 1;
 
-    let segment = new LineSegment(this.focalPoint.point);
+    let segment = new LineSegment(this.focalvector.vector);
 
     // check for intersection
-    // some point along the line
-    let bounds: Boundry = new Boundry(this.focalPoint.point.x, this.focalPoint.point.y, 30, 30);
+    // some vector along the line
+    let bounds: Boundry = new Boundry(this.focalvector.vector.x, this.focalvector.vector.y, 30, 30);
 
     // first find the slope
-    let slope = this.cw.math.findSlope({ x: bounds.x, y: bounds.y }, { x: mm.mouseX, y: mm.mouseY });
+    let slope = this.cw.vector.findSlope({ x: bounds.x, y: bounds.y }, { x: mm.mouseX, y: mm.mouseY });
 
-    // now find the slope-intercept
+    // now find the slope-intercept (y-intercept)
     let mx = (slope * mm.mouseX);
     let b = mm.mouseY - mx;
     let y = mx + b;
 
     // nailed it!
-    segment.addPoint({ x: 0, y: y });
+    segment.addVector({ x: mm.mouseX, y: y });
 
     // draw a little circle where it ends
     let mp = <iCircle>{
-      point: { x: 0, y: y },
+      vector: { x: mm.mouseX, y: y },
       radius: 2,
       color: { alpha: 1, color: 'red' }
     };
-    this.cw.shapes.drawCircle(mp);
+    this.cw.shape.drawCircle(mp);
+
+    // let t = Math.ta arctan(m);
+    // let xnew = mm.mouseX + Math.cos(t);
+    // let ynew = y + Math.sin(t);
+
+    let xNew = mm.mouseX + (1 / Math.sqrt(1 + Math.pow(slope, 2)));
+    let ynew = y + (slope / Math.sqrt(1 + Math.pow(slope, 2)));
+
+    // draw a little circle where it ends
+    let mp2 = <iCircle>{
+      vector: { x: xNew, y: ynew },
+      radius: 2,
+      color: { alpha: 1, color: 'red' }
+    };
+    this.cw.shape.drawCircle(mp2);
+
 
     line.addSegment(segment);
 
-    this.cw.shapes.drawLine(line);
+    this.cw.shape.drawLine(line);
   }
 
 }

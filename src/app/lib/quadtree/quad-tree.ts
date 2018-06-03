@@ -2,7 +2,7 @@ import { CanvasWrapper } from '../canvas/canvas-wrapper';
 import { iRectangle } from '../canvas/interfaces/iRectangle';
 // built by referencing https://en.wikipedia.org/wiki/Quadtree
 
-export class QuadPoint {
+export class Quadvector {
     x: number;
     y: number;
     data: any;
@@ -26,7 +26,7 @@ export class Boundry {
         this.h = h;
     }
 
-    containsPoint(p: QuadPoint) {
+    containsvector(p: Quadvector) {
         if (p.x > this.x && p.x < this.x + this.w) {
             if (p.y > this.y && p.y < this.y + this.h) {
                 return true;
@@ -57,8 +57,8 @@ export class QuadTree {
     // how many elements can be stored in this quad tree
     capicity: number;
 
-    // This quad's points
-    points: QuadPoint[] = [];
+    // This quad's vectors
+    vectors: Quadvector[] = [];
 
     // division flag
     isDivided: boolean = false;
@@ -74,27 +74,27 @@ export class QuadTree {
         this.capicity = c;
     }
 
-    public insert(p: QuadPoint) {
+    public insert(p: Quadvector) {
         // Ignore objects that do not belong in this quad tree
-        if (!this.boundry.containsPoint(p)) {
-            // point does not belong here
+        if (!this.boundry.containsvector(p)) {
+            // vector does not belong here
             return false;
         }
 
-        // If there is space in this quad tree, add the point here
-        if (this.points.length < this.capicity) {
-            this.points.push(p);
+        // If there is space in this quad tree, add the vector here
+        if (this.vectors.length < this.capicity) {
+            this.vectors.push(p);
             return true;
         }
 
-        // Otherwise, subdivide and then add the point to whichever quad it will fit in
+        // Otherwise, subdivide and then add the vector to whichever quad it will fit in
         if (!this.isDivided) {
             this.subdivide();
 
-            // move the points to their new quads
-            for (let x = this.points.length; x > 0; x--) {
-                this.insert(this.points[x - 1]);
-                this.points.splice(x, 1);
+            // move the vectors to their new quads
+            for (let x = this.vectors.length; x > 0; x--) {
+                this.insert(this.vectors[x - 1]);
+                this.vectors.splice(x, 1);
             }
         }
 
@@ -132,45 +132,45 @@ export class QuadTree {
         this.isDivided = true;
     }
 
-    public searchBoundry(b: Boundry): QuadPoint[] {
+    public searchBoundry(b: Boundry): Quadvector[] {
         // Prepare an array of results
-        let pointsInRange: QuadPoint[] = [];
+        let vectorsInRange: Quadvector[] = [];
 
         // leave if the boundry does not intersect this quad
         if (!this.boundry.intersects(b)) {
-            return pointsInRange; // empty list
+            return vectorsInRange; // empty list
         }
 
         // Check objects on this quad
-        for (let x = 0; x < this.points.length; x++) {
-            if (b.containsPoint(this.points[x])) {
-                pointsInRange.push(this.points[x]);
+        for (let x = 0; x < this.vectors.length; x++) {
+            if (b.containsvector(this.vectors[x])) {
+                vectorsInRange.push(this.vectors[x]);
             }
         }
 
         // stop here if we haven't subdived
         if (!this.isDivided) {
-            return pointsInRange;
+            return vectorsInRange;
         }
 
-        // add points from children
+        // add vectors from children
         for (let p of this.topLeft.searchBoundry(b)) {
-            pointsInRange.push(p);
+            vectorsInRange.push(p);
         }
 
         for (let p of this.topRight.searchBoundry(b)) {
-            pointsInRange.push(p);
+            vectorsInRange.push(p);
         }
 
         for (let p of this.bottomLeft.searchBoundry(b)) {
-            pointsInRange.push(p);
+            vectorsInRange.push(p);
         }
 
         for (let p of this.bottomRight.searchBoundry(b)) {
-            pointsInRange.push(p);
+            vectorsInRange.push(p);
         }
 
-        return pointsInRange;
+        return vectorsInRange;
     }
 
 
@@ -188,13 +188,13 @@ export class QuadTree {
         this.bottomLeft = undefined;
         this.bottomRight = undefined;
 
-        this.points = [];
+        this.vectors = [];
         this.isDivided = false;
     }
 
     public debugQuad(canvasWrapper: CanvasWrapper, color: string, alpha: number = 1, lineWidth: number = .25) {
         let rect = <iRectangle>{
-            point: {
+            vector: {
                 x: this.boundry.x,
                 y: this.boundry.y
             },
@@ -209,7 +209,7 @@ export class QuadTree {
             }
         };
 
-        canvasWrapper.shapes.drawRectangle(rect);
+        canvasWrapper.shape.drawRectangle(rect);
 
         if (this.isDivided) {
             this.topLeft.debugQuad(canvasWrapper, color, alpha, lineWidth);

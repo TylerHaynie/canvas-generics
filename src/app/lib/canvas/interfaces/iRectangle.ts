@@ -1,11 +1,11 @@
 import { iSize } from './iSize';
 import { iColor } from './iColor';
 import { iShadow } from './iShadow';
-import { iPoint } from './iPoint';
+import { iVector } from './iVector';
 import { iLine } from './iLine';
 
 export interface iRectangle {
-    point: iPoint;
+    vector: iVector;
     size: iSize;
 
     color?: iColor;

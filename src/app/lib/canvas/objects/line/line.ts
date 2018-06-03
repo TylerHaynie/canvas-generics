@@ -1,9 +1,9 @@
-import { iPoint } from '../../interfaces/iPoint';
+import { iVector } from '../../interfaces/iVector';
 import { LineSegment } from './line-segment';
 import { iLine } from '../../interfaces/iLine';
 
 export class Line implements iLine {
-    point: iPoint;
+    vector: iVector;
     segments: LineSegment[] = [];
 
     lineWidth: number;

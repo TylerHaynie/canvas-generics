@@ -1,11 +1,11 @@
 import { iSize } from './iSize';
 import { iColor } from './iColor';
 import { iShadow } from './iShadow';
-import { iPoint } from './iPoint';
+import { iVector } from './iVector';
 import { iLine } from './iLine';
 
 export interface iCircle {
-    point: iPoint;
+    vector: iVector;
     radius: number;
 
     color?: iColor;
