@@ -75,7 +75,6 @@ export class CanvasWrapper {
     private transformChanged: boolean = false;
     private PanZoomData: PanZoomData;
 
-
     constructor(context: CanvasRenderingContext2D, drawCallback: () => void) {
         this._context = context;
         this.drawCallback = drawCallback;
