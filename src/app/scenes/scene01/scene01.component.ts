@@ -27,18 +27,14 @@ export class scene01Component implements OnInit {
   //#region Variables
 
   private cw: CanvasWrapper;
-  private ctx: CanvasRenderingContext2D;
 
-  // private panZoom: PanZoom;
   private debugParticles = false;
-  private debugPointsOfIntrest = false;
 
   // points-of-interest
   private pointsOfIntrest: FloatingParticle[] = [];
 
   // quads
   private particleQuad: QuadTree;
-  private pointsOfIntrestQuad: QuadTree;
 
   // particles
   private floatingParticles: FloatingParticle[] = [];
@@ -60,7 +56,7 @@ export class scene01Component implements OnInit {
   private foregroundEnd2: number = 1.000; // where the bottom graident ends
 
   // particles
-  private maxParticles: number = 3000;
+  private maxParticles: number = 4500;
   private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
   private particleSpeedModifier: number = .05;
   private particleMaxRadius: number = 4.25;
@@ -80,7 +76,6 @@ export class scene01Component implements OnInit {
 
   ngOnInit() {
     this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
-    this.ctx = this.cw.drawingContext;
 
     this.cw.panZoomManager.minScale = 1;
     this.cw.panZoomManager.panningAllowed = false;
@@ -88,7 +83,6 @@ export class scene01Component implements OnInit {
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.particleQuad = new QuadTree(boundry, 1);
-    this.pointsOfIntrestQuad = new QuadTree(boundry, 1);
 
     // start the draw loop
     this.cw.start();
@@ -114,12 +108,7 @@ export class scene01Component implements OnInit {
 
     // debug
     if (this.debugParticles) {
-      this.particleQuad.debugQuad(this.ctx, '#777');
-    }
-
-    // debug
-    if (this.debugPointsOfIntrest) {
-      this.pointsOfIntrestQuad.debugQuad(this.ctx, '#c60000');
+      this.particleQuad.debugQuad(this.cw.drawingContext, '#777');
     }
 
     this.cw.restoreContext();
