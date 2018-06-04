@@ -1,45 +1,49 @@
 import { MouseManager } from './mouse-manager';
+import { Vector } from '../objects/vector';
 
 export class PanZoomManager {
+
+    // Public Properties
+    public get isDirty() { return this.hasChanges; }
+
+    public set scalingAllowed(v) { this.allowScaling = v; }
+    public set minScale(v) { this.minimumScale = v; }
+    public set maxScale(v) { this.maximumScale = v; }
+    public set scaleStep(v) { this.canvasScaleStep = v; }
+    public get scale() { return this.canvasScale; }
+
+    public set panningAllowed(v) { this.allowPanning = v; }
+    public set panSpeed(v) {
+        if (v <= this.minimumPanSpeed) { this.panModifier = this.minimumPanSpeed; }
+        else if (v > this.maximumPanSpeed) { this.panModifier = this.maximumPanSpeed; }
+        else { this.panModifier = v; }
+    }
+    public get pannedAmount() { return this.totalPanning; }
+
+
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
-
     private hasChanges: boolean = false;
-    public get isDirty() { return this.hasChanges; }
 
     // canvas
     private canvasScaleStep: number = .10;
-    public set scaleStep(v) { this.canvasScaleStep = v; }
     private canvasScale: number = 1;
-    public get scale() { return this.canvasScale; }
 
     // panning
+    private minimumPanSpeed: number = 0;
+    private maximumPanSpeed: number = 2;
     private allowPanning: boolean = true;
     private pannableModifier: number = 1;
-    public set panningAllowed(v) { this.allowPanning = v; }
-    private panOffsetX: number = 0;
-    private panOffsetY: number = 0;
+    private panOffset: Vector;
     private isPanning = false;
-    private panStartX: number;
-    private panStartY: number;
-    private totalPanningX: number = 0;
-    public get panX() { return this.totalPanningX; }
-    private totalPanningY: number = 0;
-    public get panY() { return this.totalPanningY; }
+    private panStartPosition: Vector;
+    private totalPanning: Vector = <Vector>{ x: 0, y: 0 };
     private panModifier: number = 1;
-    public set panSpeed(v) {
-        if (v <= 0) { this.panModifier = 1; }
-        else if (v > 2) { this.panModifier = 2; }
-        else { this.panModifier = v; }
-    }
 
     // scaling
     private allowScaling: boolean = true;
-    public set scalingAllowed(v) { this.allowScaling = v; }
     private maximumScale: number = 0;
-    public set maxScale(v) { this.maximumScale = v; }
     private minimumScale: number = 0;
-    public set minScale(v) { this.minimumScale = v; }
 
     // touch input
     private pinchMoveStart: number = 0;
@@ -69,12 +73,12 @@ export class PanZoomManager {
 
         // was the mouse pressed?
         if (this.mouseManager.leftMouseState === 'down' && !this.isPanning) {
-            this.panStart(this.mouseManager.mouseX, this.mouseManager.mouseY);
+            this.panStart(this.mouseManager.mousePosition);
         }
 
         // did the mouse move?
         if (this.mouseManager.isMoving) {
-            this.panChange(this.mouseManager.mouseX, this.mouseManager.mouseY);
+            this.panChange(this.mouseManager.mousePosition);
         }
 
         // zooming?
@@ -97,36 +101,6 @@ export class PanZoomManager {
 
     private registerEvents() {
         const cv = this.context.canvas;
-
-        // // mouse events
-        // cv.onmousemove = (e) => {
-        //     this.vectorerMove(e.clientX, e.clientY);
-        // };
-
-        // cv.onmousedown = (e) => {
-        //     this.vectorerDown(e.clientX, e.clientY);
-        // };
-
-        // cv.onmouseup = (e) => {
-        //     this.vectorerStop();
-        // };
-
-        // cv.onmousewheel = (e) => {
-        //     if (e.deltaY > 0) {
-        //         this.zoomOut();
-        //     }
-        //     else {
-        //         this.zoomIn();
-        //     }
-        // };
-
-        // cv.onmouseout = (e) => {
-        //     this.vectorerStop();
-        // };
-
-        // cv.onmouseleave = (e) => {
-        //     this.vectorerStop();
-        // };
 
         // touch events
         // cv.addEventListener('touchstart', (e) => {
@@ -191,27 +165,27 @@ export class PanZoomManager {
 
     //#region Input logic
 
-    private panStart(x: number, y: number) {
-        this.panStartX = x - this.panOffsetX;
-        this.panStartY = y - this.panOffsetY;
+    private panStart(vector: Vector) {
+        this.panStartPosition.x = vector.x - this.panOffset.x;
+        this.panStartPosition.y = vector.y - this.panOffset.y;
 
         this.isPanning = true;
     }
 
-    private panChange(x, y) {
+    private panChange(vector: Vector) {
         // are we panning?
         if (this.isPanning && this.allowPanning) {
             // movement delta
-            let dx = (this.mouseManager.mouseX - this.panStartX) * this.panModifier;
-            let dy = (this.mouseManager.mouseY - this.panStartY) * this.panModifier;
+            let dx = (this.mouseManager.mousePosition.x - this.panStartPosition.x) * this.panModifier;
+            let dy = (this.mouseManager.mousePosition.y - this.panStartPosition.y) * this.panModifier;
 
             // update panstart
-            this.panStartX = this.mouseManager.mouseX;
-            this.panStartY = this.mouseManager.mouseY;
+            this.panStartPosition.x = this.mouseManager.mousePosition.x;
+            this.panStartPosition.y = this.mouseManager.mousePosition.y;
 
             // total pan amount
-            this.totalPanningX += dx;
-            this.totalPanningY += dy;
+            this.totalPanning.x += dx;
+            this.totalPanning.y += dy;
 
             this.hasChanges = true;
         }
@@ -281,13 +255,8 @@ export class PanZoomManager {
     }
 
     private resetView() {
-        const canvasBounds = this.context.canvas.getBoundingClientRect();
-
-        this.panOffsetX = canvasBounds.left;
-        this.panOffsetY = canvasBounds.top;
-
-        this.totalPanningX = 0;
-        this.totalPanningY = 0;
+        this.panOffset = <Vector>{ x: 0, y: 0 };
+        this.totalPanning = <Vector>{ x: 0, y: 0 };
 
         this.canvasScale = 1;
         this.hasChanges = true;

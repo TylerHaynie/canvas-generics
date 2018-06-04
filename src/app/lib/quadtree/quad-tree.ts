@@ -1,8 +1,13 @@
-import { CanvasWrapper } from '../canvas/canvas-wrapper';
-import { iRectangle } from '../canvas/interfaces/iRectangle';
-// built by referencing https://en.wikipedia.org/wiki/Quadtree
+/// built by referencing https://en.wikipedia.org/wiki/Quadtree
 
-export class Quadvector {
+import { CanvasWrapper } from '../canvas/canvas-wrapper';
+import { Rectangle } from '../canvas/shapes/rectangle';
+import { Vector } from '../canvas/objects/vector';
+import { Size } from '../canvas/models/size';
+import { Color } from '../canvas/models/color';
+import { LineStyle } from '../canvas/models/line-style';
+
+export class QuadVector {
     x: number;
     y: number;
     data: any;
@@ -26,7 +31,7 @@ export class Boundry {
         this.h = h;
     }
 
-    containsvector(p: Quadvector) {
+    containsvector(p: QuadVector) {
         if (p.x > this.x && p.x < this.x + this.w) {
             if (p.y > this.y && p.y < this.y + this.h) {
                 return true;
@@ -58,7 +63,7 @@ export class QuadTree {
     capicity: number;
 
     // This quad's vectors
-    vectors: Quadvector[] = [];
+    vectors: QuadVector[] = [];
 
     // division flag
     isDivided: boolean = false;
@@ -74,7 +79,7 @@ export class QuadTree {
         this.capicity = c;
     }
 
-    public insert(p: Quadvector) {
+    public insert(p: QuadVector) {
         // Ignore objects that do not belong in this quad tree
         if (!this.boundry.containsvector(p)) {
             // vector does not belong here
@@ -132,9 +137,9 @@ export class QuadTree {
         this.isDivided = true;
     }
 
-    public searchBoundry(b: Boundry): Quadvector[] {
+    public searchBoundry(b: Boundry): QuadVector[] {
         // Prepare an array of results
-        let vectorsInRange: Quadvector[] = [];
+        let vectorsInRange: QuadVector[] = [];
 
         // leave if the boundry does not intersect this quad
         if (!this.boundry.intersects(b)) {
@@ -192,30 +197,22 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    public debugQuad(canvasWrapper: CanvasWrapper, color: string, alpha: number = 1, lineWidth: number = .25) {
-        let rect = <iRectangle>{
-            vector: {
-                x: this.boundry.x,
-                y: this.boundry.y
-            },
-            size: {
-                width: this.boundry.w,
-                height: this.boundry.h
-            },
-            outline: {
-                color: color,
-                alpha: alpha,
-                lineWidth: lineWidth
-            }
-        };
+    public debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
+        let rect = new Rectangle(context);
 
-        canvasWrapper.shape.drawRectangle(rect);
+        rect.position = new Vector(this.boundry.x, this.boundry.y);
+        rect.size = new Size(this.boundry.w, this.boundry.h);
+        rect.outline = new LineStyle(lineWidth);
+        rect.outline.shade = color;
+        rect.outline.alpha = alpha;
+
+        rect.draw();
 
         if (this.isDivided) {
-            this.topLeft.debugQuad(canvasWrapper, color, alpha, lineWidth);
-            this.topRight.debugQuad(canvasWrapper, color, alpha, lineWidth);
-            this.bottomLeft.debugQuad(canvasWrapper, color, alpha, lineWidth);
-            this.bottomRight.debugQuad(canvasWrapper, color, alpha, lineWidth);
+            this.topLeft.debugQuad(context, color, alpha, lineWidth);
+            this.topRight.debugQuad(context, color, alpha, lineWidth);
+            this.bottomLeft.debugQuad(context, color, alpha, lineWidth);
+            this.bottomRight.debugQuad(context, color, alpha, lineWidth);
         }
     }
 }

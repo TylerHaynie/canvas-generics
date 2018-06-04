@@ -1,14 +1,20 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { QuadTree, Boundry, Quadvector } from '../../lib/quadtree/quad-tree';
+import { QuadTree, Boundry, QuadVector } from '../../lib/quadtree/quad-tree';
 import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
-import { iParticle } from '../../lib/canvas/interfaces/iParticle';
 import { RandomUtility } from '../../lib/canvas/utilities/random-utility';
 import { ColorUtility } from '../../lib/canvas/utilities/color-utility';
-import { ParticleUtility } from '../../lib/canvas/utilities/particle-utility';
-import { ShapeUtility } from '../../lib/canvas/utilities/shape-utility';
-import { iRectangle } from '../../lib/canvas/interfaces/iRectangle';
-import { Line } from '../../lib/canvas/objects/line/line';
-import { LineSegment } from '../../lib/canvas/objects/line/line-segment';
+import { Particle } from '../../lib/canvas/objects/particle';
+import { Rectangle } from '../../lib/canvas/shapes/rectangle';
+import { Bounds } from '../../lib/canvas/objects/bounds';
+import { FloatingParticle } from './objects/floating-particle';
+import { Circle } from '../../lib/canvas/shapes/circle';
+import { Color } from '../../lib/canvas/models/color';
+import { Velocity } from '../../lib/canvas/models/velocity';
+import { Vector } from '../../lib/canvas/objects/vector';
+import { Size } from '../../lib/canvas/models/size';
+import { Line } from '../../lib/canvas/shapes/line/line';
+import { LineStyle } from '../../lib/canvas/models/line-style';
+import { Shadow } from '../../lib/canvas/models/shadow';
 
 @Component({
   selector: 'app-scene01',
@@ -21,19 +27,21 @@ export class scene01Component implements OnInit {
   //#region Variables
 
   private cw: CanvasWrapper;
+  private ctx: CanvasRenderingContext2D;
+
   // private panZoom: PanZoom;
   private debugParticles = false;
-  private debugvectors = false;
+  private debugPointsOfIntrest = false;
 
-  // vector
-  private vectors: iParticle[] = [];
+  // points-of-interest
+  private pointsOfIntrest: FloatingParticle[] = [];
 
   // quads
   private particleQuad: QuadTree;
-  private vectorQuad: QuadTree;
+  private pointsOfIntrestQuad: QuadTree;
 
   // particles
-  private particles: iParticle[] = [];
+  private floatingParticles: FloatingParticle[] = [];
 
   //#endregion
 
@@ -51,19 +59,19 @@ export class scene01Component implements OnInit {
   private foregroundStart2: number = .750; // where the bottom graident starts
   private foregroundEnd2: number = 1.000; // where the bottom graident ends
 
-  // vectors
-  private vectorCount = 20;
-  private vectorSize = 25;
-  private vectorSpeedModifier = 1;
-  private drawvectorToParticleLines: boolean = true;
-  private fieldSize = 80;
-  private vectorType: string = 'square'; // circle or square
-  private vectorDefaultBackground: string = '#0E1019';
-  private vectorOutline: string = '#2D3047';
-  private vectorHoverBackground: string = '#0E1019';
-  private vectorShadowColor: string = '#2D3047';
-  private vectorShadowBlur = 6;
-  private vectorerCollideColor: string = '#A9353E';
+  // Points-of-Interest
+  private poiCount = 20;
+  private poiSize = 35;
+  private poiSpeedModifier = 1;
+  private connectToParticles: boolean = true;
+  private connectorRadius = 80;
+  private poiType: string = 'square'; // circle or square
+  private poiDefaultBackground: string = '#0E1019'; // #0E1019
+  private poiOutline: string = '#2D3047';
+  private poiHoverBackground: string = '#0E1019';
+  private poiShadowColor: string = '#2D3047';
+  private poiShadowBlur = 6;
+  private poiCollisionColor: string = '#A9353E';
 
   // connecting lines
   private lineWidth: number = .5;
@@ -72,16 +80,16 @@ export class scene01Component implements OnInit {
   private lineColor: string = '#313947';
 
   // particles
-  private maxParticles: number = 3500;
+  private maxParticles: number = 1000;
   private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
   private particleSpeedModifier: number = .05;
   private particleMaxRadius: number = 4.25;
-  private particleminRadius: number = .15;
-  private maxParticleLifespan: number = 330;
+  private particleMinRadius: number = .15;
+  private maxParticleLifespan: number = 325;
   private minParticleLifespan: number = 175;
-  private particleFadeTime: number = 85;
+  private particleFadeTime: number = 100;
 
-  private maxOpacity: number = .70;
+  private maxOpacity: number = 1;
   private particleHighlightColor: string = '#ff2dd4';
   // private particleHighlightColor: string = '#5e5d52';
 
@@ -93,15 +101,17 @@ export class scene01Component implements OnInit {
 
   ngOnInit() {
     this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
+    this.ctx = this.cw.drawingContext;
+
     this.cw.panZoomManager.minScale = 1;
     this.cw.panZoomManager.panningAllowed = false;
 
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.particleQuad = new QuadTree(boundry, 1);
-    this.vectorQuad = new QuadTree(boundry, 1);
+    this.pointsOfIntrestQuad = new QuadTree(boundry, 1);
 
-    this.generatevectors();
+    this.generatePointsOfIntrest();
 
     // start the draw loop
     this.cw.start();
@@ -126,19 +136,19 @@ export class scene01Component implements OnInit {
     // this.drawConnectingLines();
 
     // update and draw main vectors
-    this.drawvectors();
+    // this.drawPointsOfIntrest();
 
     // drawing the graident on the top
     this.drawForeground();
 
     // debug
     if (this.debugParticles) {
-      this.particleQuad.debugQuad(this.cw, '#777');
+      this.particleQuad.debugQuad(this.ctx, '#777');
     }
 
     // debug
-    if (this.debugvectors) {
-      this.vectorQuad.debugQuad(this.cw, '#c60000');
+    if (this.debugPointsOfIntrest) {
+      this.pointsOfIntrestQuad.debugQuad(this.ctx, '#c60000');
     }
 
     this.cw.restoreContext();
@@ -146,22 +156,13 @@ export class scene01Component implements OnInit {
 
   drawBackground() {
     let bounds = this.cw.bounds;
+    let b = new Rectangle(this.cw.drawingContext);
 
-    let background = <iRectangle>{
-      vector: {
-        x: bounds.left,
-        y: bounds.top
-      },
-      size: {
-        width: bounds.width,
-        height: bounds.height
-      },
-      color: {
-        color: this.backgroundColor
-      }
-    };
+    b.position = new Vector(bounds.left, bounds.top);
+    b.size = new Size(bounds.width, bounds.height);
+    b.color = new Color(this.backgroundColor);
 
-    this.cw.shape.drawRectangle(background);
+    b.draw();
   }
 
   drawForeground() {
@@ -170,170 +171,142 @@ export class scene01Component implements OnInit {
     // Create gradient
     let grd = this.cw.graident.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
 
-    // Add colors
+    // Top Color
     grd.addColorStop(this.foregroundEnd1, this.foregroundColorEndColor);
     grd.addColorStop(this.foregroundStart1, this.foregroundColorStartColor);
 
+    // bottom color
     grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
-    grd.addColorStop(1.000, this.foregroundColorEndColor);
+    grd.addColorStop(this.foregroundEnd2, this.foregroundColorEndColor);
 
-    // Fill with gradient
-    let foreGround = <iRectangle>{
-      vector: {
-        x: bounds.left,
-        y: bounds.top
-      },
-      size: {
-        width: bounds.width,
-        height: bounds.height
-      },
-      color: {
-        color: grd
-      }
-    };
+    let f = new Rectangle(this.cw.drawingContext);
+    f.position = new Vector(bounds.left, bounds.top);
+    f.size = new Size(bounds.width, bounds.height);
+    f.color = new Color(grd);
 
-    this.cw.shape.drawRectangle(foreGround);
+    f.draw();
   }
 
   drawParticles() {
     // replace particles that have died off
-    if (this.particles.length - 1 !== this.maxParticles) {
+    if (this.floatingParticles.length - 1 !== this.maxParticles) {
       this.generateMissingParticles();
     }
 
-    // update particle locations
-    this.cw.particle.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.particles);
-
-    // apply fade to new or dying particles
-    this.cw.particle.particleFader(this.particleFadeTime, this.particles);
-
-    // clear the quad
-    this.particleQuad.reset(this.cw.width, this.cw.height);
-
-    // add particles then add them to the quad
-    this.particles.forEach(p => {
-      this.particleQuad.insert({ x: p.vector.x, y: p.vector.y, data: p });
-      this.cw.shape.drawCircle(p);
-    });
+    this.drawFloatingParticle(this.floatingParticles, this.particleQuad);
   }
 
-  drawvectors() {
-    // clear the quad
-    this.vectorQuad.reset(this.cw.width, this.cw.height);
-
-    // update vector locations
-    this.cw.particle.moveParticles({ x: 0, y: 0, w: this.cw.width, h: this.cw.height }, this.vectors);
-
-    this.vectors.forEach(p => {
-
-      // look for nearby particles
-      let b: Boundry = new Boundry(
-        p.vector.x - ((p.radius + (this.fieldSize / 2)) / 2),
-        p.vector.y - ((p.radius + (this.fieldSize / 2)) / 2),
-        (p.radius) * 2 + (this.fieldSize / 2),
-        (p.radius) * 2 + (this.fieldSize / 2)
-      );
-
-      let vectorsInRange: Quadvector[] = this.particleQuad.searchBoundry(b);
-
-      // debug
-      // let r = <iRectangle>{
-      //   vector: { x: b.x, y: b.y },
-      //   size: { width: b.w, height: b.h },
-      //   outline: { color: 'red', alpha: 1 }
-      // };
-
-      // this.cw.shape.drawRectangle(r);
-
-      // look for nearbyvectors
-      this.vectorParticleInteraction({ x: p.vector.x + (p.radius / 2), y: p.vector.y + (p.radius / 2) }, vectorsInRange);
-
-      if (this.vectorType === 'circle') {
-        this.cw.shape.drawCircle(p);
-      }
-      else if (this.vectorType === 'square') {
-        let r = <iRectangle>{
-          vector: { x: p.vector.x, y: p.vector.y },
-          color: p.color,
-          outline: p.outlineColor,
-          shadow: p.shadow,
-          size: { width: p.radius, height: p.radius }
-        };
-        this.cw.shape.drawRectangle(r);
-      }
-
-      // add updated vector to quad
-      this.vectorQuad.insert({ x: p.vector.x + (p.radius / 2), y: p.vector.y + (p.radius / 2), data: p });
-
-      // debug
-      // let r = <iRectangle>{
-      //   vector: { x: p.vector.x, y: p.vector.y },
-      //   size: { width: (<iParticle>p).radius, height: (<iParticle>p).radius },
-      //   outline: { color: 'red', alpha: 1 }
-      // };
-
-      // this.cw.shape.drawRectangle(r);
-    });
-
-    this.checkvectorInteractWithvector();
+  drawPointsOfIntrest() {
+    this.drawFloatingParticle(this.pointsOfIntrest, this.pointsOfIntrestQuad);
+    this.checkPoiInteraction();
   }
 
-  private vectorParticleInteraction(startVector: { x: number, y: number }, qp: Quadvector[]) {
-    let lines: Line[] = [];
+  drawFloatingParticle(particles: FloatingParticle[], trackingTree: QuadTree = undefined) {
+    if (trackingTree) {
+      // clear the quad
+      trackingTree.reset(this.cw.width, this.cw.height);
+    }
 
-    qp.forEach(vector => {
-      let ip = <iParticle>(vector.data);
-      ip.color.color = this.activeParticleColor;
-      ip.currentLifeTime = ip.maximumLifeTime - this.particleFadeTime - 15;
+    let bp = new Vector(0, 0);
+    let bs = new Size(this.cw.width, this.cw.height);
+    let particleBounds = new Bounds(bp, bs);
 
-      // lines
-      if (this.drawvectorToParticleLines) {
-        let line: Line = new Line();
-        line.color = this.lineColor;
-        line.lineWidth = this.lineWidth;
-        line.alpha = this.lineAlpha;
+    for (let x = particles.length - 1; x > 0; x--) {
+      let fp = particles[x];
 
-        let segment = new LineSegment({ x: startVector.x, y: startVector.y });
-        segment.addVector({ x: ip.vector.x + ip.radius / 2, y: ip.vector.y + ip.radius / 2 });
+      if (fp.isAlive) {
+        // move particle
+        fp.move(particleBounds);
 
-        line.addSegment(segment);
-        lines.push(line);
+        // update particle
+        fp.update();
+
+        if (trackingTree) {
+          // insert particle
+          trackingTree.insert({ x: fp.position.x, y: fp.position.y, data: fp });
+        }
+
+        // draw particle
+        fp.draw();
       }
-
-    });
-
-    lines.forEach(line => {
-      this.cw.shape.drawLine(line);
-    });
+      else {
+        // remove it
+        particles.splice(x, 1);
+      }
+    }
   }
 
-  checkvectorInteractWithvector() {
-    this.vectors.forEach(self => {
+  private vectorParticleInteraction(startVector: { x: number, y: number }, qp: QuadVector[]) {
+    // let lines: Line[] = [];
+
+    // qp.forEach(vector => {
+    //   let ip = <iParticle>(vector.data);
+    //   ip.shade.shade = this.activeParticleColor;
+    //   ip.currentLifeTime = ip.maximumLifeTime - this.particleFadeTime - 15;
+
+    //   // lines
+    //   if (this.drawvectorToParticleLines) {
+    //     let line: Line = new Line();
+    //     line.shade = this.lineColor;
+    //     line.lineWidth = this.lineWidth;
+    //     line.alpha = this.lineAlpha;
+
+    //     let segment = new LineSegment({ x: startVector.x, y: startVector.y });
+    //     segment.addVector({ x: ip.vector.x + ip.radius / 2, y: ip.vector.y + ip.radius / 2 });
+
+    //     line.addSegment(segment);
+    //     lines.push(line);
+    //   }
+
+    // });
+
+    // lines.forEach(line => {
+    //   this.cw.shape.drawLine(line);
+    // });
+  }
+
+  checkPoiInteraction() {
+    this.pointsOfIntrest.forEach(self => {
+
       // look for overlapping vectors
-      let b: Boundry = new Boundry(self.vector.x - (self.radius / 2), self.vector.y - (self.radius / 2), self.radius * 2, self.radius * 2);
-      let vectorsInRange: Quadvector[] = this.vectorQuad.searchBoundry(b);
 
-      // let r = <iRectangle>{
-      //   vector: { x: b.x, y: b.y },
-      //   size: { width: b.w, height: b.h },
-      //   outline: { color: 'yellow', alpha: 1 }
-      // };
+      // let b: Boundry = new Boundry(
+      //   self.point.x - (self.radius / 2),
+      //   self.point.y - (self.radius / 2),
+      //   self.radius * 2,
+      //   self.radius * 2);
+      // let pointsInRange: QuadVector[] = this.pointsOfIntrestQuad.searchBoundry(b);
 
-      // this.cw.shape.drawRectangle(r);
+      let b: Boundry;
+      switch (this.poiType) {
+        case 'square':
+          let b: Boundry = new Boundry(
+            self.position.x - ((<Rectangle>self.floatingObject).size.width / 2),
+            self.position.y - ((<Rectangle>self.floatingObject).size.width / 2),
+            (<Rectangle>self.floatingObject).size.width * 2,
+            (<Rectangle>self.floatingObject).size.width * 2);
+          break;
+        case 'circle':
+          break;
+      }
 
-      if (vectorsInRange.length > 0) {
-        vectorsInRange.forEach(other => {
+
+      let pointsInRange: QuadVector[] = this.pointsOfIntrestQuad.searchBoundry(b);
+      // debug collisions (hit detection is still top left but the boundry is drawing perfect. confused...)
+      let r = new Rectangle(this.cw.drawingContext);
+      r.position = new Vector(b.x, b.y);
+      r.size = new Size(b.w, b.h);
+      r.outline = new LineStyle();
+      r.outline.shade = 'yellow';
+
+      r.draw();
+
+      if (pointsInRange.length > 0) {
+        pointsInRange.forEach(other => {
           if (other.data !== self) {
-            let op = <iParticle>(other.data);
-            op.color.color = this.vectorerCollideColor;
-            self.color.color = this.vectorerCollideColor;
-
-            // op.speed.vx += .01;
-            // op.speed.vy += .01;
-
-            // self.speed.vx += .01;
-            // self.speed.vy += .01;
-
+            let op = <FloatingParticle>(other.data);
+            op.changeColor(new Color(this.poiCollisionColor));
+            self.changeColor(new Color(this.poiCollisionColor));
           }
         });
       }
@@ -343,37 +316,37 @@ export class scene01Component implements OnInit {
   }
 
   drawConnectingLines() {
-    let lines: Line[] = [];
+    // let lines: Line[] = [];
 
-    for (let x = 0; x < this.vectors.length; x++) {
-      let line: Line = new Line();
-      line.color = this.lineColor;
-      line.lineWidth = this.lineWidth;
-      line.alpha = this.lineAlpha;
+    // for (let x = 0; x < this.pointsOfIntrest.length; x++) {
+    //   let line: Line = new Line();
+    //   line.shade = this.lineColor;
+    //   line.lineWidth = this.lineWidth;
+    //   line.alpha = this.lineAlpha;
 
-      // this square
-      let s = this.vectors[x];
-      // next square
-      let ns = this.vectors[x + 1];
+    //   // this square
+    //   let s = this.vectors[x];
+    //   // next square
+    //   let ns = this.vectors[x + 1];
 
-      let segment = new LineSegment({ x: s.vector.x + s.radius / 2, y: s.vector.y + s.radius / 2 });
+    //   let segment = new LineSegment({ x: s.vector.x + s.radius / 2, y: s.vector.y + s.radius / 2 });
 
-      if (ns) {
-        segment.addVector({ x: ns.vector.x + ns.radius / 2, y: ns.vector.y + ns.radius / 2 });
-      }
-      else {
-        // connect back to the first
-        let fp = this.vectors[0];
-        segment.addVector({ x: fp.vector.x + fp.radius / 2, y: fp.vector.y + fp.radius / 2 });
-      }
+    //   if (ns) {
+    //     segment.addVector({ x: ns.vector.x + ns.radius / 2, y: ns.vector.y + ns.radius / 2 });
+    //   }
+    //   else {
+    //     // connect back to the first
+    //     let fp = this.vectors[0];
+    //     segment.addVector({ x: fp.vector.x + fp.radius / 2, y: fp.vector.y + fp.radius / 2 });
+    //   }
 
-      line.addSegment(segment);
-      lines.push(line);
-    }
+    //   line.addSegment(segment);
+    //   lines.push(line);
+    // }
 
-    lines.forEach(line => {
-      this.cw.shape.drawLine(line);
-    });
+    // lines.forEach(line => {
+    //   this.cw.shape.drawLine(line);
+    // });
   }
 
   //#endregion
@@ -382,58 +355,68 @@ export class scene01Component implements OnInit {
 
   generateMissingParticles() {
 
-    for (let x = this.particles.length - 1; x < this.maxParticles; x++) {
-      let p = <iParticle>{
-        vector: {
-          x: Math.random() * (this.cw.width - this.particleMaxRadius),
-          y: Math.random() * (this.cw.height - this.particleMaxRadius)
-        },
-        radius: this.cw.random.randomNumberBetween(this.particleminRadius, this.particleMaxRadius),
-        speed: {
-          vx: this.cw.random.randomWithNegative() * this.particleSpeedModifier,
-          vy: this.cw.random.randomWithNegative() * this.particleSpeedModifier
-        },
-        color: {
-          color: this.cw.color.randomColorFromArray(this.colorArray),
-          alpha: this.cw.random.randomNumberBetween(1, this.maxOpacity * 100) / 100
-        },
-        maximumLifeTime: this.cw.random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan),
-        currentLifeTime: 0
-      };
+    for (let x = this.floatingParticles.length; x < this.maxParticles; x++) {
 
-      this.particles.push(p);
+      let pLocation = new Vector(Math.random() * (this.cw.width - this.particleMaxRadius), Math.random() * (this.cw.height - this.particleMaxRadius));
+      let p = new Particle(pLocation);
+
+      p.velocity = new Velocity(
+        this.cw.random.randomWithNegative() * this.particleSpeedModifier,
+        this.cw.random.randomWithNegative() * this.particleSpeedModifier
+      );
+
+      let c = new Circle(this.cw.drawingContext);
+      c.position = p.position;
+      c.radius = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
+      c.color = new Color(this.cw.color.randomColorFromArray(this.colorArray));
+
+      let fp = new FloatingParticle(this.cw.drawingContext, pLocation, p, c);
+      fp.maximumLifeTime = this.cw.random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan);
+      fp.currentLifeTime = 0;
+      fp.fadeable = true;
+      fp.maximumAlpha = this.cw.random.randomNumberBetween(1, this.maxOpacity * 100) / 100;
+      fp.fadeSpan = this.particleFadeTime;
+
+      this.floatingParticles.push(fp);
     }
   }
 
-  generatevectors() {
-    for (let x = 0; x < this.vectorCount; x++) {
+  generatePointsOfIntrest() {
+    for (let x = 0; x <= this.poiCount; x++) {
 
-      let p = <iParticle>{
-        vector: {
-          x: Math.random() * (this.cw.width - this.vectorSize),
-          y: Math.random() * (this.cw.height - this.vectorSize),
-        },
-        radius: this.vectorSize,
-        speed: {
-          vx: this.cw.random.randomWithNegative() * this.vectorSpeedModifier,
-          vy: this.cw.random.randomWithNegative() * this.vectorSpeedModifier
-        },
-        color: {
-          color: this.vectorDefaultBackground,
-          alpha: 1
-        },
-        outlineColor: {
-          color: this.vectorOutline,
-          alpha: 1
-        },
-        outlineWidth: .25,
-        shadow: {
-          shadowColor: this.vectorShadowColor,
-          shadowBlur: this.vectorShadowBlur
-        },
-      };
+      let poiLocation = new Vector(
+        Math.random() * (this.cw.width - this.poiSize),
+        Math.random() * (this.cw.height - this.poiSize)
+      );
 
-      this.vectors.push(p);
+      let poiParticle = new Particle(poiLocation);
+
+      poiParticle.velocity = new Velocity(
+        this.cw.random.randomWithNegative() * this.poiSpeedModifier,
+        this.cw.random.randomWithNegative() * this.poiSpeedModifier
+      );
+
+      let obj: Circle | Rectangle;
+
+      switch (this.poiType) {
+        case 'square':
+          obj = new Rectangle(this.cw.drawingContext);
+          obj.size = new Size(this.poiSize, this.poiSize);
+
+          break;
+        case 'circle':
+          obj = new Circle(this.cw.drawingContext);
+          obj.radius = this.poiSize / 2;
+          break;
+      }
+
+      obj.color = new Color(this.poiDefaultBackground);
+      obj.outline = new LineStyle();
+      obj.outline.shade = this.poiOutline;
+      obj.shadow = new Shadow(this.poiShadowBlur, this.poiShadowColor);
+
+      let fp = new FloatingParticle(this.cw.drawingContext, poiLocation, poiParticle, obj);
+      this.pointsOfIntrest.push(fp);
     }
   }
 
@@ -444,33 +427,32 @@ export class scene01Component implements OnInit {
   checkParticleHover() {
     if (!this.cw.mouseManager.mouseOffCanvas) {
       // current mouse location
-      let mx = this.cw.mouseManager.mouseX;
-      let my = this.cw.mouseManager.mouseY;
+      let mx = this.cw.mouseManager.mousePosition.x;
+      let my = this.cw.mouseManager.mousePosition.y;
 
       // boundry around mouse
       let b: Boundry = new Boundry(mx - (this.vectorerRadius / 2), my - (this.vectorerRadius / 2), this.vectorerRadius, this.vectorerRadius);
 
-      // check vectors
-      let vectorsInRange: Quadvector[] = this.vectorQuad.searchBoundry(b);
+      // check pointsOfIntrest
+      let pointsOfIntrestInRange: QuadVector[] = this.pointsOfIntrestQuad.searchBoundry(b);
 
-      // update vectors in range
-      if (vectorsInRange.length > 0) {
-        vectorsInRange.forEach(p => {
-          let ip = <iParticle>(p.data);
-          ip.color.alpha = 1;
-          ip.color.color = this.vectorHoverBackground;
+      // update pointsOfIntrest in range
+      if (pointsOfIntrestInRange.length > 0) {
+        pointsOfIntrestInRange.forEach(p => {
+          let fp = <FloatingParticle>(p.data);
+          fp.changeColor(new Color(this.poiHoverBackground));
         });
       }
 
       // check particles
-      let particlesInRange: Quadvector[] = this.particleQuad.searchBoundry(b);
+      let particlesInRange: QuadVector[] = this.particleQuad.searchBoundry(b);
 
       // update particles in range
       if (particlesInRange.length > 0) {
         particlesInRange.forEach(p => {
-          let ip = <iParticle>(p.data);
-          ip.color.alpha = 1;
-          ip.color.color = this.particleHighlightColor;
+          let fp = <FloatingParticle>(p.data);
+          fp.maximumAlpha = 1;
+          fp.floatingObject.color.shade = this.particleHighlightColor;
         });
       }
     }

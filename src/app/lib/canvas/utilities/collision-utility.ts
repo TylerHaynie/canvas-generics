@@ -1,15 +1,15 @@
-import { iVector } from '../interfaces/iVector';
-import { iCircle } from '../interfaces/iCircle';
+import { Vector } from '../objects/vector';
+import { Circle } from '../shapes/circle';
 
 export class CollisionUtility {
 
     constructor() {}
 
-    areaOverCircle(area: iCircle, circle: iCircle): boolean {
+    circleOverCircle(area: Circle, circle: Circle): boolean {
         let withinBounds: boolean = false;
 
-        let dx = area.vector.x - circle.vector.x;
-        let dy = area.vector.y - circle.vector.y;
+        let dx = area.position.x - circle.position.x;
+        let dy = area.position.y - circle.position.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance < area.radius + circle.radius) {

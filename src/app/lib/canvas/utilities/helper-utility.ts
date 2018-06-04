@@ -1,74 +1,90 @@
-import { Line } from '../objects/line/line';
-import { iColor } from '../interfaces/iColor';
-import { LineSegment } from '../objects/line/line-segment';
-import { CanvasWrapper } from '../canvas-wrapper';
-import { ShapeUtility } from './shape-utility';
+import { Vector } from '../objects/vector';
+import { Line } from '../shapes/line/line';
+import { LineSegment } from '../shapes/line/line-segment';
 
 export class HelperUtility {
     private context: CanvasRenderingContext2D;
-    private shape: ShapeUtility;
 
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
-        this.shape = new ShapeUtility(this.context);
     }
 
-    drawGrid(color: string, spacing: number, lineWidth: number = 1) {
-        let line = new Line();
-        line.color = color;
-        line.lineWidth = lineWidth;
+    drawGrid(color: string, spacing: number) {
+        let line = new Line(this.context);
+        line.style.shade = color;
 
-        // verticle lines
+        // TODO: I want to start the gird at center
+
+        // vertical lines
         // start at 0.5 so the lines take up 1 whole pixel and not 2 halves
         for (let x = 0 + 0.5; x < this.context.canvas.width; x += spacing) {
-            let segment = new LineSegment({ x: x, y: 0 });
-            segment.addVector({ x: x, y: this.context.canvas.height });
+            let segment = new LineSegment(new Vector(x, 0));
+            segment.addPoint(new Vector(x, this.context.canvas.height));
             line.addSegment(segment);
         }
 
         // horizontal
         // start at 0.5 so the lines take up 1 whole pixel and not 2 half pixels
         for (let y = 0 + 0.5; y < this.context.canvas.height; y += spacing) {
-            let segment = new LineSegment({ x: 0, y: y });
-            segment.addVector({ x: this.context.canvas.width, y: y });
+            let segment = new LineSegment(new Vector(0, y));
+            segment.addPoint(new Vector(this.context.canvas.width, y));
             line.addSegment(segment);
         }
 
-        this.shape.drawLine(line);
+        line.draw();
     }
 
-    trackMouse(x: number, y: number, color: string, lineWidth: number = 1, drawArrows: boolean = false) {
-        let line = new Line();
-        line.color = color;
-        line.lineWidth = lineWidth;
+    trackMouse(point: Vector, color: string, drawArrows: boolean = true) {
+        let line = new Line(this.context);
+        line.style.shade = color;
 
-        // horizontal line
-        let x1 = new LineSegment({ x: 0, y: y });
-        x1.addVector({ x: this.context.canvas.width, y: y });
+        // horizontal line (left)
+        let h1 = new LineSegment(new Vector(0, point.y));
+        h1.addPoint(new Vector(point.x, point.y));
+        line.addSegment(h1);
+
+        // horizontal line (right)
+        let x1 = new LineSegment(new Vector(this.context.canvas.width, point.y));
+        x1.addPoint(new Vector(point.x, point.y));
         line.addSegment(x1);
+
+        // vertical line (top)
+        let v1 = new LineSegment(new Vector(point.x, 0));
+        v1.addPoint(new Vector(point.x, point.y));
+        line.addSegment(v1);
+
+        // vertical line (bottom)
+        let v2 = new LineSegment(new Vector(point.x, this.context.canvas.height));
+        v2.addPoint(new Vector(point.x, point.y));
+        line.addSegment(v2);
 
         if (drawArrows) {
             // right arrow
-            let ra = new LineSegment({ x: this.context.canvas.width - 5, y: y - 5 });
-            ra.addVector({ x: this.context.canvas.width, y: y });
-            ra.addVector({ x: this.context.canvas.width - 5, y: y + 5 });
+            let ra = new LineSegment(new Vector(this.context.canvas.width - 5, point.y - 5));
+            ra.addPoint(new Vector(this.context.canvas.width, point.y));
+            ra.addPoint(new Vector(this.context.canvas.width - 5, point.y + 5));
             line.addSegment(ra);
-        }
 
-        // verticle Line
-        let y1 = new LineSegment({ x: x, y: 0 });
-        y1.addVector({ x: x, y: this.context.canvas.height });
-        line.addSegment(y1);
+            // left arrow
+            let la = new LineSegment(new Vector(5, point.y - 5));
+            la.addPoint(new Vector(0, point.y));
+            la.addPoint(new Vector(5, point.y + 5));
+            line.addSegment(la);
 
-        if (drawArrows) {
-            // down arrow
-            let da = new LineSegment({ x: x + 5, y: this.context.canvas.height - 5 });
-            da.addVector({ x: x, y: this.context.canvas.height });
-            da.addVector({ x: x - 5, y: this.context.canvas.height - 5 });
+            // bottom arrow
+            let da = new LineSegment(new Vector(point.x + 5, this.context.canvas.height - 5));
+            da.addPoint(new Vector(point.x, this.context.canvas.height));
+            da.addPoint(new Vector(point.x - 5, this.context.canvas.height - 5));
             line.addSegment(da);
+
+            // top  arrow
+            let ta = new LineSegment(new Vector(point.x + 5, 5));
+            ta.addPoint(new Vector(point.x, 0));
+            ta.addPoint(new Vector(point.x - 5, 5));
+            line.addSegment(ta);
         }
 
-        this.shape.drawLine(line);
+        line.draw();
     }
 
 }

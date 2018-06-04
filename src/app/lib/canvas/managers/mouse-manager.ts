@@ -1,10 +1,11 @@
+import { Vector } from '../objects/vector';
 export class MouseManager {
 
     //#region Public Properties
 
     public get isDirty() { return this.hasChanges; }
-    public get mouseX() { return this.mousePositionX; }
-    public get mouseY() { return this.mousePositionY; }
+    public get mousePosition(): Vector { return this.mousePositionVector; }
+    public get clickPosition(): Vector { return this.clickLocation; }
     public get mouseOffCanvas() { return this.mouseOff; }
     public get scrollDirection() { return this.scrollingDirection; }
     public get leftMouseState() { return this.leftMousePosition; }
@@ -17,10 +18,9 @@ export class MouseManager {
     private hasChanges: boolean = false;
 
     // mouse
-    private mousePositionX: number = undefined;
-    private mousePositionY: number = undefined;
+    private mousePositionVector: Vector;
     private mouseOff: boolean = true;
-    private clickLocation: { x: number, y: number };
+    private clickLocation: Vector;
     private scrollingDirection: string = 'none';
 
     // mouse flags
@@ -78,15 +78,14 @@ export class MouseManager {
 
     private doMouseDown(x: number, y: number) {
         this.leftMousePosition = 'down';
-        this.clickLocation = { x: x, y: y };
+        this.clickLocation = new Vector(x, y);
 
         this.hasChanges = true;
     }
 
     private updateMousePosition(x: number, y: number) {
         this.isMoving = true;
-        this.mousePositionX = x;
-        this.mousePositionY = y;
+        this.mousePositionVector = new Vector(x, y);
         this.mouseOff = false;
 
         this.hasChanges = true;
@@ -95,7 +94,7 @@ export class MouseManager {
     private mouseStop() {
         this.isMoving = false;
         this.leftMousePosition = 'up';
-        this.clickLocation = { x: undefined, y: undefined };
+        this.clickLocation = undefined;
         this.mouseOff = true;
 
         this.hasChanges = true;
@@ -115,7 +114,6 @@ export class MouseManager {
 
     private reset() {
         this.scrollingDirection = 'none';
-
     }
 
 }
