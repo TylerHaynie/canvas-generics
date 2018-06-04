@@ -7,12 +7,14 @@ export class PanZoomManager {
     public get isDirty() { return this.hasChanges; }
 
     public set scalingAllowed(v) { this.allowScaling = v; }
+    public get scalingAllowed() { return this.allowScaling; }
     public set minScale(v) { this.minimumScale = v; }
     public set maxScale(v) { this.maximumScale = v; }
     public set scaleStep(v) { this.canvasScaleStep = v; }
     public get scale() { return this.canvasScale; }
 
     public set panningAllowed(v) { this.allowPanning = v; }
+    public get panningAllowed() { return this.allowPanning; }
     public set panSpeed(v) {
         if (v <= this.minimumPanSpeed) { this.panModifier = this.minimumPanSpeed; }
         else if (v > this.maximumPanSpeed) { this.panModifier = this.maximumPanSpeed; }
@@ -218,39 +220,44 @@ export class PanZoomManager {
     //#endregion
 
     private scaleUp(amount: number) {
-        let newScale: number = this.canvasScale + amount;
+        if (this.allowScaling) {
+            let newScale: number = this.canvasScale + amount;
 
-        if (this.maximumScale === 0) {
-            this.canvasScale = newScale;
-        }
-        else {
-            if (newScale > this.maximumScale) {
-                this.canvasScale = this.maximumScale;
-            }
-            else {
+            if (this.maximumScale === 0) {
                 this.canvasScale = newScale;
             }
+            else {
+                if (newScale > this.maximumScale) {
+                    this.canvasScale = this.maximumScale;
+                }
+                else {
+                    this.canvasScale = newScale;
+                }
+            }
+
+            this.hasChanges = true;
         }
 
-        this.hasChanges = true;
     }
 
     private scaleDown(amount: number) {
-        let newScale: number = this.canvasScale - amount;
+        if (this.allowScaling) {
+            let newScale: number = this.canvasScale - amount;
 
-        if (this.minimumScale === 0) {
-            this.canvasScale = newScale;
-        }
-        else {
-            if (newScale < this.minimumScale) {
-                this.canvasScale = this.minimumScale;
-            }
-            else {
+            if (this.minimumScale === 0) {
                 this.canvasScale = newScale;
             }
-        }
+            else {
+                if (newScale < this.minimumScale) {
+                    this.canvasScale = this.minimumScale;
+                }
+                else {
+                    this.canvasScale = newScale;
+                }
+            }
 
-        this.hasChanges = true;
+            this.hasChanges = true;
+        }
     }
 
     private resetView() {

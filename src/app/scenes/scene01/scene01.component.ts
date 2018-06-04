@@ -76,9 +76,10 @@ export class scene01Component implements OnInit {
 
   ngOnInit() {
     this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
-
     this.cw.panZoomManager.minScale = 1;
     this.cw.panZoomManager.panningAllowed = false;
+    this.cw.enableGrid = false;
+    this.cw.trackMouse = false;
 
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);

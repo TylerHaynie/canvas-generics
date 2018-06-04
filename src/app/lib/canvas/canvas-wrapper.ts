@@ -22,6 +22,7 @@ export class CanvasWrapper {
     public set frameForwardKeys(v: string[]) { this.frameForwardKeys = v; }
 
     public set enableGrid(v) { this._enableGrid = v; }
+    public set overlayAsBackground(v) { this._overlayAsBackground = v; }
     public set trackMouse(v) { this._trackMouse = v; }
 
     public get random() { return this.randomUtil; }
@@ -46,6 +47,7 @@ export class CanvasWrapper {
     private frameStep: boolean = false;
 
     // visual
+    private _overlayAsBackground: boolean = false;
     private _enableGrid: boolean = true;
     private _trackMouse: boolean = true;
 
@@ -117,23 +119,29 @@ export class CanvasWrapper {
 
         if (!this.paused || this.frameStep) {
             this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
+
             this.saveContext();
-
-            this._panZoomManager.update();
-
-            // draw grid
-            if (this._enableGrid) {
-                this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
+            if (this._panZoomManager.panningAllowed || this._panZoomManager.scalingAllowed) {
+                this._panZoomManager.update();
             }
 
-            // track mouse
-            if (this._trackMouse && !this._mouseManager.mouseOffCanvas) {
-                this.helperUtility.trackMouse(this.mouseManager.mousePosition, 'rgba(35, 35, 35, .80)');
+            this._mouseManager.update();
+
+            if (this._overlayAsBackground) {
+                // draw grid
+                if (this._enableGrid) {
+                    this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
+                }
+
+                // track mouse
+                if (this._trackMouse && !this._mouseManager.mouseOffCanvas) {
+                    this.helperUtility.trackMouse(this.mouseManager.mousePosition, 'rgba(255, 255, 255, .80)');
+                }
             }
 
             // if pan zoom has changed we need to update the context
             if (this._panZoomManager.isDirty) {
-
+                // this._context.translate(this._mouseManager.mousePosition.x, this._mouseManager.mousePosition.x);
                 this._context.setTransform(
                     this._panZoomManager.scale, // scale x
                     0, // skew x
@@ -144,9 +152,22 @@ export class CanvasWrapper {
                 );
             }
 
-            this._mouseManager.update();
             // do the draw callback
+            this.saveContext();
             this.drawCallback();
+            this.restoreContext();
+
+            if (!this._overlayAsBackground) {
+                // draw grid
+                if (this._enableGrid) {
+                    this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
+                }
+
+                // track mouse
+                if (this._trackMouse && !this._mouseManager.mouseOffCanvas) {
+                    this.helperUtility.trackMouse(this.mouseManager.mousePosition, 'rgba(35, 35, 35, .80)');
+                }
+            }
 
             this.restoreContext();
             this.frameStep = false;
