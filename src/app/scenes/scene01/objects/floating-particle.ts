@@ -9,7 +9,8 @@ export class FloatingParticle {
 
     // public properties
     public get position(): Vector { return this.pos; }
-    public get floatingObject(): Rectangle | Circle { return this.object; }
+    public get floatingObject(): Rectangle { return this.object; }
+    public get particle(): Particle { return this._particle; }
 
     maximumAlpha: number = 1;
     currentLifeTime: number;
@@ -20,19 +21,20 @@ export class FloatingParticle {
     private context: CanvasRenderingContext2D;
     private pos: Vector;
 
-    private particle: Particle;
-    private object: Circle | Rectangle;
+    private _particle: Particle;
+    private object: Rectangle;
     private modifiedAlpha: number;
     private alive: boolean = true;
 
     public get isAlive(): boolean { return this.alive; }
 
-    constructor(context: CanvasRenderingContext2D, position: Vector, particle: Particle, floatingObject: Circle | Rectangle) {
+    constructor(context: CanvasRenderingContext2D, position: Vector, particle: Particle, floatingObject: Rectangle) {
         this.pos = position;
         this.context = context;
-        this.particle = particle;
+        this._particle = particle;
         this.object = floatingObject;
 
+        this.particle.size = this.object.size;
         this.particle.position = this.pos;
         this.object.position = this.pos;
 

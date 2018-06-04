@@ -166,8 +166,7 @@ export class PanZoomManager {
     //#region Input logic
 
     private panStart(vector: Vector) {
-        this.panStartPosition.x = vector.x - this.panOffset.x;
-        this.panStartPosition.y = vector.y - this.panOffset.y;
+        this.panStartPosition = new Vector(vector.x - this.panOffset.x, vector.y - this.panOffset.y);
 
         this.isPanning = true;
     }
