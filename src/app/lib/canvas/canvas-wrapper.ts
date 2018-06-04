@@ -10,6 +10,7 @@ import { HelperUtility } from './utilities/helper-utility';
 import { Vector } from './objects/vector';
 import { PanZoomManager } from './managers/pan-zoom/pan-zoom-manager';
 import { MouseData } from './managers/mouse/mouse-data';
+import { PanZoomData } from './managers/pan-zoom/pan-zoom-data';
 
 export class CanvasWrapper {
 
@@ -71,6 +72,11 @@ export class CanvasWrapper {
     private mouseOnCanvas: boolean = false;
     private mousePosition: Vector;
 
+    // pan-zoom
+    private transformChanged: boolean = false;
+    private PanZoomData: PanZoomData;
+
+
     constructor(context: CanvasRenderingContext2D, drawCallback: () => void) {
         this._context = context;
         this.drawCallback = drawCallback;
@@ -122,11 +128,20 @@ export class CanvasWrapper {
         this._mouseManager.subscribe((e) => {
             this.mouseChanged(e);
         });
+
+        this._panZoomManager.subscribe((e) => {
+            this.panZoomChanged(e);
+        });
     }
 
     private mouseChanged(e: MouseData) {
         this.mouseOnCanvas = e.mouseOnCanvas;
         this.mousePosition = e.mousePosition;
+    }
+
+    private panZoomChanged(e: PanZoomData) {
+        this.transformChanged = true;
+        this.PanZoomData = e;
     }
 
     private setupCanvas() {
@@ -147,35 +162,32 @@ export class CanvasWrapper {
 
             this.saveContext();
 
+            // draw the grid first?
             if (this._overlayAsBackground) {
                 // draw grid
                 if (this._enableGrid) {
                     this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
                 }
-                // // track mouse
-                // if (this._trackMouse && this.mousePosition) {
-                //     this.helperUtility.trackMouse(this.mousePosition, 'rgba(255, 255, 255, .80)');
-                // }
             }
 
-            // if pan zoom has changed we need to update the context
-            if (this._panZoomManager.isDirty) {
+            // apply any panning or zooming
+            if (this.PanZoomData) {
                 this._context.setTransform(
-                    this._panZoomManager.scale, // scale x
+                    this.PanZoomData.scale, // scale x
                     0, // skew x
                     0, // skew y
-                    this._panZoomManager.scale, // scale y
-                    this._panZoomManager.pannedAmount.x, // pan x
-                    this._panZoomManager.pannedAmount.y // pan y
+                    this.PanZoomData.scale, // scale y
+                    this.PanZoomData.pan.x, // pan x
+                    this.PanZoomData.pan.y // pan y
                 );
             }
 
             // do the draw callback
             this.drawCallback();
 
-            if (!this._overlayAsBackground) {
+            if (this.enableGrid) {
                 // draw grid
-                if (this._enableGrid) {
+                if (!this._overlayAsBackground) {
                     this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
                 }
             }

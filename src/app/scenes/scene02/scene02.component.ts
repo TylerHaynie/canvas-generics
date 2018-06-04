@@ -39,7 +39,7 @@ export class Scene02Component implements OnInit {
     this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
 
     this.cw.panZoomManager.minScale = 1;
-    this.cw.panZoomManager.panningAllowed = false;
+    this.cw.panZoomManager.panningAllowed = true;
 
     let b: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.qtSquares = new QuadTree(b, 1);

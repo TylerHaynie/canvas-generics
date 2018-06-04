@@ -3,31 +3,28 @@ import { Vector } from '../../objects/vector';
 import { PanZoomData } from './pan-zoom-data';
 import { CanvasEvent } from '../../events/canvas-event';
 import { MouseData } from '../mouse/mouse-data';
+import { MouseEventType } from '../mouse/event-types';
 
 export class PanZoomManager {
 
-    // Public Properties
-    public get isDirty() { return this.hasChanges; }
-
+    //#region Public Properties
     public set scalingAllowed(v) { this.allowScaling = v; }
-    public get scalingAllowed() { return this.allowScaling; }
     public set minScale(v) { this.minimumScale = v; }
     public set maxScale(v) { this.maximumScale = v; }
     public set scaleStep(v) { this.canvasScaleStep = v; }
-    public get scale() { return this.canvasScale; }
-
     public set panningAllowed(v) { this.allowPanning = v; }
-    public get panningAllowed() { return this.allowPanning; }
     public set panSpeed(v) {
         if (v <= this.minimumPanSpeed) { this.panModifier = this.minimumPanSpeed; }
         else if (v > this.maximumPanSpeed) { this.panModifier = this.maximumPanSpeed; }
         else { this.panModifier = v; }
     }
-    public get pannedAmount() { return this.totalPanning; }
+
+    //#endregion
+
+    //#region Private Properties
 
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
-    private hasChanges: boolean = false;
 
     // canvas
     private canvasScaleStep: number = .10;
@@ -41,7 +38,7 @@ export class PanZoomManager {
     private panOffset: Vector;
     private isPanning = false;
     private panStartPosition: Vector;
-    private totalPanning: Vector = <Vector>{ x: 0, y: 0 };
+    private totalPanning: Vector = new Vector(0, 0);
     private panModifier: number = 1;
 
     // scaling
@@ -55,11 +52,16 @@ export class PanZoomManager {
     private isPinching: boolean = false;
     private pinchScale: number = 50;
 
-    // events
+    //#endregion
+
+    //#region events
+
     private panZoomEvent = new CanvasEvent<PanZoomData>();
-    subscribe(callback: (e: PanZoomData) => void){
+    subscribe(callback: (e: PanZoomData) => void) {
         this.panZoomEvent.subscribe(callback);
     }
+
+    //#endregion
 
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
         this.context = context;
@@ -73,30 +75,29 @@ export class PanZoomManager {
         this.registerEvents();
     }
 
-
-
     private mouseEvent(e: MouseData) {
-        if (e.leftMouseState === 'down' && !this.isPanning) {
-            this.panStart(e.mousePosition);
-        }
-
-        if (e.mouseMoving) {
-            this.panChange(e.mousePosition);
-        }
-
-        if (e.scrollDirection !== 'none') {
-            switch (e.scrollDirection) {
-                case 'up':
-                    this.zoomIn();
-                    break;
-                case 'down':
-                    this.zoomOut();
-                    break;
-            }
-        }
-
-        if (e.leftMouseState === 'up') {
-            this.panStop();
+        switch (e.eventType) {
+            case MouseEventType.DOWN:
+                if (!this.isPanning) {
+                    this.mouseDown(e.mousePosition);
+                }
+                break;
+            case MouseEventType.MOVE:
+                this.mouseMove(e.mousePosition);
+                break;
+            case MouseEventType.WHEEL:
+                switch (e.scrollDirection) {
+                    case 'up':
+                        this.zoomIn();
+                        break;
+                    case 'down':
+                        this.zoomOut();
+                        break;
+                }
+                break;
+            case MouseEventType.UP:
+                this.mouseStop();
+                break;
         }
     }
 
@@ -128,6 +129,13 @@ export class PanZoomManager {
         //     this.vectorerStop();
         // }, false);
 
+    }
+
+    private fireEvent() {
+        let data = new PanZoomData();
+        data.scale = this.canvasScale;
+        data.pan = this.totalPanning;
+        this.panZoomEvent.fireEvent(data);
     }
 
     //#region Touch Events
@@ -174,32 +182,18 @@ export class PanZoomManager {
 
     //#region Input logic
 
-    private panStart(vector: Vector) {
-        this.panStartPosition = new Vector(vector.x - this.panOffset.x, vector.y - this.panOffset.y);
+    private mouseDown(mousePosition: Vector) {
+        this.panStartPosition = new Vector(mousePosition.x - this.panOffset.x, mousePosition.y - this.panOffset.y);
 
         this.isPanning = true;
+        console.log('pan Start');
     }
 
-    private panChange(mousePosition: Vector) {
-        // are we panning?
-        if (this.isPanning && this.allowPanning) {
-            // movement delta
-            let dx = (mousePosition.x - this.panStartPosition.x) * this.panModifier;
-            let dy = (mousePosition.y - this.panStartPosition.y) * this.panModifier;
-
-            // update panstart
-            this.panStartPosition.x = mousePosition.x;
-            this.panStartPosition.y = mousePosition.y;
-
-            // total pan amount
-            this.totalPanning.x += dx;
-            this.totalPanning.y += dy;
-
-            this.hasChanges = true;
-        }
+    private mouseMove(mousePosition: Vector) {
+        this.pan(mousePosition);
     }
 
-    private panStop() {
+    private mouseStop() {
         if (this.isPinching && this.allowScaling) {
             let pinchDifference = (Math.max(this.pinchMoveStart, this.pinchMoveEnd) - Math.min(this.pinchMoveStart, this.pinchMoveEnd)) / this.pinchScale;
 
@@ -216,7 +210,6 @@ export class PanZoomManager {
 
             this.pinchMoveStart = 0;
             this.pinchMoveEnd = 0;
-            this.hasChanges = true;
 
             this.isPinching = false;
         }
@@ -225,6 +218,26 @@ export class PanZoomManager {
     }
 
     //#endregion
+
+    private pan(mousePosition: Vector) {
+        // are we panning?
+        if (this.isPanning && this.allowPanning) {
+            // movement delta
+            let dx = (mousePosition.x - this.panStartPosition.x) * this.panModifier;
+            let dy = (mousePosition.y - this.panStartPosition.y) * this.panModifier;
+
+            // update panstart
+            this.panStartPosition.x = mousePosition.x;
+            this.panStartPosition.y = mousePosition.y;
+
+            // total pan amount
+            this.totalPanning.x += dx;
+            this.totalPanning.y += dy;
+
+            console.log('pan changed');
+            this.fireEvent();
+        }
+    }
 
     private scaleUp(amount: number) {
         let newScale: number = this.canvasScale + amount;
@@ -241,7 +254,8 @@ export class PanZoomManager {
             }
         }
 
-        this.hasChanges = true;
+        console.log('Scale Up');
+        this.fireEvent();
     }
 
     private scaleDown(amount: number) {
@@ -260,7 +274,8 @@ export class PanZoomManager {
                 }
             }
 
-            this.hasChanges = true;
+            console.log('Scale Down');
+            this.fireEvent();
         }
     }
 
@@ -269,6 +284,6 @@ export class PanZoomManager {
         this.totalPanning = <Vector>{ x: 0, y: 0 };
 
         this.canvasScale = 1;
-        this.hasChanges = true;
+        this.fireEvent();
     }
 }

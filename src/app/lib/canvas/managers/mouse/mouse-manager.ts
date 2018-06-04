@@ -1,6 +1,7 @@
 import { CanvasEvent } from '../../events/canvas-event';
 import { Vector } from '../../objects/vector';
 import { MouseData } from './mouse-data';
+import { MouseEventType } from './event-types';
 
 export class MouseManager {
 
@@ -9,14 +10,12 @@ export class MouseManager {
     private hasChanges: boolean = false;
 
     // mouse
-    private mousePositionVector: Vector;
+    private mousePosition: Vector;
     private mouseOnCanvas: boolean = false;
-    private clickLocation: Vector;
     private scrollingDirection: string = 'none';
-
-    // mouse flags
     private leftMousePosition: string = 'up';
     private isMoving: boolean = false;
+    private eventType: MouseEventType;
 
     //#endregion
 
@@ -32,8 +31,8 @@ export class MouseManager {
 
     private fireEvent() {
         let e = new MouseData();
-        e.mousePosition = this.mousePositionVector;
-        e.clickPosition = this.clickLocation;
+        e.eventType = this.eventType;
+        e.mousePosition = this.mousePosition;
         e.mouseOnCanvas = this.mouseOnCanvas;
         e.scrollDirection = this.scrollingDirection;
         e.leftMouseState = this.leftMousePosition;
@@ -48,18 +47,22 @@ export class MouseManager {
 
         // mouse events
         cv.onmousemove = (e: MouseEvent) => {
+            this.eventType = MouseEventType.MOVE;
             this.updateMousePosition(e.clientX, e.clientY);
         };
 
         cv.onmousedown = (e: MouseEvent) => {
+            this.eventType = MouseEventType.DOWN;
             this.doMouseDown(e.clientX, e.clientY);
         };
 
         cv.onmouseup = (e: MouseEvent) => {
+            this.eventType = MouseEventType.UP;
             this.mouseStop();
         };
 
         cv.onmousewheel = (e: WheelEvent) => {
+            this.eventType = MouseEventType.WHEEL;
             if (e.deltaY > 0) {
                 this.mouseScrollDown();
             }
@@ -69,10 +72,12 @@ export class MouseManager {
         };
 
         cv.onmouseout = (e: MouseEvent) => {
+            this.eventType = MouseEventType.OUT;
             this.mouseStop();
         };
 
         cv.onmouseleave = (e: MouseEvent) => {
+            this.eventType = MouseEventType.OUT;
             this.mouseStop();
         };
 
@@ -80,14 +85,14 @@ export class MouseManager {
 
     private doMouseDown(x: number, y: number) {
         this.leftMousePosition = 'down';
-        this.clickLocation = new Vector(x, y);
+        this.mousePosition = new Vector(x, y);
 
         this.fireEvent();
     }
 
     private updateMousePosition(x: number, y: number) {
         this.isMoving = true;
-        this.mousePositionVector = new Vector(x, y);
+        this.mousePosition = new Vector(x, y);
         this.mouseOnCanvas = true;
 
         this.fireEvent();
@@ -96,7 +101,7 @@ export class MouseManager {
     private mouseStop() {
         this.isMoving = false;
         this.leftMousePosition = 'up';
-        this.clickLocation = undefined;
+        this.mousePosition = undefined;
         this.mouseOnCanvas = false;
 
         this.fireEvent();
@@ -116,9 +121,8 @@ export class MouseManager {
 
     private reset() {
         this.hasChanges = false;
-        this.mousePositionVector = undefined;
+        this.mousePosition = undefined;
         this.mouseOnCanvas = false;
-        this.clickLocation = undefined;
         this.scrollingDirection = 'none';
         this.leftMousePosition = 'up';
         this.isMoving = false;

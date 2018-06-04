@@ -9,9 +9,11 @@ export class CanvasEvent<T>{
         }
     }
     private updateSubscribers(e: T) {
-        this.callbackList.forEach(subscriber => {
-            subscriber.subscriberCallback(e);
-        });
+        if (this.callbackList) {
+            this.callbackList.forEach(subscriber => {
+                subscriber.subscriberCallback(e);
+            });
+        }
     }
 
     fireEvent(e: T) {
