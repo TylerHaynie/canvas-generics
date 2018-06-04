@@ -1,5 +1,6 @@
-import { MouseManager } from './mouse-manager';
+import { MouseManager } from './mouse/mouse-manager';
 import { Vector } from '../objects/vector';
+import { CanvasMouseEvent } from './mouse/canvas-mouse-event';
 
 export class PanZoomManager {
 
@@ -21,7 +22,6 @@ export class PanZoomManager {
         else { this.panModifier = v; }
     }
     public get pannedAmount() { return this.totalPanning; }
-
 
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
@@ -57,35 +57,25 @@ export class PanZoomManager {
         this.context = context;
         this.mouseManager = mouseManager;
 
+        this.mouseManager.subscribe((e) => {
+            this.mouseEvent(e);
+        });
+
         this.resetView();
         this.registerEvents();
     }
 
-    zoomIn() {
-        this.scaleUp(this.canvasScaleStep);
-    }
-
-    zoomOut() {
-        this.scaleDown(this.canvasScaleStep);
-    }
-
-    update() {
-        // has mouse changed at all
-        // if (this.mouseManager.isDirty) {
-
-        // was the mouse pressed?
-        if (this.mouseManager.leftMouseState === 'down' && !this.isPanning) {
-            this.panStart(this.mouseManager.mousePosition);
+    private mouseEvent(e: CanvasMouseEvent) {
+        if (e.leftMouseState === 'down' && !this.isPanning) {
+            this.panStart(e.mousePosition);
         }
 
-        // did the mouse move?
-        if (this.mouseManager.isMoving) {
-            this.panChange(this.mouseManager.mousePosition);
+        if (e.mouseMoving) {
+            this.panChange(e.mousePosition);
         }
 
-        // zooming?
-        if (this.mouseManager.scrollDirection !== 'none') {
-            switch (this.mouseManager.scrollDirection) {
+        if (e.scrollDirection !== 'none') {
+            switch (e.scrollDirection) {
                 case 'up':
                     this.zoomIn();
                     break;
@@ -95,10 +85,17 @@ export class PanZoomManager {
             }
         }
 
-        if (this.mouseManager.leftMouseState === 'up') {
+        if (e.leftMouseState === 'up') {
             this.panStop();
         }
-        // }
+    }
+
+    zoomIn() {
+        this.scaleUp(this.canvasScaleStep);
+    }
+
+    zoomOut() {
+        this.scaleDown(this.canvasScaleStep);
     }
 
     private registerEvents() {
@@ -173,16 +170,16 @@ export class PanZoomManager {
         this.isPanning = true;
     }
 
-    private panChange(vector: Vector) {
+    private panChange(mousePosition: Vector) {
         // are we panning?
         if (this.isPanning && this.allowPanning) {
             // movement delta
-            let dx = (this.mouseManager.mousePosition.x - this.panStartPosition.x) * this.panModifier;
-            let dy = (this.mouseManager.mousePosition.y - this.panStartPosition.y) * this.panModifier;
+            let dx = (mousePosition.x - this.panStartPosition.x) * this.panModifier;
+            let dy = (mousePosition.y - this.panStartPosition.y) * this.panModifier;
 
             // update panstart
-            this.panStartPosition.x = this.mouseManager.mousePosition.x;
-            this.panStartPosition.y = this.mouseManager.mousePosition.y;
+            this.panStartPosition.x = mousePosition.x;
+            this.panStartPosition.y = mousePosition.y;
 
             // total pan amount
             this.totalPanning.x += dx;
@@ -220,24 +217,21 @@ export class PanZoomManager {
     //#endregion
 
     private scaleUp(amount: number) {
-        if (this.allowScaling) {
-            let newScale: number = this.canvasScale + amount;
+        let newScale: number = this.canvasScale + amount;
 
-            if (this.maximumScale === 0) {
-                this.canvasScale = newScale;
+        if (this.maximumScale === 0) {
+            this.canvasScale = newScale;
+        }
+        else {
+            if (newScale > this.maximumScale) {
+                this.canvasScale = this.maximumScale;
             }
             else {
-                if (newScale > this.maximumScale) {
-                    this.canvasScale = this.maximumScale;
-                }
-                else {
-                    this.canvasScale = newScale;
-                }
+                this.canvasScale = newScale;
             }
-
-            this.hasChanges = true;
         }
 
+        this.hasChanges = true;
     }
 
     private scaleDown(amount: number) {

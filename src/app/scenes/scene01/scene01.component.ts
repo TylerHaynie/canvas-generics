@@ -15,6 +15,7 @@ import { Size } from '../../lib/canvas/models/size';
 import { Line } from '../../lib/canvas/shapes/line/line';
 import { LineStyle } from '../../lib/canvas/models/line-style';
 import { Shadow } from '../../lib/canvas/models/shadow';
+import { CanvasMouseEvent } from '../../lib/canvas/managers/mouse/canvas-mouse-event';
 
 @Component({
   selector: 'app-scene01',
@@ -43,8 +44,8 @@ export class scene01Component implements OnInit {
 
   //#region Configuration
 
-  // vectorer
-  private vectorerRadius: number = 55;
+  // pointer
+  private pointerRadius = 35;
 
   // background and foreground
   private backgroundColor: string = '#0C101E';
@@ -56,7 +57,7 @@ export class scene01Component implements OnInit {
   private foregroundEnd2: number = 1.000; // where the bottom graident ends
 
   // particles
-  private maxParticles: number = 4500;
+  private maxParticles: number = 6000;
   private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
   private particleSpeedModifier: number = .05;
   private particleMaxRadius: number = 4.25;
@@ -67,6 +68,10 @@ export class scene01Component implements OnInit {
 
   private maxOpacity: number = .75;
   private particleHighlightColor: string = '#ff2dd4';
+
+  // mouse
+  private mouseOnCanvas: boolean = false;
+  private mousePosition: Vector;
 
   //#endregion
 
@@ -81,12 +86,26 @@ export class scene01Component implements OnInit {
     this.cw.enableGrid = false;
     this.cw.trackMouse = false;
 
+    this.registerEvents();
+
+
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.particleQuad = new QuadTree(boundry, 1);
 
     // start the draw loop
     this.cw.start();
+  }
+
+  private registerEvents() {
+    this.cw.mouseManager.subscribe((e: CanvasMouseEvent) => {
+      this.mouseChanged(e);
+    });
+  }
+
+  private mouseChanged(e: CanvasMouseEvent) {
+    this.mouseOnCanvas = e.mouseOnCanvas;
+    this.mousePosition = e.mousePosition;
   }
 
   //#endregion
@@ -230,13 +249,13 @@ export class scene01Component implements OnInit {
   //#region Interaction
 
   checkParticleHover() {
-    if (!this.cw.mouseManager.mouseOffCanvas) {
+    if (this.mouseOnCanvas) {
       // current mouse location
-      let mx = this.cw.mouseManager.mousePosition.x;
-      let my = this.cw.mouseManager.mousePosition.y;
+      let mx = this.mousePosition.x;
+      let my = this.mousePosition.y;
 
       // boundry around mouse
-      let b: Boundry = new Boundry(mx - (this.vectorerRadius / 2), my - (this.vectorerRadius / 2), this.vectorerRadius, this.vectorerRadius);
+      let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
 
       // check particles
       let particlesInRange: QuadVector[] = this.particleQuad.searchBoundry(b);

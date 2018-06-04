@@ -9,6 +9,7 @@ import { Line } from '../../lib/canvas/shapes/line/line';
 import { LineSegment } from '../../lib/canvas/shapes/line/line-segment';
 import { Color } from '../../lib/canvas/models/color';
 import { LineStyle } from '../../lib/canvas/models/line-style';
+import { CanvasMouseEvent } from '../../lib/canvas/managers/mouse/canvas-mouse-event';
 
 interface Ray {
   a: Vector;
@@ -28,6 +29,10 @@ export class Scene02Component implements OnInit {
   private qtSquares: QuadTree;
   private focalPoint: Circle;
 
+    // mouse
+    private mouseOnCanvas: boolean = false;
+    private mousePosition: Vector;
+
   constructor() { }
 
   ngOnInit() {
@@ -39,13 +44,25 @@ export class Scene02Component implements OnInit {
     let b: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.qtSquares = new QuadTree(b, 1);
 
+    this.registerEvents();
+
     this.setFocalPoint();
     this.generateSquares();
-
     this.testLineIntersection();
 
     // start the draw loop
     this.cw.start();
+  }
+
+  private registerEvents() {
+    this.cw.mouseManager.subscribe((e: CanvasMouseEvent) => {
+      this.mouseChanged(e);
+    });
+  }
+
+  private mouseChanged(e: CanvasMouseEvent) {
+    this.mouseOnCanvas = e.mouseOnCanvas;
+    this.mousePosition = e.mousePosition;
   }
 
   setFocalPoint() {
@@ -110,10 +127,9 @@ export class Scene02Component implements OnInit {
   }
 
   drawMousePosition() {
-    let mm = this.cw.mouseManager;
-    if (!mm.mouseOffCanvas) {
+    if (this.mouseOnCanvas) {
       let mp = new Circle(this.cw.drawingContext);
-      mp.position = mm.mousePosition;
+      mp.position = this.mousePosition;
       mp.radius = 2;
       mp.color = new Color('red');
 
@@ -122,8 +138,7 @@ export class Scene02Component implements OnInit {
   }
 
   castRay() {
-    let mm = this.cw.mouseManager;
-    if (mm.mouseOffCanvas) { return; }
+    if (!this.mouseOnCanvas) { return; }
 
     // draw the source
     this.focalPoint.draw();
@@ -136,7 +151,7 @@ export class Scene02Component implements OnInit {
 
     // add points to create line
     let seg = new LineSegment(this.focalPoint.position);
-    seg.addPoint(mm.mousePosition);
+    seg.addPoint(this.mousePosition);
 
     // add segments to the line
     line.addSegment(seg);

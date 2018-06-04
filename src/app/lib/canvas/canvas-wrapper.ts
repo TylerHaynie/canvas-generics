@@ -1,4 +1,4 @@
-import { MouseManager } from './managers/mouse-manager';
+import { MouseManager } from './managers/mouse/mouse-manager';
 import { PanZoomManager } from './managers/pan-zoom-manager';
 import { RandomUtility } from './utilities/random-utility';
 import { ColorUtility } from './utilities/color-utility';
@@ -8,6 +8,8 @@ import { PatternUtility } from './utilities/pattern-utility';
 import { KeyboardManager } from './managers/keyboard-manager';
 import { WindowManager } from './managers/window-manager';
 import { HelperUtility } from './utilities/helper-utility';
+import { CanvasMouseEvent } from './managers/mouse/canvas-mouse-event';
+import { Vector } from './objects/vector';
 
 export class CanvasWrapper {
 
@@ -65,12 +67,17 @@ export class CanvasWrapper {
     private _keyboardManager: KeyboardManager;
     private _WindowManager: WindowManager;
 
+    // mouse
+    private mouseOnCanvas: boolean = false;
+    private mousePosition: Vector;
+
     constructor(context: CanvasRenderingContext2D, drawCallback: () => void) {
         this._context = context;
         this.drawCallback = drawCallback;
 
         this.setupManagers();
         this.setupUtilities();
+        this.registerEvents();
         this.setupCanvas();
 
         this._WindowManager.resize();
@@ -89,9 +96,16 @@ export class CanvasWrapper {
     }
 
     private setupManagers() {
+        // window
         this._WindowManager = new WindowManager(this._context);
+
+        // mouse
         this._mouseManager = new MouseManager(this._context);
+
+        // keyboard
         this._keyboardManager = new KeyboardManager(this._context);
+
+        // pan-zoom
         this._panZoomManager = new PanZoomManager(this._context, this._mouseManager);
     }
 
@@ -102,6 +116,17 @@ export class CanvasWrapper {
         this.imageDataUtility = new ImageDataUtility(this._context);
         this.patternUtility = new PatternUtility(this._context);
         this.helperUtility = new HelperUtility(this._context);
+    }
+
+    private registerEvents() {
+        this._mouseManager.subscribe((e) => {
+            this.mouseChanged(e);
+        });
+    }
+
+    private mouseChanged(e: CanvasMouseEvent) {
+        this.mouseOnCanvas = e.mouseOnCanvas;
+        this.mousePosition = e.mousePosition;
     }
 
     private setupCanvas() {
@@ -121,27 +146,20 @@ export class CanvasWrapper {
             this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
 
             this.saveContext();
-            if (this._panZoomManager.panningAllowed || this._panZoomManager.scalingAllowed) {
-                this._panZoomManager.update();
-            }
-
-            this._mouseManager.update();
 
             if (this._overlayAsBackground) {
                 // draw grid
                 if (this._enableGrid) {
                     this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
                 }
-
-                // track mouse
-                if (this._trackMouse && !this._mouseManager.mouseOffCanvas) {
-                    this.helperUtility.trackMouse(this.mouseManager.mousePosition, 'rgba(255, 255, 255, .80)');
-                }
+                // // track mouse
+                // if (this._trackMouse && this.mousePosition) {
+                //     this.helperUtility.trackMouse(this.mousePosition, 'rgba(255, 255, 255, .80)');
+                // }
             }
 
             // if pan zoom has changed we need to update the context
             if (this._panZoomManager.isDirty) {
-                // this._context.translate(this._mouseManager.mousePosition.x, this._mouseManager.mousePosition.x);
                 this._context.setTransform(
                     this._panZoomManager.scale, // scale x
                     0, // skew x
@@ -153,20 +171,17 @@ export class CanvasWrapper {
             }
 
             // do the draw callback
-            this.saveContext();
             this.drawCallback();
-            this.restoreContext();
 
             if (!this._overlayAsBackground) {
                 // draw grid
                 if (this._enableGrid) {
                     this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
                 }
+            }
 
-                // track mouse
-                if (this._trackMouse && !this._mouseManager.mouseOffCanvas) {
-                    this.helperUtility.trackMouse(this.mouseManager.mousePosition, 'rgba(35, 35, 35, .80)');
-                }
+            if (this.mousePosition) {
+                this.helperUtility.trackMouse(this.mousePosition, 'rgba(255, 255, 255, .80)');
             }
 
             this.restoreContext();
@@ -178,6 +193,10 @@ export class CanvasWrapper {
 
         // do it all again
         requestAnimationFrame(() => this.start());
+    }
+
+    private mouseEvent(e: CanvasMouseEvent) {
+
     }
 
     private checkKeys() {

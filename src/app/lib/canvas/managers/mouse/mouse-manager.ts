@@ -1,17 +1,10 @@
-import { Vector } from '../objects/vector';
+import { CanvasMouseEvent } from './canvas-mouse-event';
+import { Vector } from '../../objects/vector';
+import { CanvasEvent } from '../../events/canvas-event';
+
 export class MouseManager {
 
-    //#region Public Properties
 
-    public get isDirty() { return this.hasChanges; }
-    public get mousePosition(): Vector { return this.mousePositionVector; }
-    public get clickPosition(): Vector { return this.clickLocation; }
-    public get mouseOffCanvas() { return this.mouseOff; }
-    public get scrollDirection() { return this.scrollingDirection; }
-    public get leftMouseState() { return this.leftMousePosition; }
-    public get mouseMoving() { return this.isMoving; }
-
-    //#endregion
 
     //#region private variables
     private _context: CanvasRenderingContext2D;
@@ -19,13 +12,13 @@ export class MouseManager {
 
     // mouse
     private mousePositionVector: Vector;
-    private mouseOff: boolean = true;
+    private mouseOnCanvas: boolean = false;
     private clickLocation: Vector;
     private scrollingDirection: string = 'none';
 
     // mouse flags
     private leftMousePosition: string = 'up';
-    isMoving: boolean = false;
+    private isMoving: boolean = false;
 
     //#endregion
 
@@ -34,11 +27,22 @@ export class MouseManager {
         this.registerEvents();
     }
 
-    update() {
-        if (this.hasChanges) {
-            this.hasChanges = false;
-            this.reset();
-        }
+    private mouseEvent = new CanvasEvent<CanvasMouseEvent>();
+    subscribe(callback: (e: CanvasMouseEvent) => void){
+        this.mouseEvent.subscribe(callback);
+    }
+
+    private fireEvent() {
+        let e = new CanvasMouseEvent();
+        e.mousePosition = this.mousePositionVector;
+        e.clickPosition = this.clickLocation;
+        e.mouseOnCanvas = this.mouseOnCanvas;
+        e.scrollDirection = this.scrollingDirection;
+        e.leftMouseState = this.leftMousePosition;
+        e.mouseMoving = this.isMoving;
+
+        this.mouseEvent.fireEvent(e);
+        this.reset();
     }
 
     private registerEvents() {
@@ -80,40 +84,46 @@ export class MouseManager {
         this.leftMousePosition = 'down';
         this.clickLocation = new Vector(x, y);
 
-        this.hasChanges = true;
+        this.fireEvent();
     }
 
     private updateMousePosition(x: number, y: number) {
         this.isMoving = true;
         this.mousePositionVector = new Vector(x, y);
-        this.mouseOff = false;
+        this.mouseOnCanvas = true;
 
-        this.hasChanges = true;
+        this.fireEvent();
     }
 
     private mouseStop() {
         this.isMoving = false;
         this.leftMousePosition = 'up';
         this.clickLocation = undefined;
-        this.mouseOff = true;
+        this.mouseOnCanvas = false;
 
-        this.hasChanges = true;
+        this.fireEvent();
     }
 
     private mouseScrollUp() {
         this.scrollingDirection = 'up';
 
-        this.hasChanges = true;
+        this.fireEvent();
     }
 
     private mouseScrollDown() {
         this.scrollingDirection = 'down';
 
-        this.hasChanges = true;
+        this.fireEvent();
     }
 
     private reset() {
+        this.hasChanges = false;
+        this.mousePositionVector = undefined;
+        this.mouseOnCanvas = false;
+        this.clickLocation = undefined;
         this.scrollingDirection = 'none';
+        this.leftMousePosition = 'up';
+        this.isMoving = false;
     }
 
 }
