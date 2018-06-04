@@ -218,11 +218,6 @@ export class scene01Component implements OnInit {
         this.cw.random.randomWithNegative() * this.particleSpeedModifier
       );
 
-      // let c = new Circle(this.cw.drawingContext);
-      // c.position = p.position;
-      // c.radius = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
-      // c.color = new Color(this.cw.color.randomColorFromArray(this.colorArray));
-
       let r = new Rectangle(this.cw.drawingContext);
       r.position = p.position;
       let rad = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
@@ -252,17 +247,6 @@ export class scene01Component implements OnInit {
 
       // boundry around mouse
       let b: Boundry = new Boundry(mx - (this.vectorerRadius / 2), my - (this.vectorerRadius / 2), this.vectorerRadius, this.vectorerRadius);
-
-      // check pointsOfIntrest
-      let pointsOfIntrestInRange: QuadVector[] = this.pointsOfIntrestQuad.searchBoundry(b);
-
-      // update pointsOfIntrest in range
-      if (pointsOfIntrestInRange.length > 0) {
-        pointsOfIntrestInRange.forEach(p => {
-          let fp = <FloatingParticle>(p.data);
-          fp.changeColor(new Color(this.poiHoverBackground));
-        });
-      }
 
       // check particles
       let particlesInRange: QuadVector[] = this.particleQuad.searchBoundry(b);
