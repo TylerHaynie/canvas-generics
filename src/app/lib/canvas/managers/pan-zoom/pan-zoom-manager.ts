@@ -1,6 +1,8 @@
-import { MouseManager } from './mouse/mouse-manager';
-import { Vector } from '../objects/vector';
-import { CanvasMouseEvent } from './mouse/canvas-mouse-event';
+import { MouseManager } from '../mouse/mouse-manager';
+import { Vector } from '../../objects/vector';
+import { PanZoomData } from './pan-zoom-data';
+import { CanvasEvent } from '../../events/canvas-event';
+import { MouseData } from '../mouse/mouse-data';
 
 export class PanZoomManager {
 
@@ -53,6 +55,12 @@ export class PanZoomManager {
     private isPinching: boolean = false;
     private pinchScale: number = 50;
 
+    // events
+    private panZoomEvent = new CanvasEvent<PanZoomData>();
+    subscribe(callback: (e: PanZoomData) => void){
+        this.panZoomEvent.subscribe(callback);
+    }
+
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
         this.context = context;
         this.mouseManager = mouseManager;
@@ -65,7 +73,9 @@ export class PanZoomManager {
         this.registerEvents();
     }
 
-    private mouseEvent(e: CanvasMouseEvent) {
+
+
+    private mouseEvent(e: MouseData) {
         if (e.leftMouseState === 'down' && !this.isPanning) {
             this.panStart(e.mousePosition);
         }

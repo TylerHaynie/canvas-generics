@@ -1,10 +1,8 @@
-import { CanvasMouseEvent } from './canvas-mouse-event';
-import { Vector } from '../../objects/vector';
 import { CanvasEvent } from '../../events/canvas-event';
+import { Vector } from '../../objects/vector';
+import { MouseData } from './mouse-data';
 
 export class MouseManager {
-
-
 
     //#region private variables
     private _context: CanvasRenderingContext2D;
@@ -27,13 +25,13 @@ export class MouseManager {
         this.registerEvents();
     }
 
-    private mouseEvent = new CanvasEvent<CanvasMouseEvent>();
-    subscribe(callback: (e: CanvasMouseEvent) => void){
+    private mouseEvent = new CanvasEvent<MouseData>();
+    subscribe(callback: (e: MouseData) => void){
         this.mouseEvent.subscribe(callback);
     }
 
     private fireEvent() {
-        let e = new CanvasMouseEvent();
+        let e = new MouseData();
         e.mousePosition = this.mousePositionVector;
         e.clickPosition = this.clickLocation;
         e.mouseOnCanvas = this.mouseOnCanvas;

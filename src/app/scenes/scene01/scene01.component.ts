@@ -15,7 +15,7 @@ import { Size } from '../../lib/canvas/models/size';
 import { Line } from '../../lib/canvas/shapes/line/line';
 import { LineStyle } from '../../lib/canvas/models/line-style';
 import { Shadow } from '../../lib/canvas/models/shadow';
-import { CanvasMouseEvent } from '../../lib/canvas/managers/mouse/canvas-mouse-event';
+import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
 
 @Component({
   selector: 'app-scene01',
@@ -98,12 +98,12 @@ export class scene01Component implements OnInit {
   }
 
   private registerEvents() {
-    this.cw.mouseManager.subscribe((e: CanvasMouseEvent) => {
+    this.cw.mouseManager.subscribe((e: MouseData) => {
       this.mouseChanged(e);
     });
   }
 
-  private mouseChanged(e: CanvasMouseEvent) {
+  private mouseChanged(e: MouseData) {
     this.mouseOnCanvas = e.mouseOnCanvas;
     this.mousePosition = e.mousePosition;
   }

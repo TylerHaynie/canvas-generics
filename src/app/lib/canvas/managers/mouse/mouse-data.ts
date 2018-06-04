@@ -1,6 +1,6 @@
 import { Vector } from '../../objects/vector';
 
-export class CanvasMouseEvent {
+export class MouseData {
     mousePosition: Vector;
     clickPosition: Vector;
     mouseOnCanvas: boolean;

@@ -1,5 +1,4 @@
 import { MouseManager } from './managers/mouse/mouse-manager';
-import { PanZoomManager } from './managers/pan-zoom-manager';
 import { RandomUtility } from './utilities/random-utility';
 import { ColorUtility } from './utilities/color-utility';
 import { GraidentUtility } from './utilities/graident-utility';
@@ -8,8 +7,9 @@ import { PatternUtility } from './utilities/pattern-utility';
 import { KeyboardManager } from './managers/keyboard-manager';
 import { WindowManager } from './managers/window-manager';
 import { HelperUtility } from './utilities/helper-utility';
-import { CanvasMouseEvent } from './managers/mouse/canvas-mouse-event';
 import { Vector } from './objects/vector';
+import { PanZoomManager } from './managers/pan-zoom/pan-zoom-manager';
+import { MouseData } from './managers/mouse/mouse-data';
 
 export class CanvasWrapper {
 
@@ -124,7 +124,7 @@ export class CanvasWrapper {
         });
     }
 
-    private mouseChanged(e: CanvasMouseEvent) {
+    private mouseChanged(e: MouseData) {
         this.mouseOnCanvas = e.mouseOnCanvas;
         this.mousePosition = e.mousePosition;
     }
@@ -195,7 +195,7 @@ export class CanvasWrapper {
         requestAnimationFrame(() => this.start());
     }
 
-    private mouseEvent(e: CanvasMouseEvent) {
+    private mouseEvent(e: MouseData) {
 
     }
 

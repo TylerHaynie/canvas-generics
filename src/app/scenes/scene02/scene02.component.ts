@@ -9,7 +9,7 @@ import { Line } from '../../lib/canvas/shapes/line/line';
 import { LineSegment } from '../../lib/canvas/shapes/line/line-segment';
 import { Color } from '../../lib/canvas/models/color';
 import { LineStyle } from '../../lib/canvas/models/line-style';
-import { CanvasMouseEvent } from '../../lib/canvas/managers/mouse/canvas-mouse-event';
+import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
 
 interface Ray {
   a: Vector;
@@ -55,12 +55,12 @@ export class Scene02Component implements OnInit {
   }
 
   private registerEvents() {
-    this.cw.mouseManager.subscribe((e: CanvasMouseEvent) => {
+    this.cw.mouseManager.subscribe((e: MouseData) => {
       this.mouseChanged(e);
     });
   }
 
-  private mouseChanged(e: CanvasMouseEvent) {
+  private mouseChanged(e: MouseData) {
     this.mouseOnCanvas = e.mouseOnCanvas;
     this.mousePosition = e.mousePosition;
   }
