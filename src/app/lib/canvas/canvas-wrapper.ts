@@ -69,7 +69,6 @@ export class CanvasWrapper {
     private _WindowManager: WindowManager;
 
     // mouse
-    private mouseOnCanvas: boolean = false;
     private mousePosition: Vector;
 
     // pan-zoom
@@ -135,7 +134,6 @@ export class CanvasWrapper {
     }
 
     private mouseChanged(e: MouseData) {
-        this.mouseOnCanvas = e.mouseOnCanvas;
         this.mousePosition = e.mousePosition;
     }
 
@@ -192,7 +190,7 @@ export class CanvasWrapper {
                 }
             }
 
-            if (this.mousePosition) {
+            if (this._trackMouse && this.mousePosition) {
                 this.helperUtility.trackMouse(this.mousePosition, 'rgba(255, 255, 255, .80)');
             }
 
@@ -205,10 +203,6 @@ export class CanvasWrapper {
 
         // do it all again
         requestAnimationFrame(() => this.start());
-    }
-
-    private mouseEvent(e: MouseData) {
-
     }
 
     private checkKeys() {

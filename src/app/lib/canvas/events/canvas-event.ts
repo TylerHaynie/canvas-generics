@@ -1,3 +1,5 @@
+// TODO: look into using promises possibly. Would they provide any benefit?
+
 export class CanvasEvent<T>{
     private callbackList: [{ subscriberCallback: (e: T) => void }];
     subscribe(callback: (e: T) => void) {
