@@ -18,7 +18,7 @@ export class QuadVector {
     }
 }
 
-export class Boundry {
+export class Boundary {
     x: number;
     y: number;
     w: number;
@@ -41,7 +41,7 @@ export class Boundry {
         return false;
     }
 
-    intersects(other: Boundry) {
+    intersects(other: Boundary) {
         if (other.x - other.w > this.x + this.w ||
             other.x + other.w < this.x - this.w ||
             other.y - other.h > this.y + this.h ||
@@ -57,7 +57,7 @@ export class Boundry {
 
 export class QuadTree {
     // Axis-aligned bounding box (boundaries of this quad tree)
-    boundry: Boundry;
+    boundary: Boundary;
 
     // how many elements can be stored in this quad tree
     capicity: number;
@@ -74,14 +74,14 @@ export class QuadTree {
     bottomLeft: QuadTree;
     bottomRight: QuadTree;
 
-    constructor(b: Boundry, c: number) {
-        this.boundry = b;
+    constructor(b: Boundary, c: number) {
+        this.boundary = b;
         this.capicity = c;
     }
 
     public insert(p: QuadVector) {
         // Ignore objects that do not belong in this quad tree
-        if (!this.boundry.containsvector(p)) {
+        if (!this.boundary.containsvector(p)) {
             // vector does not belong here
             return false;
         }
@@ -113,36 +113,36 @@ export class QuadTree {
     }
 
     private subdivide() {
-        let x = this.boundry.x;
-        let y = this.boundry.y;
-        let w = this.boundry.w;
-        let h = this.boundry.h;
+        let x = this.boundary.x;
+        let y = this.boundary.y;
+        let w = this.boundary.w;
+        let h = this.boundary.h;
 
         // topLeft
-        let tlBounds = new Boundry(x, y, w / 2, h / 2);
+        let tlBounds = new Boundary(x, y, w / 2, h / 2);
         this.topLeft = new QuadTree(tlBounds, this.capicity);
 
         // topRight
-        let trBounds = new Boundry(x + w / 2, y, w / 2, h / 2);
+        let trBounds = new Boundary(x + w / 2, y, w / 2, h / 2);
         this.topRight = new QuadTree(trBounds, this.capicity);
 
         // bottomLeft
-        let blBounds = new Boundry(x, y + h / 2, w / 2, h / 2);
+        let blBounds = new Boundary(x, y + h / 2, w / 2, h / 2);
         this.bottomLeft = new QuadTree(blBounds, this.capicity);
 
         // bottomRight
-        let brBounds = new Boundry(x + w / 2, y + h / 2, w / 2, h / 2);
+        let brBounds = new Boundary(x + w / 2, y + h / 2, w / 2, h / 2);
         this.bottomRight = new QuadTree(brBounds, this.capicity);
 
         this.isDivided = true;
     }
 
-    public searchBoundry(b: Boundry): QuadVector[] {
+    public searchBoundary(b: Boundary): QuadVector[] {
         // Prepare an array of results
         let vectorsInRange: QuadVector[] = [];
 
-        // leave if the boundry does not intersect this quad
-        if (!this.boundry.intersects(b)) {
+        // leave if the boundary does not intersect this quad
+        if (!this.boundary.intersects(b)) {
             return vectorsInRange; // empty list
         }
 
@@ -159,19 +159,19 @@ export class QuadTree {
         }
 
         // add vectors from children
-        for (let p of this.topLeft.searchBoundry(b)) {
+        for (let p of this.topLeft.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
 
-        for (let p of this.topRight.searchBoundry(b)) {
+        for (let p of this.topRight.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
 
-        for (let p of this.bottomLeft.searchBoundry(b)) {
+        for (let p of this.bottomLeft.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
 
-        for (let p of this.bottomRight.searchBoundry(b)) {
+        for (let p of this.bottomRight.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
 
@@ -185,8 +185,8 @@ export class QuadTree {
     // }
 
     public reset(w: number, h: number) {
-        this.boundry.w = w;
-        this.boundry.h = h;
+        this.boundary.w = w;
+        this.boundary.h = h;
 
         this.topLeft = undefined;
         this.topRight = undefined;
@@ -200,8 +200,8 @@ export class QuadTree {
     public debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
         let rect = new Rectangle(context);
 
-        rect.position = new Vector(this.boundry.x, this.boundry.y);
-        rect.size = new Size(this.boundry.w, this.boundry.h);
+        rect.position = new Vector(this.boundary.x, this.boundary.y);
+        rect.size = new Size(this.boundary.w, this.boundary.h);
         rect.outline = new LineStyle(lineWidth);
         rect.outline.shade = color;
         rect.outline.alpha = alpha;

@@ -11,6 +11,7 @@ import { Vector } from './objects/vector';
 import { PanZoomManager } from './managers/pan-zoom/pan-zoom-manager';
 import { MouseData } from './managers/mouse/mouse-data';
 import { PanZoomData } from './managers/pan-zoom/pan-zoom-data';
+import { MouseEventType, PanZoomEventType } from './events/canvas-event-types';
 
 export class CanvasWrapper {
 
@@ -124,16 +125,24 @@ export class CanvasWrapper {
     }
 
     private registerEvents() {
-        this._mouseManager.subscribe((e) => {
-            this.mouseChanged(e);
+        this._mouseManager.on(MouseEventType.MOVE, (e) => {
+            this.mouseMoved(e);
         });
 
-        this._panZoomManager.subscribe((e) => {
+        this._panZoomManager.on(PanZoomEventType.ZOOM, (e) => {
+            this.panZoomChanged(e);
+        });
+
+        this._panZoomManager.on(PanZoomEventType.PAN, (e) => {
+            this.panZoomChanged(e);
+        });
+
+        this._panZoomManager.on(PanZoomEventType.RESET, (e) => {
             this.panZoomChanged(e);
         });
     }
 
-    private mouseChanged(e: MouseData) {
+    private mouseMoved(e: MouseData) {
         this.translatedMouse = e.translatedPosition ? e.translatedPosition : e.mousePosition;
     }
 

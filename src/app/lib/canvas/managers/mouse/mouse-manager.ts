@@ -1,8 +1,8 @@
 import { CanvasEvent } from '../../events/canvas-event';
 import { Vector } from '../../objects/vector';
 import { MouseData } from './mouse-data';
-import { MouseEventType } from './event-types';
 import { PanZoomData } from '../pan-zoom/pan-zoom-data';
+import { MouseEventType } from '../../events/canvas-event-types';
 
 export class MouseManager {
 
@@ -18,18 +18,19 @@ export class MouseManager {
     private scrollingDirection: string = 'none';
     private leftMousePosition: string = 'up';
     private isMoving: boolean = false;
-    private eventType: MouseEventType;
 
     //#endregion
+
+    // event
+    private eventType: MouseEventType;
+    private mouseEvent = new CanvasEvent<MouseData>();
+    on(on: MouseEventType, callback: (e: MouseData) => void) {
+        this.mouseEvent.subscribe(on, callback);
+    }
 
     constructor(context: CanvasRenderingContext2D) {
         this._context = context;
         this.registerEvents();
-    }
-
-    private mouseEvent = new CanvasEvent<MouseData>();
-    subscribe(callback: (e: MouseData) => void) {
-        this.mouseEvent.subscribe(callback);
     }
 
     contextupdated(data: PanZoomData) {
@@ -51,7 +52,7 @@ export class MouseManager {
         e.leftMouseState = this.leftMousePosition;
         e.mouseMoving = this.isMoving;
 
-        this.mouseEvent.fireEvent(e);
+        this.mouseEvent.fireEvent(e.eventType, e);
     }
 
     private registerEvents() {
@@ -119,6 +120,8 @@ export class MouseManager {
     private mouseLeave() {
         this.mouseOnCanvas = false;
         this.mousePosition = undefined;
+
+        this.fireEvent();
     }
 
     private mouseScrollUp() {

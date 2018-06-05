@@ -1,25 +1,35 @@
 // TODO: look into using promises possibly. Would they provide any benefit?
 
 export class CanvasEvent<T>{
-    private callbackList: [{ subscriberCallback: (e: T) => void }];
-    subscribe(callback: (e: T) => void) {
+    private callbackList: [
+        {
+            eventName: string,
+            callback: (e: T) => void
+        }
+    ];
+
+    subscribe(on: string, callback: (e: T) => void) {
         if (!this.callbackList) {
-            this.callbackList = [{ subscriberCallback: callback }];
+            this.callbackList = [{ eventName: on, callback: callback }];
         }
         else {
-            this.callbackList.push({ subscriberCallback: callback });
+            this.callbackList.push({ eventName: on, callback: callback });
         }
     }
-    private updateSubscribers(e: T) {
+
+    private updateSubscribers(eventName: string, e: T) {
         if (this.callbackList) {
             this.callbackList.forEach(subscriber => {
-                subscriber.subscriberCallback(e);
+                if (subscriber.eventName === eventName) {
+                    subscriber.callback(e);
+                }
+
             });
         }
     }
 
-    fireEvent(e: T) {
-        this.updateSubscribers(e);
+    fireEvent(eventName: string, e: T) {
+        this.updateSubscribers(eventName, e);
     }
 
 }

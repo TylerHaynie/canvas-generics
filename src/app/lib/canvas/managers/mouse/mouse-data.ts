@@ -1,5 +1,5 @@
 import { Vector } from '../../objects/vector';
-import { MouseEventType } from './event-types';
+import { MouseEventType } from '../../events/canvas-event-types';
 
 export class MouseData {
     eventType: MouseEventType;

@@ -1,5 +1,5 @@
 import { Vector } from '../../objects/vector';
-import { PanZoomEventType } from './event-type';
+import { PanZoomEventType } from '../../events/canvas-event-types';
 
 export class PanZoomData {
     eventType: PanZoomEventType;

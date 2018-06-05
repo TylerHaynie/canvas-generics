@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { QuadTree, Boundry, QuadVector } from '../../lib/quadtree/quad-tree';
+import { QuadTree, Boundary, QuadVector } from '../../lib/quadtree/quad-tree';
 import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
 import { RandomUtility } from '../../lib/canvas/utilities/random-utility';
 import { ColorUtility } from '../../lib/canvas/utilities/color-utility';
@@ -16,6 +16,7 @@ import { Line } from '../../lib/canvas/shapes/line/line';
 import { LineStyle } from '../../lib/canvas/models/line-style';
 import { Shadow } from '../../lib/canvas/models/shadow';
 import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
+import { MouseEventType } from '../../lib/canvas/events/canvas-event-types';
 
 @Component({
   selector: 'app-scene01',
@@ -24,7 +25,6 @@ import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
 })
 export class scene01Component implements OnInit {
   @ViewChild('c') canvasRef: ElementRef;
-
   //#region Variables
 
   private cw: CanvasWrapper;
@@ -45,7 +45,7 @@ export class scene01Component implements OnInit {
   //#region Configuration
 
   // pointer
-  private pointerRadius = 35;
+  private pointerRadius = 55;
 
   // background and foreground
   private backgroundColor: string = '#0C101E';
@@ -84,27 +84,28 @@ export class scene01Component implements OnInit {
     this.cw.panZoomManager.minScale = 1;
     this.cw.panZoomManager.panningAllowed = true;
     this.cw.enableGrid = false;
-    this.cw.trackMouse = true;
+    this.cw.trackMouse = false;
 
     this.registerEvents();
 
     // set up quad trees
-    let boundry: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
-    this.particleQuad = new QuadTree(boundry, 1);
+    let boundary: Boundary = new Boundary(0, 0, this.cw.width, this.cw.height);
+    this.particleQuad = new QuadTree(boundary, 1);
 
     // start the draw loop
     this.cw.start();
   }
 
   private registerEvents() {
-    this.cw.mouseManager.subscribe((e: MouseData) => {
-      this.mouseChanged(e);
+    this.cw.mouseManager.on(MouseEventType.MOVE, (e: MouseData) => {
+      this.mouseOnCanvas = true;
+      this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
     });
-  }
 
-  private mouseChanged(e: MouseData) {
-    this.mouseOnCanvas = e.mouseOnCanvas;
-    this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
+
+    this.cw.mouseManager.on(MouseEventType.OUT, (e: MouseData) => {
+      this.mouseOnCanvas = false;
+    });
   }
 
   //#endregion
@@ -125,6 +126,9 @@ export class scene01Component implements OnInit {
     // drawing the graident on the top
     this.drawForeground();
 
+    // draw UI
+    this.drawUI();
+
     // debug
     if (this.debugParticles) {
       this.particleQuad.debugQuad(this.cw.drawingContext, '#777');
@@ -133,7 +137,7 @@ export class scene01Component implements OnInit {
     this.cw.restoreContext();
   }
 
-  drawBackground() {
+  private drawBackground() {
     let bounds = this.cw.bounds;
     let b = new Rectangle(this.cw.drawingContext);
 
@@ -144,7 +148,7 @@ export class scene01Component implements OnInit {
     b.draw();
   }
 
-  drawForeground() {
+  private drawForeground() {
     let bounds = this.cw.bounds;
 
     // Create gradient
@@ -166,7 +170,7 @@ export class scene01Component implements OnInit {
     f.draw();
   }
 
-  drawParticles() {
+  private drawParticles() {
     // replace particles that have died off
     if (this.floatingParticles.length - 1 !== this.maxParticles) {
       this.generateMissingParticles();
@@ -175,7 +179,7 @@ export class scene01Component implements OnInit {
     this.drawFloatingParticle(this.floatingParticles, this.particleQuad);
   }
 
-  drawFloatingParticle(particles: FloatingParticle[], trackingTree: QuadTree = undefined) {
+  private drawFloatingParticle(particles: FloatingParticle[], trackingTree: QuadTree = undefined) {
     if (trackingTree) {
       // clear the quad
       trackingTree.reset(this.cw.width, this.cw.height);
@@ -208,6 +212,10 @@ export class scene01Component implements OnInit {
         particles.splice(x, 1);
       }
     }
+  }
+
+  private drawUI() {
+
   }
 
   //#endregion
@@ -253,11 +261,11 @@ export class scene01Component implements OnInit {
       let mx = this.mousePosition.x;
       let my = this.mousePosition.y;
 
-      // boundry around mouse
-      let b: Boundry = new Boundry(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
+      // boundary around mouse
+      let b: Boundary = new Boundary(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
 
       // check particles
-      let particlesInRange: QuadVector[] = this.particleQuad.searchBoundry(b);
+      let particlesInRange: QuadVector[] = this.particleQuad.searchBoundary(b);
 
       // update particles in range
       if (particlesInRange.length > 0) {
