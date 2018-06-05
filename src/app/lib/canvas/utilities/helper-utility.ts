@@ -34,7 +34,7 @@ export class HelperUtility {
         line.draw();
     }
 
-    trackMouse(point: Vector, color: string, drawArrows: boolean = true) {
+    trackMouse(point: Vector, color: string, drawArrows: boolean = false) {
         let line = new Line(this.context);
         line.style.shade = color;
 

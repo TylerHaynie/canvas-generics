@@ -88,7 +88,6 @@ export class scene01Component implements OnInit {
 
     this.registerEvents();
 
-
     // set up quad trees
     let boundry: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
     this.particleQuad = new QuadTree(boundry, 1);
