@@ -69,11 +69,12 @@ export class CanvasWrapper {
     private _WindowManager: WindowManager;
 
     // mouse
-    private mousePosition: Vector;
+    private translatedMouse: Vector;
 
     // pan-zoom
     private transformChanged: boolean = false;
     private PanZoomData: PanZoomData;
+    private needsFlip: boolean = false;
 
     constructor(context: CanvasRenderingContext2D, drawCallback: () => void) {
         this._context = context;
@@ -133,12 +134,13 @@ export class CanvasWrapper {
     }
 
     private mouseChanged(e: MouseData) {
-        this.mousePosition = e.mousePosition;
+        this.translatedMouse = e.translatedPosition ? e.translatedPosition : e.mousePosition;
     }
 
     private panZoomChanged(e: PanZoomData) {
         this.transformChanged = true;
         this.PanZoomData = e;
+
     }
 
     private setupCanvas() {
@@ -156,44 +158,28 @@ export class CanvasWrapper {
 
         if (!this.paused || this.frameStep) {
             this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
-
             this.saveContext();
 
             // draw the grid first?
             if (this._overlayAsBackground) {
-                // draw grid
-                if (this._enableGrid) {
-                    this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
-                }
+                this.drawGrid();
             }
 
-            // apply any panning or zooming
-            if (this.PanZoomData) {
-                this._context.setTransform(
-                    this.PanZoomData.scale, // scale x
-                    0, // skew x
-                    0, // skew y
-                    this.PanZoomData.scale, // scale y
-                    this.PanZoomData.pan.x, // pan x
-                    this.PanZoomData.pan.y // pan y
-                );
-            }
+            // apply any pan or zoon
+            this.applyPanAndZoom();
 
             // do the draw callback
             this.drawCallback();
 
-            if (this.enableGrid) {
-                // draw grid
-                if (!this._overlayAsBackground) {
-                    this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
-                }
-            }
+            this.trackMousePosition();
 
-            if (this._trackMouse && this.mousePosition) {
-                this.helperUtility.trackMouse(this.mousePosition, 'rgba(255, 255, 255, .80)');
+            // draw the grid last?
+            if (!this._overlayAsBackground) {
+                this.drawGrid();
             }
 
             this.restoreContext();
+
             this.frameStep = false;
         }
 
@@ -202,6 +188,28 @@ export class CanvasWrapper {
 
         // do it all again
         requestAnimationFrame(() => this.start());
+    }
+
+    private applyPanAndZoom() {
+        if (this.PanZoomData) {
+            this._context.translate(this.PanZoomData.pan.x, this.PanZoomData.pan.y);
+            this._context.scale(this.PanZoomData.scale, this.PanZoomData.scale);
+
+            this.mouseManager.contextupdated(this.PanZoomData);
+        }
+    }
+
+    private drawGrid() {
+        // draw grid
+        if (this._enableGrid) {
+            this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
+        }
+    }
+
+    private trackMousePosition() {
+        if (this._trackMouse && this.translatedMouse) {
+            this.helperUtility.trackMouse(this.translatedMouse, 'rgba(255, 255, 255, .80)');
+        }
     }
 
     private checkKeys() {

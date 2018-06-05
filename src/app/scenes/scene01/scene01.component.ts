@@ -82,9 +82,9 @@ export class scene01Component implements OnInit {
   ngOnInit() {
     this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
     this.cw.panZoomManager.minScale = 1;
-    this.cw.panZoomManager.panningAllowed = false;
+    this.cw.panZoomManager.panningAllowed = true;
     this.cw.enableGrid = false;
-    this.cw.trackMouse = false;
+    this.cw.trackMouse = true;
 
     this.registerEvents();
 
@@ -105,7 +105,7 @@ export class scene01Component implements OnInit {
 
   private mouseChanged(e: MouseData) {
     this.mouseOnCanvas = e.mouseOnCanvas;
-    this.mousePosition = e.mousePosition;
+    this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
   }
 
   //#endregion

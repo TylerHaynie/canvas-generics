@@ -25,6 +25,7 @@ export class PanZoomManager {
 
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
+    private mousePosition: Vector;
 
     // canvas
     private canvasScaleStep: number = .10;
@@ -135,6 +136,7 @@ export class PanZoomManager {
         let data = new PanZoomData();
         data.scale = this.canvasScale;
         data.pan = this.totalPanning;
+        data.mousePosition = this.mousePosition;
         this.panZoomEvent.fireEvent(data);
     }
 
@@ -190,6 +192,7 @@ export class PanZoomManager {
     }
 
     private mouseMove(mousePosition: Vector) {
+        this.mousePosition = mousePosition;
         this.pan(mousePosition);
     }
 
