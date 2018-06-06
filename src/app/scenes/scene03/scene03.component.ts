@@ -45,8 +45,8 @@ export class Scene03Component implements OnInit {
   // testing
   private createTestUI() {
     this.defaultInteractiveSquare();
-    this.interactiveCircle();
-    this.interactiveRectangle();
+    // this.interactiveCircle();
+    // this.interactiveRectangle();
   }
 
   defaultInteractiveSquare() {
@@ -65,6 +65,10 @@ export class Scene03Component implements OnInit {
       let dx = e.mousePosition.x - elementPosition.x;
       let dy = e.mousePosition.y - elementPosition.y;
       this.dragOffset = new Vector(dx, dy);
+    });
+
+    nr.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+      this.showHoverContextMenu(e, nr);
     });
 
     nr.on(UI_EVENT_TYPE.UP, (e: MouseData) => {
@@ -94,6 +98,10 @@ export class Scene03Component implements OnInit {
       }
     });
 
+  }
+
+  private showHoverContextMenu(e: MouseData, nr) {
+    console.log(nr);
   }
 
   interactiveCircle() {

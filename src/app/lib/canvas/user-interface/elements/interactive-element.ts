@@ -70,8 +70,6 @@ export class InteractiveElement {
         this.canvasEvent.subscribe(on, callback);
     }
 
-
-
     constructor(context: CanvasRenderingContext2D) {
         this._context = context;
         this.previousEventType = UI_EVENT_TYPE.UP;
@@ -81,6 +79,9 @@ export class InteractiveElement {
         this._activeShadow = new Shadow();
 
         this.defaultColor = new Color();
+        this.hoverOutline = new LineStyle();
+        this.hoverOutline.lineWidth = 1;
+        this.hoverOutline.shade = '#54ff5f';
     }
 
     private fireEvent(e: MouseData) {
@@ -151,7 +152,7 @@ export class InteractiveElement {
             case UI_EVENT_TYPE.DOWN:
                 if (this.downColor) { this._activeColor = this.downColor; }
                 if (this.downOutline) { this._activeOutline = this.downOutline; }
-                if (this.downOutline) { this._activeShadow = this.downShadow; }
+                if (this.downShadow) { this._activeShadow = this.downShadow; }
                 break;
             case UI_EVENT_TYPE.HOVER:
                 if (this.hoverColor) { this._activeColor = this.hoverColor; }

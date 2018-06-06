@@ -118,10 +118,18 @@ export class HelperUtility {
 
         // center point
         let cp = new Circle(this.context, position);
-        cp.color.shade = 'red';
+        cp.color.shade = '#e80000';
         cp.radius = 1;
 
+        let cpc = new Circle(this.context, new Vector(position.x, position.y));
+        cpc.color = undefined;
+        cpc.outline = new LineStyle();
+        cpc.outline.shade = '#000';
+        cpc.outline.lineWidth = 1;
+        cpc.radius = 2;
+
         cp.draw();
+        cpc.draw();
         co.draw();
     }
 
