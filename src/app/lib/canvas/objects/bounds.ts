@@ -1,5 +1,6 @@
-import { Vector } from '../objects/vector';
-import { Size } from '../models/size';
+import { Size } from '@canvas/models/size';
+import { Vector } from '@canvas/objects/vector';
+
 export class Bounds {
     x: number;
     y: number;

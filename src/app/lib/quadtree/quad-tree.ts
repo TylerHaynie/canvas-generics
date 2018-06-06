@@ -1,11 +1,9 @@
-/// built by referencing https://en.wikipedia.org/wiki/Quadtree
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { Vector } from '@canvas/objects/vector';
+import { Size } from '@canvas/models/size';
+import { LineStyle } from '@canvas/models/line-style';
 
-import { CanvasWrapper } from '../canvas/canvas-wrapper';
-import { Rectangle } from '../canvas/shapes/rectangle';
-import { Vector } from '../canvas/objects/vector';
-import { Size } from '../canvas/models/size';
-import { Color } from '../canvas/models/color';
-import { LineStyle } from '../canvas/models/line-style';
+/// built by referencing https://en.wikipedia.org/wiki/Quadtree
 
 export class QuadVector {
     x: number;

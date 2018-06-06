@@ -1,22 +1,16 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { QuadTree, Boundary, QuadVector } from '../../lib/quadtree/quad-tree';
-import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
-import { RandomUtility } from '../../lib/canvas/utilities/random-utility';
-import { ColorUtility } from '../../lib/canvas/utilities/color-utility';
-import { Particle } from '../../lib/canvas/objects/particle';
-import { Rectangle } from '../../lib/canvas/shapes/rectangle';
-import { Bounds } from '../../lib/canvas/objects/bounds';
+import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { FloatingParticle } from './objects/floating-particle';
-import { Circle } from '../../lib/canvas/shapes/circle';
-import { Color } from '../../lib/canvas/models/color';
-import { Velocity } from '../../lib/canvas/models/velocity';
-import { Vector } from '../../lib/canvas/objects/vector';
-import { Size } from '../../lib/canvas/models/size';
-import { Line } from '../../lib/canvas/shapes/line/line';
-import { LineStyle } from '../../lib/canvas/models/line-style';
-import { Shadow } from '../../lib/canvas/models/shadow';
-import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
-import { MouseEventType } from '../../lib/canvas/events/canvas-event-types';
+import { QuadTree, Boundary, QuadVector } from '../../lib/quadtree/quad-tree';
+import { Vector } from '@canvas/objects/vector';
+import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { MouseData } from '@canvas/events/event-data';
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { Size } from '@canvas/models/size';
+import { Color } from '@canvas/models/color';
+import { Bounds } from '@canvas/objects/bounds';
+import { Particle } from '@canvas/objects/particle';
+import { Velocity } from '@canvas/models/velocity';
 
 @Component({
   selector: 'app-scene01',

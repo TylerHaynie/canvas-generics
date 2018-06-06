@@ -1,16 +1,13 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
-import { MouseEventType, UIEventType } from '../../lib/canvas/events/canvas-event-types';
-import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
-import { Vector } from '../../lib/canvas/objects/vector';
-import { LineStyle } from '../../lib/canvas/models/line-style';
-import { Color } from '../../lib/canvas/models/color';
+import { CanvasWrapper } from '@canvas/canvas-wrapper';
+import { CollisionUtility } from '@canvas/utilities/collision-utility';
 import { QuadTree, Boundary, QuadVector } from '../../lib/quadtree/quad-tree';
-import { Rectangle } from '../../lib/canvas/shapes/rectangle';
-import { Size } from '../../lib/canvas/models/size';
-import { CollisionUtility } from '../../lib/canvas/utilities/collision-utility';
-import { Circle } from '../../lib/canvas/shapes/circle';
-import { CanvasUIElement } from '../../lib/canvas/user-interface/canvas-ui-element';
+import { CanvasUIElement } from '@canvas/user-interface/canvas-ui-element';
+import { MouseEventType, UIEventType } from '@canvas/events/canvas-event-types';
+import { MouseData } from '@canvas/events/event-data';
+import { Vector } from '@canvas/objects/vector';
+import { LineStyle } from '@canvas/models/line-style';
+import { Color } from '@canvas/models/color';
 
 @Component({
   selector: 'app-scene03',

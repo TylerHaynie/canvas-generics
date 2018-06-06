@@ -1,7 +1,7 @@
-import { Vector } from '../objects/vector';
-import { Color } from '../models/color';
-import { LineStyle } from '../models/line-style';
-import { Shadow } from '../models/shadow';
+import { Vector } from '@canvas/objects/vector';
+import { Color } from '@canvas/models/color';
+import { LineStyle } from '@canvas/models/line-style';
+import { Shadow } from '@canvas/models/shadow';
 
 export class Circle {
     private context: CanvasRenderingContext2D;

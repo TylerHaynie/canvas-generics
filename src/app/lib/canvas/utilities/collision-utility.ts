@@ -1,5 +1,4 @@
-import { Vector } from '../objects/vector';
-import { Circle } from '../shapes/circle';
+import { Vector } from '@canvas/objects/vector';
 
 export class CollisionUtility {
 

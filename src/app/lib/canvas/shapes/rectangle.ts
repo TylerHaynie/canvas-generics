@@ -1,8 +1,8 @@
-import { Vector } from '../objects/vector';
-import { Size } from '../models/size';
-import { Color } from '../models/color';
-import { LineStyle } from '../models/line-style';
-import { Shadow } from '../models/shadow';
+import { Vector } from '@canvas/objects/vector';
+import { Size } from '@canvas/models/size';
+import { Color } from '@canvas/models/color';
+import { LineStyle } from '@canvas/models/line-style';
+import { Shadow } from '@canvas/models/shadow';
 
 export class Rectangle {
     private context: CanvasRenderingContext2D;

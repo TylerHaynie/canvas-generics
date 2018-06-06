@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -15,6 +14,17 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "@canvas/*": ["app/lib/canvas/*"],
+      "@canvas/events/*": ["app/lib/canvas/events/*"],
+      "@canvas/managers/*": ["app/lib/canvas/managers/*"],
+      "@canvas/models/*": ["app/lib/canvas/models/*"],
+      "@canvas/objects/*": ["app/lib/canvas/objects/*"],
+      "@canvas/shapes/*": ["app/lib/canvas/shapes/*"],
+      "@canvas/ui/*": ["app/lib/canvas/user-interface/*"],
+      "@canvas/utilities/*": ["app/lib/canvas/utilities/*"],
+    }
   }
 }

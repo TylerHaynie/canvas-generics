@@ -1,6 +1,6 @@
-import { Vector } from '../objects/vector';
-import { Line } from '../shapes/line/line';
-import { LineSegment } from '../shapes/line/line-segment';
+import { Line } from '@canvas/shapes/line/line';
+import { LineSegment } from '@canvas/shapes/line/line-segment';
+import { Vector } from '@canvas/objects/vector';
 
 export class HelperUtility {
     private context: CanvasRenderingContext2D;

@@ -1,10 +1,8 @@
-import { Vector } from '../objects/vector';
-import { RandomUtility } from '../utilities/random-utility';
-import { Bounds } from './bounds';
-import { Size } from '../models/size';
-import { Color } from '../models/color';
-import { Velocity } from '../models/velocity';
-import { Shadow } from '../models/shadow';
+import { Vector } from '@canvas/objects/vector';
+import { Size } from '@canvas/models/size';
+import { Velocity } from '@canvas/models/velocity';
+import { RandomUtility } from '@canvas/utilities/random-utility';
+import { Bounds } from '@canvas/objects/bounds';
 
 export class Particle {
     position: Vector;

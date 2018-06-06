@@ -1,4 +1,4 @@
-import { Color } from './color';
+import { Color } from '@canvas/models/color';
 
 export class LineStyle extends Color {
     lineWidth: number;

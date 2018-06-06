@@ -1,10 +1,11 @@
-import { Vector } from '../objects/vector';
-import { Color } from '../models/color';
-import { LineStyle } from '../models/line-style';
-import { Shadow } from '../models/shadow';
-import { UIEventType } from '../events/canvas-event-types';
-import { CanvasEvent } from '../events/canvas-event';
-import { Circle } from '../shapes/circle';
+import { Vector } from '@canvas/objects/vector';
+import { Color } from '@canvas/models/color';
+import { LineStyle } from '@canvas/models/line-style';
+import { Shadow } from '@canvas/models/shadow';
+import { UIEventType } from '@canvas/events/canvas-event-types';
+import { CanvasEvent } from '@canvas/events/canvas-event';
+import { Circle } from '@canvas/shapes/circle';
+
 export class CanvasUIElement {
     // public
     position: Vector = new Vector(0, 0);

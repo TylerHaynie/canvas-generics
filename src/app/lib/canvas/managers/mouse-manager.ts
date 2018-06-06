@@ -1,8 +1,7 @@
-import { CanvasEvent } from '../../events/canvas-event';
-import { Vector } from '../../objects/vector';
-import { MouseData } from './mouse-data';
-import { PanZoomData } from '../pan-zoom/pan-zoom-data';
-import { MouseEventType } from '../../events/canvas-event-types';
+import { PanZoomData, MouseData } from '@canvas/events/event-data';
+import { Vector } from '@canvas/objects/vector';
+import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { CanvasEvent } from '@canvas/events/canvas-event';
 
 export class MouseManager {
 

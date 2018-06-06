@@ -1,6 +1,6 @@
-import { LineSegment } from './line-segment';
-import { LineStyle } from '../../models/line-style';
-import { Shadow } from '../../models/shadow';
+import { LineSegment } from '@canvas/shapes/line/line-segment';
+import { LineStyle } from '@canvas/models/line-style';
+import { Shadow } from '@canvas/models/shadow';
 
 export class Line {
     private context: CanvasRenderingContext2D;

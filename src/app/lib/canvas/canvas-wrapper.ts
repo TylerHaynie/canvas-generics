@@ -1,22 +1,16 @@
-import { MouseManager } from './managers/mouse/mouse-manager';
-import { RandomUtility } from './utilities/random-utility';
-import { ColorUtility } from './utilities/color-utility';
-import { GraidentUtility } from './utilities/graident-utility';
-import { ImageDataUtility } from './utilities/image-data-utility';
-import { PatternUtility } from './utilities/pattern-utility';
-import { KeyboardManager } from './managers/keyboard-manager';
-import { WindowManager } from './managers/window-manager';
-import { HelperUtility } from './utilities/helper-utility';
-import { Vector } from './objects/vector';
-import { PanZoomManager } from './managers/pan-zoom/pan-zoom-manager';
-import { MouseData } from './managers/mouse/mouse-data';
-import { PanZoomData } from './managers/pan-zoom/pan-zoom-data';
-import { MouseEventType, PanZoomEventType } from './events/canvas-event-types';
-import { QuadTree, Boundary, QuadVector } from '../quadtree/quad-tree';
-import { Rectangle } from './shapes/rectangle';
-import { Size } from './models/size';
-import { Color } from './models/color';
-import { LineStyle } from './models/line-style';
+import { RandomUtility } from '@canvas/utilities/random-utility';
+import { ColorUtility } from '@canvas/utilities/color-utility';
+import { GraidentUtility } from '@canvas/utilities/graident-utility';
+import { ImageDataUtility } from '@canvas/utilities/image-data-utility';
+import { PatternUtility } from '@canvas/utilities/pattern-utility';
+import { HelperUtility } from '@canvas/utilities/helper-utility';
+import { PanZoomManager } from '@canvas/managers/pan-zoom-manager';
+import { MouseManager } from '@canvas/managers/mouse-manager';
+import { KeyboardManager } from '@canvas/managers/keyboard-manager';
+import { WindowManager } from '@canvas/managers/window-manager';
+import { Vector } from '@canvas/objects/vector';
+import { PanZoomData, MouseData } from '@canvas/events/event-data';
+import { MouseEventType, PanZoomEventType } from '@canvas/events/canvas-event-types';
 
 export class CanvasWrapper {
 

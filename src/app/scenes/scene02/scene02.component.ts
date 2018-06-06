@@ -1,16 +1,15 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
+import { Vector } from '@canvas/objects/vector';
+import { CanvasWrapper } from '@canvas/canvas-wrapper';
+import { Rectangle } from '@canvas/shapes/rectangle';
 import { QuadTree, Boundary } from '../../lib/quadtree/quad-tree';
-import { Vector } from '../../lib/canvas/objects/vector';
-import { Rectangle } from '../../lib/canvas/shapes/rectangle';
-import { Circle } from '../../lib/canvas/shapes/circle';
-import { RayCastUtility } from '../../lib/canvas/utilities/raycast-utility';
-import { Line } from '../../lib/canvas/shapes/line/line';
-import { LineSegment } from '../../lib/canvas/shapes/line/line-segment';
-import { Color } from '../../lib/canvas/models/color';
-import { LineStyle } from '../../lib/canvas/models/line-style';
-import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
-import { MouseEventType } from '../../lib/canvas/events/canvas-event-types';
+import { Circle } from '@canvas/shapes/circle';
+import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { MouseData } from '@canvas/events/event-data';
+import { Color } from '@canvas/models/color';
+import { RayCastUtility } from '@canvas/utilities/raycast-utility';
+import { Line } from '@canvas/shapes/line/line';
+import { LineSegment } from '@canvas/shapes/line/line-segment';
 
 interface Ray {
   a: Vector;
