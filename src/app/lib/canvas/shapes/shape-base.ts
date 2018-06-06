@@ -10,11 +10,9 @@ export class ShapeBase {
     }
 
     private _position: Vector;
+    public get position(): Vector { return this._position; }
     public set position(position: Vector) {
         this._position = new Vector(Math.fround(position.x), Math.fround(position.y));
-    }
-    public get position(): Vector {
-        return this._position;
     }
 
     color?: Color;
@@ -24,5 +22,7 @@ export class ShapeBase {
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         this._context = context;
         this.position = position;
+
+        this.color = new Color();
     }
 }

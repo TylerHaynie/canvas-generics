@@ -1,8 +1,9 @@
 import { Vector } from '@canvas/objects/vector';
-import { MouseEventType, PanZoomEventType } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 
 export class MouseData {
-    eventType: MouseEventType;
+    uiMouseState: MOUSE_STATE;
+    eventType: MOUSE_EVENT_TYPE;
     translatedPosition: Vector;
     mousePosition: Vector;
     clickPosition: Vector;
@@ -13,7 +14,7 @@ export class MouseData {
 }
 
 export class PanZoomData {
-    eventType: PanZoomEventType;
+    eventType: PAN_ZOOM_EVENT_TYPE;
     scale: number;
     pan: Vector;
     mousePosition: Vector;

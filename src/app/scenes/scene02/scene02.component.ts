@@ -4,7 +4,7 @@ import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { QuadTree, Boundary } from '../../lib/quadtree/quad-tree';
 import { Circle } from '@canvas/shapes/circle';
-import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { Color } from '@canvas/models/color';
 import { RayCastUtility } from '@canvas/utilities/raycast-utility';
@@ -55,7 +55,7 @@ export class Scene02Component implements OnInit {
   }
 
   private registerEvents() {
-    this.cw.mouseManager.on(MouseEventType.MOVE, (e: MouseData) => {
+    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
       this.mouseChanged(e);
     });
   }

@@ -1,9 +1,11 @@
 import { PanZoomData, MouseData } from '@canvas/events/event-data';
 import { Vector } from '@canvas/objects/vector';
-import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { CanvasEvent } from '@canvas/events/canvas-event';
 
 export class MouseManager {
+
+    public get mouseOnCanvas(): boolean { return this._mouseOnCanvas; }
 
     //#region private variables
     private _context: CanvasRenderingContext2D;
@@ -13,7 +15,7 @@ export class MouseManager {
     // mouse
     private mousePosition: Vector;
     private translatedPosition: Vector;
-    private mouseOnCanvas: boolean = false;
+    private _mouseOnCanvas: boolean = false;
     private scrollingDirection: string = 'none';
     private leftMousePosition: string = 'up';
     private isMoving: boolean = false;
@@ -21,9 +23,9 @@ export class MouseManager {
     //#endregion
 
     // event
-    private eventType: MouseEventType;
+    private eventType: MOUSE_EVENT_TYPE;
     private mouseEvent = new CanvasEvent<MouseData>();
-    on(on: MouseEventType, callback: (e: MouseData) => void) {
+    on(on: MOUSE_EVENT_TYPE, callback: (e: MouseData) => void) {
         this.mouseEvent.subscribe(on, callback);
     }
 
@@ -33,7 +35,7 @@ export class MouseManager {
     }
 
     contextupdated(data: PanZoomData) {
-        if (this.mouseOnCanvas) {
+        if (this._mouseOnCanvas) {
             let mx = (this.mousePosition.x - data.pan.x) / data.scale;
             let my = (this.mousePosition.y - data.pan.y) / data.scale;
 
@@ -46,7 +48,7 @@ export class MouseManager {
         e.eventType = this.eventType;
         e.translatedPosition = this.translatedPosition;
         e.mousePosition = this.mousePosition;
-        e.mouseOnCanvas = this.mouseOnCanvas;
+        e.mouseOnCanvas = this._mouseOnCanvas;
         e.scrollDirection = this.scrollingDirection;
         e.leftMouseState = this.leftMousePosition;
         e.mouseMoving = this.isMoving;
@@ -59,22 +61,22 @@ export class MouseManager {
 
         // mouse events
         cv.onmousemove = (e: MouseEvent) => {
-            this.eventType = MouseEventType.MOVE;
+            this.eventType = MOUSE_EVENT_TYPE.MOVE;
             this.updateMousePosition(e.clientX, e.clientY);
         };
 
         cv.onmousedown = (e: MouseEvent) => {
-            this.eventType = MouseEventType.DOWN;
+            this.eventType = MOUSE_EVENT_TYPE.DOWN;
             this.doMouseDown(e.clientX, e.clientY);
         };
 
         cv.onmouseup = (e: MouseEvent) => {
-            this.eventType = MouseEventType.UP;
+            this.eventType = MOUSE_EVENT_TYPE.UP;
             this.mouseUp();
         };
 
         cv.onmousewheel = (e: WheelEvent) => {
-            this.eventType = MouseEventType.WHEEL;
+            this.eventType = MOUSE_EVENT_TYPE.WHEEL;
             if (e.deltaY > 0) {
                 this.mouseScrollDown();
             }
@@ -84,19 +86,19 @@ export class MouseManager {
         };
 
         cv.onmouseout = (e: MouseEvent) => {
-            this.eventType = MouseEventType.OUT;
+            this.eventType = MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
 
         cv.onmouseleave = (e: MouseEvent) => {
-            this.eventType = MouseEventType.OUT;
+            this.eventType = MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
 
     }
 
     private doMouseDown(x: number, y: number) {
-        this.mouseOnCanvas = true;
+        this._mouseOnCanvas = true;
         this.leftMousePosition = 'down';
         this.mousePosition = new Vector(x, y);
 
@@ -106,7 +108,7 @@ export class MouseManager {
     private updateMousePosition(x: number, y: number) {
         this.isMoving = true;
         this.mousePosition = new Vector(x, y);
-        this.mouseOnCanvas = true;
+        this._mouseOnCanvas = true;
 
         this.fireEvent();
     }
@@ -117,21 +119,21 @@ export class MouseManager {
     }
 
     private mouseLeave() {
-        this.mouseOnCanvas = false;
+        this._mouseOnCanvas = false;
         this.mousePosition = undefined;
 
         this.fireEvent();
     }
 
     private mouseScrollUp() {
-        this.mouseOnCanvas = true;
+        this._mouseOnCanvas = true;
         this.scrollingDirection = 'up';
 
         this.fireEvent();
     }
 
     private mouseScrollDown() {
-        this.mouseOnCanvas = true;
+        this._mouseOnCanvas = true;
         this.scrollingDirection = 'down';
 
         this.fireEvent();

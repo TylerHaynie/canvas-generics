@@ -6,6 +6,7 @@
 
 html, body {
     touch-action: none;
+    cursor: none;
     background-color: #111;
     color: white;
 }

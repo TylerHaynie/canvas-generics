@@ -9,6 +9,8 @@ export class Circle extends ShapeBase {
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         super(context, position);
+
+        this.radius = 10;
     }
 
     center(): Vector {

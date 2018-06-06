@@ -1,15 +1,18 @@
 import { Vector } from '@canvas/objects/vector';
-import { UIEventType } from '@canvas/events/canvas-event-types';
+import { UI_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 import { Color } from '@canvas/models/color';
 import { LineStyle } from '@canvas/models/line-style';
 import { Shadow } from '@canvas/models/shadow';
 import { CanvasEvent } from '@canvas/events/canvas-event';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Circle } from '@canvas/shapes/circle';
+import { MouseData } from '@canvas/events/event-data';
 
 export class InteractiveElement {
-    position: Vector = new Vector(0, 0);
-    baseElement: Rectangle | Circle;
+
+    private _baseElement: Rectangle | Circle;
+    public get baseElement(): Rectangle | Circle { return this._baseElement; }
+    public set baseElement(v: Rectangle | Circle) { this._baseElement = v; }
 
     draggable = false;
     resizable = false;
@@ -57,65 +60,79 @@ export class InteractiveElement {
     private _context: CanvasRenderingContext2D;
     public get context(): CanvasRenderingContext2D { return this._context; }
 
-    private previousEventType: UIEventType;
+    private previousEventType: UI_EVENT_TYPE;
 
     // event
-    public get eventType(): UIEventType { return this._eventType; }
-    private _eventType: UIEventType;
-    private buttonEvent = new CanvasEvent();
-    on(on: UIEventType, callback: () => void) {
-        this.buttonEvent.subscribe(on, callback);
+    public get eventType(): UI_EVENT_TYPE { return this._eventType; }
+    private _eventType: UI_EVENT_TYPE;
+    private canvasEvent = new CanvasEvent<MouseData>();
+    on(on: UI_EVENT_TYPE, callback: (e: MouseData) => void) {
+        this.canvasEvent.subscribe(on, callback);
     }
 
-    constructor(context: CanvasRenderingContext2D, position: Vector) {
+
+
+    constructor(context: CanvasRenderingContext2D) {
         this._context = context;
-        this.position = position;
-        this.previousEventType = UIEventType.UP;
+        this.previousEventType = UI_EVENT_TYPE.UP;
 
         this._activeColor = new Color();
         this._activeOutline = new LineStyle();
         this._activeShadow = new Shadow();
+
+        this.defaultColor = new Color();
     }
 
-    private fireEvent() {
-        if (this._eventType !== this.previousEventType) {
-            this.buttonEvent.fireEvent(this._eventType, null);
+    private fireEvent(e: MouseData) {
+        if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
+            this.canvasEvent.fireEvent(this._eventType, e);
             this.previousEventType = this._eventType;
         }
     }
 
-    buttonDown() {
-        this._eventType = UIEventType.DOWN;
+    elementMouseDown(e: MouseData) {
+        this._eventType = UI_EVENT_TYPE.DOWN;
 
-        this.fireEvent();
+        this.fireEvent(e);
     }
 
-    buttonUp() {
-        if (this.previousEventType === UIEventType.DOWN) {
-            this._eventType = UIEventType.HOVER;
+    elementMouseUp(e: MouseData) {
+        if (this.previousEventType === UI_EVENT_TYPE.DOWN) {
+            this._eventType = UI_EVENT_TYPE.HOVER;
         }
         else {
-            this._eventType = UIEventType.UP;
+            this._eventType = UI_EVENT_TYPE.UP;
         }
 
-        this.fireEvent();
+        this.fireEvent(e);
     }
 
-    buttonHover() {
-        if (this.previousEventType !== UIEventType.DOWN) {
-            this._eventType = UIEventType.HOVER;
+    elementMouseHover(e: MouseData) {
+        if (this.previousEventType !== UI_EVENT_TYPE.DOWN) {
+            this._eventType = UI_EVENT_TYPE.HOVER;
         }
 
-        this.fireEvent();
+        this.fireEvent(e);
     }
 
-    buttonleave() {
-        this._eventType = UIEventType.LEAVE;
-        this.fireEvent();
+    elementMouseMove(e: MouseData) {
+        this._eventType = UI_EVENT_TYPE.MOVE;
+
+        this.fireEvent(e);
+    }
+
+    elementMouseleave(e: MouseData) {
+        this._eventType = UI_EVENT_TYPE.LEAVE;
+        this.fireEvent(e);
+    }
+
+    elementMouseOut(e: MouseData) {
+        this._eventType = UI_EVENT_TYPE.OUT;
+        this.fireEvent(e);
     }
 
     draw() {
-        this.baseElement.draw();
+        this._baseElement.draw();
         this.styleElement();
     }
 
@@ -123,25 +140,27 @@ export class InteractiveElement {
         this.applyColors();
     }
 
-    private applyColors(){
+    private applyColors() {
         this._activeColor = this._defaultColor;
         this._activeOutline = this._defaultOutline;
         this._activeShadow = this._defaultShadow;
 
         switch (this.eventType) {
-            case UIEventType.DOWN:
+            case UI_EVENT_TYPE.MOVE:
+                break;
+            case UI_EVENT_TYPE.DOWN:
                 if (this.downColor) { this._activeColor = this.downColor; }
                 if (this.downOutline) { this._activeOutline = this.downOutline; }
                 if (this.downOutline) { this._activeShadow = this.downShadow; }
                 break;
-            case UIEventType.HOVER:
+            case UI_EVENT_TYPE.HOVER:
                 if (this.hoverColor) { this._activeColor = this.hoverColor; }
                 if (this.hoverOutline) { this._activeOutline = this.hoverOutline; }
                 if (this.hoverShadow) { this._activeShadow = this.hoverShadow; }
         }
 
-        this.baseElement.color = this._activeColor;
-        this.baseElement.outline = this._activeOutline;
-        this.baseElement.shadow = this._activeShadow;
+        this._baseElement.color = this._activeColor;
+        this._baseElement.outline = this._activeOutline;
+        this._baseElement.shadow = this._activeShadow;
     }
 }

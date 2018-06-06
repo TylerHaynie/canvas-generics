@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { Vector } from '@canvas/objects/vector';
-import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Size } from '@canvas/models/size';
@@ -54,8 +54,9 @@ export class scene01Component implements OnInit {
   private maxParticles: number = 6000;
   private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
   private particleSpeedModifier: number = .05;
+  private particleCornerRadius: number = 0; // high particle count will lag with corner radius set
   private particleMaxRadius: number = 4.25;
-  private particleMinRadius: number = .15;
+  private particleMinRadius: number = 0.15;
   private maxParticleLifespan: number = 325;
   private minParticleLifespan: number = 175;
   private particleFadeTime: number = 100;
@@ -92,13 +93,13 @@ export class scene01Component implements OnInit {
   }
 
   private registerEvents() {
-    this.cw.mouseManager.on(MouseEventType.MOVE, (e: MouseData) => {
+    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
       this.mouseOnCanvas = true;
       this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
     });
 
 
-    this.cw.mouseManager.on(MouseEventType.OUT, (e: MouseData) => {
+    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
       this.mouseOnCanvas = false;
     });
   }
@@ -153,7 +154,7 @@ export class scene01Component implements OnInit {
     grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
     grd.addColorStop(this.foregroundEnd2, this.foregroundColorEndColor);
 
-    let p = new Vector(bounds.left, bounds.top); 
+    let p = new Vector(bounds.left, bounds.top);
     let f = new Rectangle(this.cw.drawingContext, p);
     f.size = new Size(bounds.width, bounds.height);
     f.color = new Color(grd);
@@ -213,17 +214,21 @@ export class scene01Component implements OnInit {
 
     for (let x = this.floatingParticles.length; x < this.maxParticles; x++) {
 
-      let pLocation = new Vector(Math.random() * (this.cw.width - this.particleMaxRadius), Math.random() * (this.cw.height - this.particleMaxRadius));
-      let p = new Particle(pLocation);
+      let pLocation = new Vector(
+        Math.fround(Math.random() * (this.cw.width - this.particleMaxRadius)),
+        Math.fround(Math.random() * (this.cw.height - this.particleMaxRadius))
+      );
 
+      let p = new Particle(pLocation);
       p.velocity = new Velocity(
         this.cw.random.randomWithNegative() * this.particleSpeedModifier,
         this.cw.random.randomWithNegative() * this.particleSpeedModifier
       );
 
       let r = new Rectangle(this.cw.drawingContext, p.position);
+      r.cornerRadius = this.particleCornerRadius;
       let rad = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
-      r.size = new Size(rad * 2, rad * 2);
+      r.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
       r.color = new Color(this.cw.color.randomColorFromArray(this.colorArray));
 
       let fp = new FloatingParticle(this.cw.drawingContext, pLocation, p, r);

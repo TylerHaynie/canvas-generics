@@ -100,6 +100,8 @@ export class Rectangle extends ShapeBase {
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         super(context, position);
+
+        this.size = new Size(50, 50);
     }
 
     draw() {
@@ -108,10 +110,12 @@ export class Rectangle extends ShapeBase {
                 this.context.save();
 
                 if (this._cornerRadius > 0) {
-                    if (this._cornerRadius < Math.fround(this._size.width / 2) && this._cornerRadius < Math.fround(this._size.height / 2)) {
+                    if (this._cornerRadius < Math.fround(this._size.width * 0.25) && this._cornerRadius < Math.fround(this._size.height * 0.25)) {
+                        // it's large enough to draw the rounded corners
                         this.drawComplexRectangle();
                     }
                     else {
+                        // save some number crunching and draw a basic rectangle if it's too small for rounded corners
                         this.drawBasicRectangle();
                     }
                 }
