@@ -13,7 +13,6 @@ import { MouseData } from './managers/mouse/mouse-data';
 import { PanZoomData } from './managers/pan-zoom/pan-zoom-data';
 import { MouseEventType, PanZoomEventType } from './events/canvas-event-types';
 import { QuadTree, Boundary, QuadVector } from '../quadtree/quad-tree';
-import { CanvasButton } from './user-interface/button/button';
 import { Rectangle } from './shapes/rectangle';
 import { Size } from './models/size';
 import { Color } from './models/color';

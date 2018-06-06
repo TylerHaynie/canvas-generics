@@ -1,8 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
-import { MouseEventType, ButtonEventType } from '../../lib/canvas/events/canvas-event-types';
+import { MouseEventType, UIEventType } from '../../lib/canvas/events/canvas-event-types';
 import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
-import { CanvasButton } from '../../lib/canvas/user-interface/button/button';
 import { Vector } from '../../lib/canvas/objects/vector';
 import { LineStyle } from '../../lib/canvas/models/line-style';
 import { Color } from '../../lib/canvas/models/color';
@@ -11,6 +10,7 @@ import { Rectangle } from '../../lib/canvas/shapes/rectangle';
 import { Size } from '../../lib/canvas/models/size';
 import { CollisionUtility } from '../../lib/canvas/utilities/collision-utility';
 import { Circle } from '../../lib/canvas/shapes/circle';
+import { CanvasUIElement } from '../../lib/canvas/user-interface/canvas-ui-element';
 
 @Component({
   selector: 'app-scene03',
@@ -29,7 +29,7 @@ export class Scene03Component implements OnInit {
 
   // quads
   private elementQuad: QuadTree;
-  private uiElements: CanvasButton[] = [];
+  private uiElements: CanvasUIElement[] = [];
 
   private uiEnabled: boolean = true;
   private uiBuffer: [{ callback: () => void }];
@@ -78,7 +78,7 @@ export class Scene03Component implements OnInit {
     this.uiElements = undefined;
   }
 
-  private removeUIButton(button: CanvasButton) {
+  private removeUIButton(button: CanvasUIElement) {
     let bi = this.uiElements.indexOf(button);
     this.uiElements.splice(bi, 1);
 
@@ -101,7 +101,7 @@ export class Scene03Component implements OnInit {
     });
   }
 
-  private addUIElement(element: CanvasButton) {
+  private addUIElement(element: CanvasUIElement) {
     this.uiElements.push(element);
     this.addToUiBuffer(() => element.draw());
     this.elementQuad.insert(new QuadVector(element.position.x, element.position.y, element));
@@ -199,8 +199,9 @@ export class Scene03Component implements OnInit {
   //#region User Interface
 
   private createUI() {
-    // create a canvas button element
-    let b = new CanvasButton(this.cw.drawingContext, new Vector(100, 100));
+
+    // create a canvas element for testing
+    let b = new CanvasUIElement(this.cw.drawingContext, new Vector(100, 100));
     b.radius = 25;
 
     let ls = new LineStyle(2);
@@ -211,8 +212,10 @@ export class Scene03Component implements OnInit {
     b.hoverColor = new Color('#7bd1cb');
     b.downColor = new Color('#111');
 
-    b.on(ButtonEventType.DOWN, () => {
-      console.log('BUTTON CLICKED');
+    // TODO: now creat a button off of a UI element
+
+    b.on(UIEventType.DOWN, () => {
+      // do something with your button
     });
 
     this.uiElements.push(b);

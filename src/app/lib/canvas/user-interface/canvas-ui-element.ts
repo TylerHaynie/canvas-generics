@@ -1,12 +1,11 @@
-import { ButtonEventType } from '../../events/canvas-event-types';
-import { Vector } from '../../objects/vector';
-import { Color } from '../../models/color';
-import { LineStyle } from '../../models/line-style';
-import { CanvasEvent } from '../../events/canvas-event';
-import { Circle } from '../../shapes/circle';
-import { Shadow } from '../../models/shadow';
-
-export class CanvasButton {
+import { Vector } from '../objects/vector';
+import { Color } from '../models/color';
+import { LineStyle } from '../models/line-style';
+import { Shadow } from '../models/shadow';
+import { UIEventType } from '../events/canvas-event-types';
+import { CanvasEvent } from '../events/canvas-event';
+import { Circle } from '../shapes/circle';
+export class CanvasUIElement {
     // public
     position: Vector = new Vector(0, 0);
     radius: number = 1;
@@ -45,94 +44,82 @@ export class CanvasButton {
     private activeColor: Color;
     private activeOutline: LineStyle;
     private activeShadow: Shadow;
-    private previousEventType: ButtonEventType;
+    private previousEventType: UIEventType;
 
     // event
-    private eventType: ButtonEventType;
+    private eventType: UIEventType;
     private buttonEvent = new CanvasEvent();
-    on(on: ButtonEventType, callback: () => void) {
+    on(on: UIEventType, callback: () => void) {
         this.buttonEvent.subscribe(on, callback);
     }
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         this.context = context;
         this.position = position;
-        this.previousEventType = ButtonEventType.UP;
+        this.previousEventType = UIEventType.UP;
 
         this.activeColor = new Color();
         this.activeOutline = new LineStyle();
         this.activeShadow = new Shadow();
     }
 
-    private fireEvent(type: ButtonEventType) {
+    private fireEvent() {
         if (this.eventType !== this.previousEventType) {
-            console.log(`Button: ${this.eventType}`);
-            this.buttonEvent.fireEvent(type, null);
-            this.previousEventType = type;
+            this.buttonEvent.fireEvent(this.eventType, null);
+            this.previousEventType = this.eventType;
         }
     }
 
     buttonDown() {
-        this.eventType = ButtonEventType.DOWN;
+        this.eventType = UIEventType.DOWN;
     }
 
     buttonUp() {
-        if (this.previousEventType === ButtonEventType.DOWN) {
-            this.eventType = ButtonEventType.HOVER;
+        if (this.previousEventType === UIEventType.DOWN) {
+            this.eventType = UIEventType.HOVER;
         }
         else {
-            this.eventType = ButtonEventType.UP;
+            this.eventType = UIEventType.UP;
         }
     }
 
     buttonHover() {
-        if (this.previousEventType !== ButtonEventType.DOWN) {
-            this.eventType = ButtonEventType.HOVER;
+        if (this.previousEventType !== UIEventType.DOWN) {
+            this.eventType = UIEventType.HOVER;
         }
     }
 
     buttonleave() {
-        this.eventType = ButtonEventType.LEAVE;
+        this.eventType = UIEventType.LEAVE;
     }
 
     draw() {
-        this.HandleButton();
-        this.drawButton();
+        this.styleElement();
+        this.drawElement();
+        this.fireEvent();
     }
 
-    private HandleButton() {
+    private styleElement() {
         this.activeColor = this.defaultColor;
         this.activeOutline = this.defaultOutline;
         this.activeShadow = this.defaultShadow;
 
         switch (this.eventType) {
-            case ButtonEventType.DOWN:
+            case UIEventType.DOWN:
                 if (this.downColor) { this.activeColor = this.downColor; }
                 if (this.downOutline) { this.activeOutline = this.downOutline; }
                 if (this.downOutline) { this.activeShadow = this.downShadow; }
-
-                this.fireEvent(ButtonEventType.DOWN);
                 break;
-            case ButtonEventType.UP:
-                this.fireEvent(ButtonEventType.UP);
-                break;
-            case ButtonEventType.LEAVE:
-                this.fireEvent(ButtonEventType.LEAVE);
-                break;
-            case ButtonEventType.HOVER:
+            case UIEventType.HOVER:
                 if (this.hoverColor) { this.activeColor = this.hoverColor; }
                 if (this.hoverOutline) { this.activeOutline = this.hoverOutline; }
                 if (this.hoverShadow) { this.activeShadow = this.hoverShadow; }
-
-                this.fireEvent(ButtonEventType.HOVER);
-                break;
-
-            default:
-                break;
         }
     }
 
-    private drawButton() {
+    private drawElement() {
+
+        // testing with circle
         let c = new Circle(this.context);
         c.position = this.position;
         c.radius = this.radius;

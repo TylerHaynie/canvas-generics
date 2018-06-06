@@ -12,7 +12,7 @@ export enum PanZoomEventType {
     RESET = 'reset'
 }
 
-export enum ButtonEventType {
+export enum UIEventType {
     DOWN = 'down',
     UP = 'up',
     HOVER = 'hover',
