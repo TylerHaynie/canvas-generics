@@ -27,6 +27,8 @@ export class Rectangle {
                 if (this.shadow) {
                     this.context.shadowBlur = this.shadow.shadowBlur;
                     this.context.shadowColor = this.shadow.shadowColor;
+                    this.context.shadowOffsetX = this.shadow.offsetX;
+                    this.context.shadowOffsetY = this.shadow.offsetY;
                 }
 
                 // draw the solid this

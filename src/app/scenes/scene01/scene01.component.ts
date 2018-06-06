@@ -126,9 +126,6 @@ export class scene01Component implements OnInit {
     // drawing the graident on the top
     this.drawForeground();
 
-    // draw UI
-    this.drawUI();
-
     // debug
     if (this.debugParticles) {
       this.particleQuad.debugQuad(this.cw.drawingContext, '#777');
@@ -212,10 +209,6 @@ export class scene01Component implements OnInit {
         particles.splice(x, 1);
       }
     }
-  }
-
-  private drawUI() {
-
   }
 
   //#endregion

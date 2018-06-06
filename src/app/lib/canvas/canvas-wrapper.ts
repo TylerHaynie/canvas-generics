@@ -12,6 +12,12 @@ import { PanZoomManager } from './managers/pan-zoom/pan-zoom-manager';
 import { MouseData } from './managers/mouse/mouse-data';
 import { PanZoomData } from './managers/pan-zoom/pan-zoom-data';
 import { MouseEventType, PanZoomEventType } from './events/canvas-event-types';
+import { QuadTree, Boundary, QuadVector } from '../quadtree/quad-tree';
+import { CanvasButton } from './user-interface/button/button';
+import { Rectangle } from './shapes/rectangle';
+import { Size } from './models/size';
+import { Color } from './models/color';
+import { LineStyle } from './models/line-style';
 
 export class CanvasWrapper {
 
@@ -129,6 +135,18 @@ export class CanvasWrapper {
             this.mouseMoved(e);
         });
 
+        this._mouseManager.on(MouseEventType.DOWN, (e) => {
+            this.mouseDown(e);
+        });
+
+        this._mouseManager.on(MouseEventType.UP, (e) => {
+            this.mouseUp(e);
+        });
+
+        this._mouseManager.on(MouseEventType.OUT, (e) => {
+            this.mouseLeave(e);
+        });
+
         this._panZoomManager.on(PanZoomEventType.ZOOM, (e) => {
             this.panZoomChanged(e);
         });
@@ -146,10 +164,21 @@ export class CanvasWrapper {
         this.translatedMouse = e.translatedPosition ? e.translatedPosition : e.mousePosition;
     }
 
+    private mouseDown(e: MouseData) {
+        // check UI quad tree for down
+    }
+
+    private mouseUp(e: MouseData) {
+        // check UI quad tree for up
+    }
+
+    private mouseLeave(e: MouseData) {
+        // mouse is off canvas
+    }
+
     private panZoomChanged(e: PanZoomData) {
         this.transformChanged = true;
         this.PanZoomData = e;
-
     }
 
     private setupCanvas() {
@@ -211,7 +240,7 @@ export class CanvasWrapper {
     private drawGrid() {
         // draw grid
         if (this._enableGrid) {
-            this.helperUtility.drawGrid('rgba(24, 24, 24, .80)', 30);
+            this.helperUtility.drawGrid('rgba(30, 30, 30, .80)', 30);
         }
     }
 

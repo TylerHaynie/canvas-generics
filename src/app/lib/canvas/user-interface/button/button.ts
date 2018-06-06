@@ -3,31 +3,49 @@ import { Vector } from '../../objects/vector';
 import { Color } from '../../models/color';
 import { LineStyle } from '../../models/line-style';
 import { CanvasEvent } from '../../events/canvas-event';
+import { Circle } from '../../shapes/circle';
+import { Shadow } from '../../models/shadow';
 
 export class CanvasButton {
-    private context: CanvasRenderingContext2D;
-    private color: Color;
-    private outline: LineStyle;
-
-    position: Vector;
-    radius: number;
+    // public
+    position: Vector = new Vector(0, 0);
+    radius: number = 1;
     icon?: HTMLImageElement;
     text?: string;
 
     // styles
-    defaultColor: Color;
-    defaultOutline: LineStyle;
-
     hoverColor?: Color;
-    hoverOutline: LineStyle;
+    hoverOutline?: LineStyle;
+    hoverShadow?: Shadow;
 
     downColor?: Color;
-    downOutline: LineStyle;
+    downOutline?: LineStyle;
+    downShadow?: Shadow;
 
-    private downCallbackList: () => void[];
-    private upCallbackList: () => void[];
-    private hoverCallbackList: () => void[];
-    private leaveCallbackList: () => void[];
+    // styles
+    private defaultColor: Color;
+    public set color(v: Color) {
+        this.defaultColor = v;
+        this.activeColor = v;
+    }
+
+    private defaultOutline: LineStyle;
+    public set outline(v: LineStyle) {
+        this.defaultOutline = v;
+        this.activeOutline = v;
+    }
+
+    private defaultShadow: Shadow;
+    public set shadow(v: Shadow) {
+        this.defaultShadow = v;
+        this.activeShadow = v;
+    }
+
+    private context: CanvasRenderingContext2D;
+    private activeColor: Color;
+    private activeOutline: LineStyle;
+    private activeShadow: Shadow;
+    private previousEventType: ButtonEventType;
 
     // event
     private eventType: ButtonEventType;
@@ -39,53 +57,89 @@ export class CanvasButton {
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         this.context = context;
         this.position = position;
+        this.previousEventType = ButtonEventType.UP;
 
-        this.color = new Color();
-        this.outline = new LineStyle();
-
-        this.defaultColor = this.color;
-        this.defaultOutline = this.outline;
+        this.activeColor = new Color();
+        this.activeOutline = new LineStyle();
+        this.activeShadow = new Shadow();
     }
 
     private fireEvent(type: ButtonEventType) {
-        this.buttonEvent.fireEvent(type, null);
+        if (this.eventType !== this.previousEventType) {
+            console.log(`Button: ${this.eventType}`);
+            this.buttonEvent.fireEvent(type, null);
+            this.previousEventType = type;
+        }
     }
 
     buttonDown() {
-        this.color = this.defaultColor;
-        this.outline = this.defaultOutline;
-
-        if (this.downColor) { this.color = this.downColor; }
-        if (this.downOutline) { this.outline = this.downOutline; }
-
-        this.fireEvent(ButtonEventType.DOWN);
+        this.eventType = ButtonEventType.DOWN;
     }
 
     buttonUp() {
-        this.color = this.defaultColor;
-        this.outline = this.defaultOutline;
-
-        this.fireEvent(ButtonEventType.UP);
+        if (this.previousEventType === ButtonEventType.DOWN) {
+            this.eventType = ButtonEventType.HOVER;
+        }
+        else {
+            this.eventType = ButtonEventType.UP;
+        }
     }
 
     buttonHover() {
-        this.color = this.defaultColor;
-        this.outline = this.defaultOutline;
-
-        if (this.hoverColor) { this.color = this.hoverColor; }
-        if (this.hoverOutline) { this.outline = this.hoverOutline; }
-
-        this.fireEvent(ButtonEventType.HOVER);
+        if (this.previousEventType !== ButtonEventType.DOWN) {
+            this.eventType = ButtonEventType.HOVER;
+        }
     }
 
     buttonleave() {
-        this.color = this.defaultColor;
-        this.outline = this.defaultOutline;
-
-        this.fireEvent(ButtonEventType.LEAVE);
+        this.eventType = ButtonEventType.LEAVE;
     }
 
     draw() {
+        this.HandleButton();
+        this.drawButton();
+    }
 
+    private HandleButton() {
+        this.activeColor = this.defaultColor;
+        this.activeOutline = this.defaultOutline;
+        this.activeShadow = this.defaultShadow;
+
+        switch (this.eventType) {
+            case ButtonEventType.DOWN:
+                if (this.downColor) { this.activeColor = this.downColor; }
+                if (this.downOutline) { this.activeOutline = this.downOutline; }
+                if (this.downOutline) { this.activeShadow = this.downShadow; }
+
+                this.fireEvent(ButtonEventType.DOWN);
+                break;
+            case ButtonEventType.UP:
+                this.fireEvent(ButtonEventType.UP);
+                break;
+            case ButtonEventType.LEAVE:
+                this.fireEvent(ButtonEventType.LEAVE);
+                break;
+            case ButtonEventType.HOVER:
+                if (this.hoverColor) { this.activeColor = this.hoverColor; }
+                if (this.hoverOutline) { this.activeOutline = this.hoverOutline; }
+                if (this.hoverShadow) { this.activeShadow = this.hoverShadow; }
+
+                this.fireEvent(ButtonEventType.HOVER);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private drawButton() {
+        let c = new Circle(this.context);
+        c.position = this.position;
+        c.radius = this.radius;
+        c.color = this.activeColor;
+        c.outline = this.activeOutline;
+        c.shadow = this.activeShadow;
+
+        c.draw();
     }
 }

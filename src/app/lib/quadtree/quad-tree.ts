@@ -15,6 +15,7 @@ export class QuadVector {
     constructor(x: number, y: number, data: any = undefined) {
         this.x = x;
         this.y = y;
+        this.data = data;
     }
 }
 
