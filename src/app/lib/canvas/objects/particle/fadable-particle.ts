@@ -1,8 +1,8 @@
-import { Particle } from '../particle';
-import { Vector } from '../vector';
-import { Rectangle } from '../../shapes/rectangle';
-import { Circle } from '../../shapes/circle';
-import { Line } from '../../shapes/line/line';
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { Circle } from '@canvas/shapes/circle';
+import { Particle } from '@canvas/objects/particle';
+import { Line } from '@canvas/shapes/line/line';
+import { Vector } from '@canvas/objects/vector';
 
 export class FadableParticle extends Particle {
 

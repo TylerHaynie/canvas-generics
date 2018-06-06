@@ -1,4 +1,5 @@
-import { Vector } from '../objects/vector';
+import { Vector } from '@canvas/objects/vector';
+
 export class RandomUtility {
     /// returns a random number between -1 and 1
     randomWithNegative() {

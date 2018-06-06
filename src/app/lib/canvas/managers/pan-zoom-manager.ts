@@ -1,9 +1,8 @@
-import { MouseManager } from '../mouse/mouse-manager';
-import { Vector } from '../../objects/vector';
-import { PanZoomData } from './pan-zoom-data';
-import { CanvasEvent } from '../../events/canvas-event';
-import { MouseData } from '../mouse/mouse-data';
-import { MouseEventType } from '../mouse/event-types';
+import { MouseManager } from "@canvas/managers/mouse-manager";
+import { Vector } from "@canvas/objects/vector";
+import { PanZoomEventType, MouseEventType } from "@canvas/events/canvas-event-types";
+import { CanvasEvent } from "@canvas/events/canvas-event";
+import { PanZoomData } from "@canvas/events/event-data";
 
 export class PanZoomManager {
 
@@ -25,6 +24,7 @@ export class PanZoomManager {
 
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
+    private mousePosition: Vector;
 
     // canvas
     private canvasScaleStep: number = .10;
@@ -56,9 +56,10 @@ export class PanZoomManager {
 
     //#region events
 
+    private eventType: PanZoomEventType;
     private panZoomEvent = new CanvasEvent<PanZoomData>();
-    subscribe(callback: (e: PanZoomData) => void) {
-        this.panZoomEvent.subscribe(callback);
+    on(on: PanZoomEventType, callback: (e: PanZoomData) => void) {
+        this.panZoomEvent.subscribe(on, callback);
     }
 
     //#endregion
@@ -67,38 +68,8 @@ export class PanZoomManager {
         this.context = context;
         this.mouseManager = mouseManager;
 
-        this.mouseManager.subscribe((e) => {
-            this.mouseEvent(e);
-        });
-
         this.resetView();
         this.registerEvents();
-    }
-
-    private mouseEvent(e: MouseData) {
-        switch (e.eventType) {
-            case MouseEventType.DOWN:
-                if (!this.isPanning) {
-                    this.mouseDown(e.mousePosition);
-                }
-                break;
-            case MouseEventType.MOVE:
-                this.mouseMove(e.mousePosition);
-                break;
-            case MouseEventType.WHEEL:
-                switch (e.scrollDirection) {
-                    case 'up':
-                        this.zoomIn();
-                        break;
-                    case 'down':
-                        this.zoomOut();
-                        break;
-                }
-                break;
-            case MouseEventType.UP:
-                this.mouseStop();
-                break;
-        }
     }
 
     zoomIn() {
@@ -111,6 +82,33 @@ export class PanZoomManager {
 
     private registerEvents() {
         const cv = this.context.canvas;
+
+        this.mouseManager.on(MouseEventType.DOWN, (e) => {
+            this.mouseDown(e.mousePosition);
+        });
+
+        this.mouseManager.on(MouseEventType.MOVE, (e) => {
+            this.mouseMove(e.mousePosition);
+        });
+
+        this.mouseManager.on(MouseEventType.WHEEL, (e) => {
+            switch (e.scrollDirection) {
+                case 'up':
+                    this.zoomIn();
+                    break;
+                case 'down':
+                    this.zoomOut();
+                    break;
+            }
+        });
+
+        this.mouseManager.on(MouseEventType.UP, (e) => {
+            this.mouseStop();
+        });
+
+        this.mouseManager.on(MouseEventType.OUT, (e) => {
+            this.mouseStop();
+        });
 
         // touch events
         // cv.addEventListener('touchstart', (e) => {
@@ -133,9 +131,12 @@ export class PanZoomManager {
 
     private fireEvent() {
         let data = new PanZoomData();
+        data.eventType = this.eventType;
         data.scale = this.canvasScale;
         data.pan = this.totalPanning;
-        this.panZoomEvent.fireEvent(data);
+        data.mousePosition = this.mousePosition;
+
+        this.panZoomEvent.fireEvent(this.eventType, data);
     }
 
     //#region Touch Events
@@ -183,13 +184,15 @@ export class PanZoomManager {
     //#region Input logic
 
     private mouseDown(mousePosition: Vector) {
-        this.panStartPosition = new Vector(mousePosition.x - this.panOffset.x, mousePosition.y - this.panOffset.y);
+        if (!this.isPanning) {
+            this.panStartPosition = new Vector(mousePosition.x - this.panOffset.x, mousePosition.y - this.panOffset.y);
 
-        this.isPanning = true;
-        console.log('pan Start');
+            this.isPanning = true;
+        }
     }
 
     private mouseMove(mousePosition: Vector) {
+        this.mousePosition = mousePosition;
         this.pan(mousePosition);
     }
 
@@ -235,6 +238,7 @@ export class PanZoomManager {
             this.totalPanning.y += dy;
 
             console.log('pan changed');
+            this.eventType = PanZoomEventType.PAN;
             this.fireEvent();
         }
     }
@@ -255,6 +259,7 @@ export class PanZoomManager {
         }
 
         console.log('Scale Up');
+        this.eventType = PanZoomEventType.ZOOM;
         this.fireEvent();
     }
 
@@ -275,6 +280,7 @@ export class PanZoomManager {
             }
 
             console.log('Scale Down');
+            this.eventType = PanZoomEventType.ZOOM;
             this.fireEvent();
         }
     }
@@ -284,6 +290,7 @@ export class PanZoomManager {
         this.totalPanning = <Vector>{ x: 0, y: 0 };
 
         this.canvasScale = 1;
+        this.eventType = PanZoomEventType.RESET;
         this.fireEvent();
     }
 }

@@ -1,15 +1,15 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { CanvasWrapper } from '../../lib/canvas/canvas-wrapper';
-import { QuadTree, Boundry } from '../../lib/quadtree/quad-tree';
-import { Vector } from '../../lib/canvas/objects/vector';
-import { Rectangle } from '../../lib/canvas/shapes/rectangle';
-import { Circle } from '../../lib/canvas/shapes/circle';
-import { RayCastUtility } from '../../lib/canvas/utilities/raycast-utility';
-import { Line } from '../../lib/canvas/shapes/line/line';
-import { LineSegment } from '../../lib/canvas/shapes/line/line-segment';
-import { Color } from '../../lib/canvas/models/color';
-import { LineStyle } from '../../lib/canvas/models/line-style';
-import { MouseData } from '../../lib/canvas/managers/mouse/mouse-data';
+import { Vector } from '@canvas/objects/vector';
+import { CanvasWrapper } from '@canvas/canvas-wrapper';
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { QuadTree, Boundary } from '../../lib/quadtree/quad-tree';
+import { Circle } from '@canvas/shapes/circle';
+import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { MouseData } from '@canvas/events/event-data';
+import { Color } from '@canvas/models/color';
+import { RayCastUtility } from '@canvas/utilities/raycast-utility';
+import { Line } from '@canvas/shapes/line/line';
+import { LineSegment } from '@canvas/shapes/line/line-segment';
 
 interface Ray {
   a: Vector;
@@ -29,9 +29,9 @@ export class Scene02Component implements OnInit {
   private qtSquares: QuadTree;
   private focalPoint: Circle;
 
-    // mouse
-    private mouseOnCanvas: boolean = false;
-    private mousePosition: Vector;
+  // mouse
+  private mouseOnCanvas: boolean = false;
+  private mousePosition: Vector;
 
   constructor() { }
 
@@ -41,7 +41,7 @@ export class Scene02Component implements OnInit {
     this.cw.panZoomManager.minScale = 1;
     this.cw.panZoomManager.panningAllowed = true;
 
-    let b: Boundry = new Boundry(0, 0, this.cw.width, this.cw.height);
+    let b: Boundary = new Boundary(0, 0, this.cw.width, this.cw.height);
     this.qtSquares = new QuadTree(b, 1);
 
     this.registerEvents();
@@ -55,7 +55,7 @@ export class Scene02Component implements OnInit {
   }
 
   private registerEvents() {
-    this.cw.mouseManager.subscribe((e: MouseData) => {
+    this.cw.mouseManager.on(MouseEventType.MOVE, (e: MouseData) => {
       this.mouseChanged(e);
     });
   }

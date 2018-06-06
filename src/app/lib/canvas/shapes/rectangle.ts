@@ -1,8 +1,8 @@
-import { Vector } from '../objects/vector';
-import { Size } from '../models/size';
-import { Color } from '../models/color';
-import { LineStyle } from '../models/line-style';
-import { Shadow } from '../models/shadow';
+import { Vector } from '@canvas/objects/vector';
+import { Size } from '@canvas/models/size';
+import { Color } from '@canvas/models/color';
+import { LineStyle } from '@canvas/models/line-style';
+import { Shadow } from '@canvas/models/shadow';
 
 export class Rectangle {
     private context: CanvasRenderingContext2D;
@@ -27,6 +27,8 @@ export class Rectangle {
                 if (this.shadow) {
                     this.context.shadowBlur = this.shadow.shadowBlur;
                     this.context.shadowColor = this.shadow.shadowColor;
+                    this.context.shadowOffsetX = this.shadow.offsetX;
+                    this.context.shadowOffsetY = this.shadow.offsetY;
                 }
 
                 // draw the solid this

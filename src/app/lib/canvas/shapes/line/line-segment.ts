@@ -1,4 +1,4 @@
-import { Vector } from '../../objects/vector';
+import { Vector } from '@canvas/objects/vector';
 
 export class LineSegment {
     startPosition: Vector;

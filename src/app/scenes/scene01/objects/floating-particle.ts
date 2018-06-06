@@ -1,9 +1,8 @@
-import { Particle } from '../../../lib/canvas/objects/particle';
-import { Circle } from '../../../lib/canvas/shapes/circle';
-import { Rectangle } from '../../../lib/canvas/shapes/rectangle';
-import { Vector } from '../../../lib/canvas/objects/vector';
-import { Bounds } from '../../../lib/canvas/objects/bounds';
-import { Color } from '../../../lib/canvas/models/color';
+import { Vector } from '@canvas/objects/vector';
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { Particle } from '@canvas/objects/particle';
+import { Bounds } from '@canvas/objects/bounds';
+import { Color } from '@canvas/models/color';
 
 export class FloatingParticle {
 
