@@ -10,7 +10,7 @@ import { KeyboardManager } from '@canvas/managers/keyboard-manager';
 import { WindowManager } from '@canvas/managers/window-manager';
 import { Vector } from '@canvas/objects/vector';
 import { PanZoomData, MouseData } from '@canvas/events/event-data';
-import { MouseEventType, PanZoomEventType } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 import { UIManager } from '@canvas/managers/ui-manager';
 
 export class CanvasWrapper {
@@ -129,31 +129,31 @@ export class CanvasWrapper {
     }
 
     private registerEvents() {
-        this._mouseManager.on(MouseEventType.MOVE, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e) => {
             this.mouseMoved(e);
         });
 
-        this._mouseManager.on(MouseEventType.DOWN, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.DOWN, (e) => {
             this.mouseDown(e);
         });
 
-        this._mouseManager.on(MouseEventType.UP, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.UP, (e) => {
             this.mouseUp(e);
         });
 
-        this._mouseManager.on(MouseEventType.OUT, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e) => {
             this.mouseLeave(e);
         });
 
-        this._panZoomManager.on(PanZoomEventType.ZOOM, (e) => {
+        this._panZoomManager.on(PAN_ZOOM_EVENT_TYPE.ZOOM, (e) => {
             this.panZoomChanged(e);
         });
 
-        this._panZoomManager.on(PanZoomEventType.PAN, (e) => {
+        this._panZoomManager.on(PAN_ZOOM_EVENT_TYPE.PAN, (e) => {
             this.panZoomChanged(e);
         });
 
-        this._panZoomManager.on(PanZoomEventType.RESET, (e) => {
+        this._panZoomManager.on(PAN_ZOOM_EVENT_TYPE.RESET, (e) => {
             this.panZoomChanged(e);
         });
     }
@@ -214,6 +214,8 @@ export class CanvasWrapper {
                 this.drawGrid();
             }
 
+            this.drawMouse();
+
             this.restoreContext();
 
             this.frameStep = false;
@@ -245,6 +247,12 @@ export class CanvasWrapper {
     private trackMousePosition() {
         if (this._trackMouse && this.translatedMouse) {
             this.helperUtility.trackMouse(this.translatedMouse, 'rgba(255, 255, 255, .80)');
+        }
+    }
+
+    private drawMouse() {
+        if (this.translatedMouse && this._mouseManager.mouseOnCanvas) {
+            this.helperUtility.drawMouse(this.translatedMouse, this._uiManager.uiMouseState);
         }
     }
 

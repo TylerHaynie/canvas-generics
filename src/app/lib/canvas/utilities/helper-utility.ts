@@ -1,6 +1,12 @@
 import { Line } from '@canvas/shapes/line/line';
 import { LineSegment } from '@canvas/shapes/line/line-segment';
 import { Vector } from '@canvas/objects/vector';
+import { MOUSE_STATE } from '@canvas/events/canvas-event-types';
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { Size } from '@canvas/models/size';
+import { Color } from '@canvas/models/color';
+import { Circle } from '@canvas/shapes/circle';
+import { LineStyle } from '@canvas/models/line-style';
 
 export class HelperUtility {
     private context: CanvasRenderingContext2D;
@@ -85,6 +91,36 @@ export class HelperUtility {
         }
 
         line.draw();
+    }
+
+    drawMouse(position: Vector, state: MOUSE_STATE) {
+        switch (state) {
+            case MOUSE_STATE.DEFAULT:
+                this.drawDefaultMouse(position);
+                break;
+            case MOUSE_STATE.GRAB:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private drawDefaultMouse(position: Vector) {
+        // circle outline
+        let co = new Circle(this.context, position);
+        co.radius = 20;
+        co.color = undefined;
+        co.outline = new LineStyle();
+        co.outline.shade = '#454545';
+        co.outline.alpha = .50;
+
+        // center point
+        let cp = new Circle(this.context, position);
+        cp.color.shade = 'red';
+        cp.radius = 1;
+
+        cp.draw();
+        co.draw();
     }
 
 }

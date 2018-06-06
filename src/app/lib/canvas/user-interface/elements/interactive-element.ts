@@ -1,5 +1,5 @@
 import { Vector } from '@canvas/objects/vector';
-import { UIEventType } from '@canvas/events/canvas-event-types';
+import { UI_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 import { Color } from '@canvas/models/color';
 import { LineStyle } from '@canvas/models/line-style';
 import { Shadow } from '@canvas/models/shadow';
@@ -60,19 +60,21 @@ export class InteractiveElement {
     private _context: CanvasRenderingContext2D;
     public get context(): CanvasRenderingContext2D { return this._context; }
 
-    private previousEventType: UIEventType;
+    private previousEventType: UI_EVENT_TYPE;
 
     // event
-    public get eventType(): UIEventType { return this._eventType; }
-    private _eventType: UIEventType;
+    public get eventType(): UI_EVENT_TYPE { return this._eventType; }
+    private _eventType: UI_EVENT_TYPE;
     private canvasEvent = new CanvasEvent<MouseData>();
-    on(on: UIEventType, callback: (e: MouseData) => void) {
+    on(on: UI_EVENT_TYPE, callback: (e: MouseData) => void) {
         this.canvasEvent.subscribe(on, callback);
     }
 
+
+
     constructor(context: CanvasRenderingContext2D) {
         this._context = context;
-        this.previousEventType = UIEventType.UP;
+        this.previousEventType = UI_EVENT_TYPE.UP;
 
         this._activeColor = new Color();
         this._activeOutline = new LineStyle();
@@ -82,50 +84,50 @@ export class InteractiveElement {
     }
 
     private fireEvent(e: MouseData) {
-        if ((this._eventType !== this.previousEventType) || this._eventType === UIEventType.MOVE) {
+        if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
             this.canvasEvent.fireEvent(this._eventType, e);
             this.previousEventType = this._eventType;
         }
     }
 
     elementMouseDown(e: MouseData) {
-        this._eventType = UIEventType.DOWN;
+        this._eventType = UI_EVENT_TYPE.DOWN;
 
         this.fireEvent(e);
     }
 
     elementMouseUp(e: MouseData) {
-        if (this.previousEventType === UIEventType.DOWN) {
-            this._eventType = UIEventType.HOVER;
+        if (this.previousEventType === UI_EVENT_TYPE.DOWN) {
+            this._eventType = UI_EVENT_TYPE.HOVER;
         }
         else {
-            this._eventType = UIEventType.UP;
+            this._eventType = UI_EVENT_TYPE.UP;
         }
 
         this.fireEvent(e);
     }
 
     elementMouseHover(e: MouseData) {
-        if (this.previousEventType !== UIEventType.DOWN) {
-            this._eventType = UIEventType.HOVER;
+        if (this.previousEventType !== UI_EVENT_TYPE.DOWN) {
+            this._eventType = UI_EVENT_TYPE.HOVER;
         }
 
         this.fireEvent(e);
     }
 
     elementMouseMove(e: MouseData) {
-        this._eventType = UIEventType.MOVE;
+        this._eventType = UI_EVENT_TYPE.MOVE;
 
         this.fireEvent(e);
     }
 
     elementMouseleave(e: MouseData) {
-        this._eventType = UIEventType.LEAVE;
+        this._eventType = UI_EVENT_TYPE.LEAVE;
         this.fireEvent(e);
     }
 
     elementMouseOut(e: MouseData) {
-        this._eventType = UIEventType.OUT;
+        this._eventType = UI_EVENT_TYPE.OUT;
         this.fireEvent(e);
     }
 
@@ -144,14 +146,14 @@ export class InteractiveElement {
         this._activeShadow = this._defaultShadow;
 
         switch (this.eventType) {
-            case UIEventType.MOVE:
+            case UI_EVENT_TYPE.MOVE:
                 break;
-            case UIEventType.DOWN:
+            case UI_EVENT_TYPE.DOWN:
                 if (this.downColor) { this._activeColor = this.downColor; }
                 if (this.downOutline) { this._activeOutline = this.downOutline; }
                 if (this.downOutline) { this._activeShadow = this.downShadow; }
                 break;
-            case UIEventType.HOVER:
+            case UI_EVENT_TYPE.HOVER:
                 if (this.hoverColor) { this._activeColor = this.hoverColor; }
                 if (this.hoverOutline) { this._activeOutline = this.hoverOutline; }
                 if (this.hoverShadow) { this._activeShadow = this.hoverShadow; }

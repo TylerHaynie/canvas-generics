@@ -3,7 +3,7 @@ import { Size } from '@canvas/models/size';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { InteractiveElement } from '@canvas/user-interface/elements/interactive-element';
 
-export class RectangularUIElement extends InteractiveElement {
+export class RectangularElement extends InteractiveElement{
 
     _cornerRadius: number = 0;
     public set cornerRadius(v: number) {

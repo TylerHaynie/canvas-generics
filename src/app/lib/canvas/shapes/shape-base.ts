@@ -22,5 +22,7 @@ export class ShapeBase {
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         this._context = context;
         this.position = position;
+
+        this.color = new Color();
     }
 }

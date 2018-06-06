@@ -100,6 +100,8 @@ export class Rectangle extends ShapeBase {
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         super(context, position);
+
+        this.size = new Size(50, 50);
     }
 
     draw() {

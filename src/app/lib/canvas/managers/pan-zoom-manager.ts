@@ -1,6 +1,6 @@
 import { MouseManager } from "@canvas/managers/mouse-manager";
 import { Vector } from "@canvas/objects/vector";
-import { PanZoomEventType, MouseEventType } from "@canvas/events/canvas-event-types";
+import { PAN_ZOOM_EVENT_TYPE, MOUSE_EVENT_TYPE } from "@canvas/events/canvas-event-types";
 import { CanvasEvent } from "@canvas/events/canvas-event";
 import { PanZoomData } from "@canvas/events/event-data";
 
@@ -56,9 +56,9 @@ export class PanZoomManager {
 
     //#region events
 
-    private eventType: PanZoomEventType;
+    private eventType: PAN_ZOOM_EVENT_TYPE;
     private panZoomEvent = new CanvasEvent<PanZoomData>();
-    on(on: PanZoomEventType, callback: (e: PanZoomData) => void) {
+    on(on: PAN_ZOOM_EVENT_TYPE, callback: (e: PanZoomData) => void) {
         this.panZoomEvent.subscribe(on, callback);
     }
 
@@ -83,15 +83,15 @@ export class PanZoomManager {
     private registerEvents() {
         const cv = this.context.canvas;
 
-        this.mouseManager.on(MouseEventType.DOWN, (e) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.DOWN, (e) => {
             this.mouseDown(e.mousePosition);
         });
 
-        this.mouseManager.on(MouseEventType.MOVE, (e) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e) => {
             this.mouseMove(e.mousePosition);
         });
 
-        this.mouseManager.on(MouseEventType.WHEEL, (e) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.WHEEL, (e) => {
             switch (e.scrollDirection) {
                 case 'up':
                     this.zoomIn();
@@ -102,11 +102,11 @@ export class PanZoomManager {
             }
         });
 
-        this.mouseManager.on(MouseEventType.UP, (e) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.UP, (e) => {
             this.mouseStop();
         });
 
-        this.mouseManager.on(MouseEventType.OUT, (e) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e) => {
             this.mouseStop();
         });
 
@@ -238,7 +238,7 @@ export class PanZoomManager {
             this.totalPanning.y += dy;
 
             console.log('pan changed');
-            this.eventType = PanZoomEventType.PAN;
+            this.eventType = PAN_ZOOM_EVENT_TYPE.PAN;
             this.fireEvent();
         }
     }
@@ -259,7 +259,7 @@ export class PanZoomManager {
         }
 
         console.log('Scale Up');
-        this.eventType = PanZoomEventType.ZOOM;
+        this.eventType = PAN_ZOOM_EVENT_TYPE.ZOOM;
         this.fireEvent();
     }
 
@@ -280,7 +280,7 @@ export class PanZoomManager {
             }
 
             console.log('Scale Down');
-            this.eventType = PanZoomEventType.ZOOM;
+            this.eventType = PAN_ZOOM_EVENT_TYPE.ZOOM;
             this.fireEvent();
         }
     }
@@ -290,7 +290,7 @@ export class PanZoomManager {
         this.totalPanning = <Vector>{ x: 0, y: 0 };
 
         this.canvasScale = 1;
-        this.eventType = PanZoomEventType.RESET;
+        this.eventType = PAN_ZOOM_EVENT_TYPE.RESET;
         this.fireEvent();
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { Vector } from '@canvas/objects/vector';
-import { MouseEventType } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Size } from '@canvas/models/size';
@@ -93,13 +93,13 @@ export class scene01Component implements OnInit {
   }
 
   private registerEvents() {
-    this.cw.mouseManager.on(MouseEventType.MOVE, (e: MouseData) => {
+    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
       this.mouseOnCanvas = true;
       this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
     });
 
 
-    this.cw.mouseManager.on(MouseEventType.OUT, (e: MouseData) => {
+    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
       this.mouseOnCanvas = false;
     });
   }

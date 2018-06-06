@@ -1,7 +1,7 @@
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { QuadTree, QuadVector } from '../../quadtree/quad-tree';
 import { MouseManager } from '@canvas/managers/mouse-manager';
-import { MouseEventType, UIEventType } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE, UI_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { LineStyle } from '@canvas/models/line-style';
 import { Vector } from '@canvas/objects/vector';
@@ -9,10 +9,11 @@ import { Color } from '@canvas/models/color';
 import { Circle } from '@canvas/shapes/circle';
 import { CircularUIElement } from '@canvas/user-interface/elements/circular-element';
 import { InteractiveElement } from '@canvas/user-interface/elements/interactive-element';
-import { RectangularUIElement } from '@canvas/user-interface/elements/rectangular-element';
+import { RectangularElement } from '@canvas/user-interface/elements/rectangular-element';
 
 export class UIManager {
     public get uiEnabled(): boolean { return this._uiEnabled; }
+    public get uiMouseState(): MOUSE_STATE { return this._uiMouseState; }
     public set enableUI(v: boolean) { this._uiEnabled = v; }
     public get debugEnabled(): boolean { return this._debugEnabled; }
     public set enableDebug(v: boolean) { this._debugEnabled = v; }
@@ -36,6 +37,8 @@ export class UIManager {
     private _debugBuffer: [{ callback: () => void }];
     public get debugBuffer() { return this._uiBuffer; }
 
+    private _uiMouseState: MOUSE_STATE = MOUSE_STATE.DEFAULT;
+
     //#endregion
 
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
@@ -46,25 +49,25 @@ export class UIManager {
     }
 
     private registerEvents() {
-        this.mouseManager.on(MouseEventType.MOVE, (e: MouseData) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
             if (this._uiEnabled) {
                 this.pointerMoved(e);
             }
         });
 
-        this.mouseManager.on(MouseEventType.DOWN, (e: MouseData) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.DOWN, (e: MouseData) => {
             if (this._uiEnabled) {
                 this.checkPointerDown(e);
             }
         });
 
-        this.mouseManager.on(MouseEventType.UP, (e: MouseData) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.UP, (e: MouseData) => {
             if (this._uiEnabled) {
                 this.checkPointerUp(e);
             }
         });
 
-        this.mouseManager.on(MouseEventType.OUT, (e: MouseData) => {
+        this.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
             this.uiElements.forEach(element => {
                 element.elementMouseOut(e);
             });
@@ -177,7 +180,12 @@ export class UIManager {
 
     //#region User Interaction
 
+    mouseStateChange(mouseState: MOUSE_STATE) {
+        this._uiMouseState = mouseState;
+    }
+
     private pointerMoved(e: MouseData) {
+        e.uiMouseState = this._uiMouseState;
         let mp = e.mousePosition;
 
         this.uiElements.forEach(element => {
@@ -190,6 +198,7 @@ export class UIManager {
     }
 
     private checkPointerDown(e: MouseData) {
+        e.uiMouseState = this._uiMouseState;
         let mp = e.mousePosition;
 
         this.uiElements.forEach(element => {
@@ -200,6 +209,7 @@ export class UIManager {
     }
 
     private checkPointerUp(e: MouseData) {
+        e.uiMouseState = this._uiMouseState;
         let mp = e.mousePosition;
 
         this.uiElements.forEach(element => {
