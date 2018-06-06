@@ -7,9 +7,9 @@ import { LineStyle } from '@canvas/models/line-style';
 import { Vector } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
 import { Circle } from '@canvas/shapes/circle';
-import { CircularUIElement } from '@canvas/user-interface/element/circular-element';
-import { InteractiveElement } from '@canvas/user-interface/element/interactive-element';
-import { RectangularUIElement } from '@canvas/user-interface/element/rectangular-element';
+import { CircularUIElement } from '@canvas/user-interface/elements/circular-element';
+import { InteractiveElement } from '@canvas/user-interface/elements/interactive-element';
+import { RectangularUIElement } from '@canvas/user-interface/elements/rectangular-element';
 
 export class UIManager {
     public get uiEnabled(): boolean { return this._uiEnabled; }

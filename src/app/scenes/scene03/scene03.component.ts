@@ -8,8 +8,8 @@ import { LineStyle } from '@canvas/models/line-style';
 import { Color } from '@canvas/models/color';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Size } from '@canvas/models/size';
-import { CircularUIElement } from '@canvas/user-interface/element/circular-element';
-import { RectangularUIElement } from '@canvas/user-interface/element/rectangular-element';
+import { CircularUIElement } from '@canvas/user-interface/elements/circular-element';
+import { RectangularUIElement } from '@canvas/user-interface/elements/rectangular-element';
 
 @Component({
   selector: 'app-scene03',
@@ -72,7 +72,7 @@ export class Scene03Component implements OnInit {
 
     // create a rectangular element for testing
     let re = new RectangularUIElement(this.cw.drawingContext, new Vector(800, 250));
-    re.cornerRadius = 15;
+    re.cornerRadius = 8;
 
     let rls = new LineStyle(2);
     rls.shade = '#f442d7';

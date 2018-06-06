@@ -109,13 +109,11 @@ export class Rectangle extends ShapeBase {
 
                 if (this._cornerRadius > 0) {
                     if (this._cornerRadius < Math.fround(this._size.width * 0.25) && this._cornerRadius < Math.fround(this._size.height * 0.25)) {
-                        // radius is 25% or less the width or height of the rectangle
                         // it's large enough to draw the rounded corners
                         this.drawComplexRectangle();
                     }
                     else {
-                        // radius is 25% or more the width or height of the rectangle
-                        // save some number crunching and draw a basic rectangle
+                        // save some number crunching and draw a basic rectangle if it's too small for rounded corners
                         this.drawBasicRectangle();
                     }
                 }

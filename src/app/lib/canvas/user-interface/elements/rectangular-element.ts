@@ -1,7 +1,7 @@
 import { Vector } from '@canvas/objects/vector';
 import { Size } from '@canvas/models/size';
 import { Rectangle } from '@canvas/shapes/rectangle';
-import { InteractiveElement } from '@canvas/user-interface/element/interactive-element';
+import { InteractiveElement } from '@canvas/user-interface/elements/interactive-element';
 
 export class RectangularUIElement extends InteractiveElement {
 

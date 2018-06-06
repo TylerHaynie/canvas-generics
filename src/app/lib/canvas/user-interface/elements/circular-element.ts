@@ -1,4 +1,4 @@
-import { InteractiveElement } from '@canvas/user-interface/element/interactive-element';
+import { InteractiveElement } from '@canvas/user-interface/elements/interactive-element';
 import { Vector } from '@canvas/objects/vector';
 import { Circle } from '@canvas/shapes/circle';
 
