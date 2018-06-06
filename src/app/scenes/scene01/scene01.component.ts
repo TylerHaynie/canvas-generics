@@ -1,7 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
-import { FloatingParticle } from './objects/floating-particle';
-import { QuadTree, Boundary, QuadVector } from '../../lib/quadtree/quad-tree';
 import { Vector } from '@canvas/objects/vector';
 import { MouseEventType } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
@@ -11,6 +9,8 @@ import { Color } from '@canvas/models/color';
 import { Bounds } from '@canvas/objects/bounds';
 import { Particle } from '@canvas/objects/particle';
 import { Velocity } from '@canvas/models/velocity';
+import { FloatingParticle } from '@canvas/objects/particle/floating-particle';
+import { QuadTree, Boundary, QuadVector } from '@quadtree/quad-tree';
 
 @Component({
   selector: 'app-scene01',

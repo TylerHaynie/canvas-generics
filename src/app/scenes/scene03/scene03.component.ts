@@ -8,6 +8,8 @@ import { MouseData } from '@canvas/events/event-data';
 import { Vector } from '@canvas/objects/vector';
 import { LineStyle } from '@canvas/models/line-style';
 import { Color } from '@canvas/models/color';
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { Size } from '@canvas/models/size';
 
 @Component({
   selector: 'app-scene03',
@@ -18,8 +20,6 @@ export class Scene03Component implements OnInit {
   @ViewChild('c') canvasRef: ElementRef;
   private cw: CanvasWrapper;
 
-  //#endregion
-
   constructor() { }
 
   ngOnInit() {
@@ -28,14 +28,23 @@ export class Scene03Component implements OnInit {
     this.cw.panZoomManager.scalingAllowed = false;
     this.cw.trackMouse = false;
 
-    this.createTestUI();
+    // this.createTestUI();
 
     // start the draw loop
     this.cw.start();
   }
 
   draw() {
+    let ctx = this.cw.drawingContext;
+    ctx.save();
 
+    let r = new Rectangle(this.cw.drawingContext);
+    r.position = new Vector(50, 50);
+    r.size = new Size(100, 100);
+    r.color = new Color();
+    r.draw();
+
+    ctx.restore();
   }
 
   // testing
@@ -52,8 +61,6 @@ export class Scene03Component implements OnInit {
     b.color = new Color('#333');
     b.hoverColor = new Color('#7bd1cb');
     b.downColor = new Color('#111');
-
-    // TODO: now creat a button off of a UI element
 
     b.on(UIEventType.DOWN, () => {
       // do something with your button
