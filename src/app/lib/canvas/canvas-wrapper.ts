@@ -11,6 +11,7 @@ import { WindowManager } from '@canvas/managers/window-manager';
 import { Vector } from '@canvas/objects/vector';
 import { PanZoomData, MouseData } from '@canvas/events/event-data';
 import { MouseEventType, PanZoomEventType } from '@canvas/events/canvas-event-types';
+import { UIManager } from '@canvas/managers/ui-manager';
 
 export class CanvasWrapper {
 
@@ -20,6 +21,7 @@ export class CanvasWrapper {
     public get mouseManager() { return this._mouseManager; }
     public get panZoomManager() { return this._panZoomManager; }
     public get keyboardManager() { return this._keyboardManager; }
+    public get uiManager() { return this._uiManager; }
 
     public set pauseKeys(v: string[]) { this._pauseKeys = v; }
     public set frameForwardKeys(v: string[]) { this.frameForwardKeys = v; }
@@ -41,7 +43,6 @@ export class CanvasWrapper {
 
     // context
     private _context: CanvasRenderingContext2D;
-    private drawCallback: () => void;
 
     // control
     private _pauseKeys: string[] = ['p', 'P'];
@@ -65,6 +66,7 @@ export class CanvasWrapper {
     // managers
     private _panZoomManager: PanZoomManager;
     private _mouseManager: MouseManager;
+    private _uiManager: UIManager;
     private _keyboardManager: KeyboardManager;
     private _WindowManager: WindowManager;
 
@@ -78,13 +80,13 @@ export class CanvasWrapper {
 
     constructor(context: CanvasRenderingContext2D, drawCallback: () => void) {
         this._context = context;
-        this.drawCallback = drawCallback;
 
         this.setupManagers();
         this.setupUtilities();
         this.registerEvents();
         this.setupCanvas();
 
+        this.uiManager.addToMainBuffer(drawCallback);
         this._WindowManager.resize();
     }
 
@@ -109,6 +111,9 @@ export class CanvasWrapper {
 
         // keyboard
         this._keyboardManager = new KeyboardManager(this._context);
+
+        // UI and main drawing
+        this._uiManager = new UIManager(this._context, this._mouseManager);
 
         // pan-zoom
         this._panZoomManager = new PanZoomManager(this._context, this._mouseManager);
@@ -192,15 +197,15 @@ export class CanvasWrapper {
             this.saveContext();
 
             // draw the grid first?
-            if (this._overlayAsBackground) {
-                this.drawGrid();
-            }
+            if (this._overlayAsBackground) { this.drawGrid(); }
 
             // apply any pan or zoon
             this.applyPanAndZoom();
 
-            // do the draw callback
-            this.drawCallback();
+            this._uiManager.drawMainBuffer();
+
+            if (this._uiManager.uiEnabled) { this._uiManager.drawUiBuffer(); }
+            if (this._uiManager.debugEnabled) { this._uiManager.drawDebugBuffer(); }
 
             this.trackMousePosition();
 
