@@ -2,27 +2,20 @@ import { Vector } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
 import { LineStyle } from '@canvas/models/line-style';
 import { Shadow } from '@canvas/models/shadow';
+import { ShapeBase } from '@canvas/shapes/shape-base';
 
-export class Circle {
-    private context: CanvasRenderingContext2D;
-
-    position: Vector;
+export class Circle extends ShapeBase {
     radius: number;
 
-    color?: Color;
-    outline?: LineStyle;
-    shadow?: Shadow;
-
-    constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
-
+    constructor(context: CanvasRenderingContext2D, position: Vector) {
+        super(context, position);
     }
 
     center(): Vector {
         if (this.position && this.radius) {
             return <Vector>{
-                x: this.position.x - this.radius / 2,
-                y: this.position.y - this.radius / 2
+                x: Math.fround(this.position.x - this.radius / 2),
+                y: Math.fround(this.position.y - this.radius / 2)
             };
         }
 
@@ -36,7 +29,7 @@ export class Circle {
             this.context.globalAlpha = 0;
 
             // create the circle
-            this.context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
+            this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.fround(2 * Math.PI));
 
             // does it have a shadow
             if (this.shadow) {
@@ -66,6 +59,23 @@ export class Circle {
 
             this.context.restore();
         }
+    }
+
+    pointWithinBounds(point: Vector) {
+        let withinBounds: boolean = false;
+
+        let circle1 = { radius: 1, x: point.x, y: point.y };
+        let circle2 = { radius: this.radius, x: this.position.x, y: this.position.y };
+
+        let dx = circle1.x - circle2.x;
+        let dy = circle1.y - circle2.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < circle1.radius + circle2.radius) {
+            withinBounds = true;
+        }
+
+        return withinBounds;
     }
 
 }

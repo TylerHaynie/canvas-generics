@@ -17,6 +17,7 @@
     ],
     "baseUrl": "./src",
     "paths": {
+      "@quadtree/*": ["app/lib/quadtree/*"],
       "@canvas/*": ["app/lib/canvas/*"],
       "@canvas/events/*": ["app/lib/canvas/events/*"],
       "@canvas/managers/*": ["app/lib/canvas/managers/*"],

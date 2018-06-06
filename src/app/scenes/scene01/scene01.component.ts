@@ -1,7 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
-import { FloatingParticle } from './objects/floating-particle';
-import { QuadTree, Boundary, QuadVector } from '../../lib/quadtree/quad-tree';
 import { Vector } from '@canvas/objects/vector';
 import { MouseEventType } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
@@ -11,6 +9,8 @@ import { Color } from '@canvas/models/color';
 import { Bounds } from '@canvas/objects/bounds';
 import { Particle } from '@canvas/objects/particle';
 import { Velocity } from '@canvas/models/velocity';
+import { FloatingParticle } from '@canvas/objects/particle/floating-particle';
+import { QuadTree, Boundary, QuadVector } from '@quadtree/quad-tree';
 
 @Component({
   selector: 'app-scene01',
@@ -131,9 +131,8 @@ export class scene01Component implements OnInit {
 
   private drawBackground() {
     let bounds = this.cw.bounds;
-    let b = new Rectangle(this.cw.drawingContext);
-
-    b.position = new Vector(bounds.left, bounds.top);
+    let p = new Vector(bounds.left, bounds.top);
+    let b = new Rectangle(this.cw.drawingContext, p);
     b.size = new Size(bounds.width, bounds.height);
     b.color = new Color(this.backgroundColor);
 
@@ -154,8 +153,8 @@ export class scene01Component implements OnInit {
     grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
     grd.addColorStop(this.foregroundEnd2, this.foregroundColorEndColor);
 
-    let f = new Rectangle(this.cw.drawingContext);
-    f.position = new Vector(bounds.left, bounds.top);
+    let p = new Vector(bounds.left, bounds.top); 
+    let f = new Rectangle(this.cw.drawingContext, p);
     f.size = new Size(bounds.width, bounds.height);
     f.color = new Color(grd);
 
@@ -222,8 +221,7 @@ export class scene01Component implements OnInit {
         this.cw.random.randomWithNegative() * this.particleSpeedModifier
       );
 
-      let r = new Rectangle(this.cw.drawingContext);
-      r.position = p.position;
+      let r = new Rectangle(this.cw.drawingContext, p.position);
       let rad = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
       r.size = new Size(rad * 2, rad * 2);
       r.color = new Color(this.cw.color.randomColorFromArray(this.colorArray));

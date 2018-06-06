@@ -197,9 +197,9 @@ export class QuadTree {
     }
 
     public debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
-        let rect = new Rectangle(context);
 
-        rect.position = new Vector(this.boundary.x, this.boundary.y);
+        let p = new Vector(this.boundary.x, this.boundary.y);
+        let rect = new Rectangle(context, p);
         rect.size = new Size(this.boundary.w, this.boundary.h);
         rect.outline = new LineStyle(lineWidth);
         rect.outline.shade = color;
