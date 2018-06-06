@@ -66,8 +66,8 @@ export class Scene02Component implements OnInit {
   }
 
   setFocalPoint() {
-    this.focalPoint = new Circle(this.cw.drawingContext);
-    this.focalPoint.position = new Vector(this.cw.width / 2, this.cw.height / 2);
+    let p = new Vector(this.cw.width / 2, this.cw.height / 2);
+    this.focalPoint = new Circle(this.cw.drawingContext, p);
     this.focalPoint.radius = 2;
     this.focalPoint.color = new Color('lime');
   }
@@ -82,8 +82,8 @@ export class Scene02Component implements OnInit {
 
   generateSquares() {
     for (let x = 0; x < 10; x++) {
-      let r = new Rectangle(this.cw.drawingContext);
-      r.position = this.cw.random.randomVectorInBounds(this.cw.width, this.cw.height);
+      let p = this.cw.random.randomVectorInBounds(this.cw.width, this.cw.height);
+      let r = new Rectangle(this.cw.drawingContext, p);
       r.size = { width: 30, height: 30 };
       r.color = new Color();
       r.color.shade = '#888';
@@ -128,8 +128,7 @@ export class Scene02Component implements OnInit {
 
   drawMousePosition() {
     if (this.mouseOnCanvas) {
-      let mp = new Circle(this.cw.drawingContext);
-      mp.position = this.mousePosition;
+      let mp = new Circle(this.cw.drawingContext, this.mousePosition);
       mp.radius = 2;
       mp.color = new Color('red');
 

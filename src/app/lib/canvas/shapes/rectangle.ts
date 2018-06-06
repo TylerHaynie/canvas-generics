@@ -3,6 +3,7 @@ import { Size } from '@canvas/models/size';
 import { Color } from '@canvas/models/color';
 import { LineStyle } from '@canvas/models/line-style';
 import { Shadow } from '@canvas/models/shadow';
+import { ShapeBase } from '@canvas/shapes/shape-base';
 
 export class Corner {
     controlPoint: Vector;
@@ -14,25 +15,21 @@ export class Corner {
     }
 }
 
-export class Rectangle {
-    private context: CanvasRenderingContext2D;
+export class Rectangle extends ShapeBase {
 
-    position: Vector;
-    size: Size;
-    cornerRadius: number = 2;
+    //#region Public Properties
 
-    color?: Color;
-    outline?: LineStyle;
-    shadow?: Shadow;
+    public set size(v: Size) { this._size = v; }
+    public get size(): Size { return this._size; }
 
-    constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
-    }
+    public set cornerRadius(v: number) { this._cornerRadius = v; }
+    public get cornerRadius(): number { return this._cornerRadius; }
+
 
     public get center(): Vector {
         return <Vector>{
-            x: this.position.x - this.size.width / 2,
-            y: this.position.y - this.size.height / 2
+            x: Math.fround(this.position.x - this._size.width / 2),
+            y: Math.fround(this.position.y - this._size.height / 2)
         };
     }
 
@@ -41,68 +38,77 @@ export class Rectangle {
     }
 
     public get topRight(): Vector {
-        return new Vector(Math.fround(this.position.x + this.size.width), Math.fround(this.position.y));
+        return new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y));
     }
 
     public get bottomRight(): Vector {
-        return new Vector(this.position.x + this.size.width, this.position.y + this.size.height);
+        return new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height));
     }
 
     public get bottomLeft(): Vector {
-        return new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this.size.height));
+        return new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height));
     }
 
     public get topLineStart(): Vector {
-        return new Vector(Math.fround(this.position.x + this.cornerRadius), Math.fround(this.position.y));
+        return new Vector(Math.fround(this.position.x + this._cornerRadius), Math.fround(this.position.y));
     }
 
     public get topLineEnd(): Vector {
-        return new Vector(Math.fround(this.position.x + this.size.width - this.cornerRadius), Math.fround(this.position.y));
+        return new Vector(Math.fround(this.position.x + this._size.width - this._cornerRadius), Math.fround(this.position.y));
     }
 
     public get topRightCorner(): Corner {
-        let cp = new Vector(Math.fround(this.position.x + this.size.width), Math.fround(this.position.y));
-        let ep = new Vector(Math.fround(this.position.x + this.size.width), Math.fround(this.position.y + this.cornerRadius));
+        let cp = new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y));
+        let ep = new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._cornerRadius));
         return new Corner(cp, ep);
     }
 
     public get rightLineEnd(): Vector {
-        return new Vector(Math.fround(this.position.x + this.size.width), Math.fround(this.position.y + this.size.height - this.cornerRadius));
+        return new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height - this._cornerRadius));
     }
 
     public get bottomRightCorner(): Corner {
-        let cp = new Vector(Math.fround(this.position.x + this.size.width), Math.fround(this.position.y + this.size.height));
-        let ep = new Vector(Math.fround(this.position.x + this.size.width - this.cornerRadius), Math.fround(this.position.y + this.size.height));
+        let cp = new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height));
+        let ep = new Vector(Math.fround(this.position.x + this._size.width - this._cornerRadius), Math.fround(this.position.y + this._size.height));
         return new Corner(cp, ep);
     }
 
     public get bottomLineEnd(): Vector {
-        return new Vector(Math.fround(this.position.x + this.cornerRadius), Math.fround(this.position.y + this.size.height));
+        return new Vector(Math.fround(this.position.x + this._cornerRadius), Math.fround(this.position.y + this._size.height));
     }
 
     public get bottomLeftCorner(): Corner {
-        let cp = new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this.size.height));
-        let ep = new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this.size.height - this.cornerRadius));
+        let cp = new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height));
+        let ep = new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height - this._cornerRadius));
         return new Corner(cp, ep);
     }
 
     public get leftLineEnd(): Vector {
-        return new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this.cornerRadius));
+        return new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this._cornerRadius));
     }
 
     public get topLeftCorner(): Corner {
         let cp = new Vector(Math.fround(this.position.x), Math.fround(this.position.y));
-        let ep = new Vector(Math.fround(this.position.x + this.cornerRadius), Math.fround(this.position.y));
+        let ep = new Vector(Math.fround(this.position.x + this._cornerRadius), Math.fround(this.position.y));
         return new Corner(cp, ep);
+    }
+
+    //#endregion
+
+    private _size: Size;
+    private _cornerRadius: number = 2;
+
+    constructor(context: CanvasRenderingContext2D, position: Vector) {
+        super(context, position);
     }
 
     draw() {
         if (this.context) {
-            if (this.position && this.size) {
+            if (this.position && this._size) {
                 this.context.save();
 
-                if (this.cornerRadius > 0) {
-                    if (this.cornerRadius < this.size.width / 2 && this.cornerRadius < this.size.height / 2) {
+                if (this._cornerRadius > 0) {
+                    if (this._cornerRadius < Math.fround(this._size.width / 2) && this._cornerRadius < Math.fround(this._size.height / 2)) {
                         this.drawComplexRectangle();
                     }
                     else {
@@ -112,7 +118,6 @@ export class Rectangle {
                 else {
                     this.drawBasicRectangle();
                 }
-
 
                 // does it have a shadow
                 if (this.shadow) {
@@ -159,13 +164,13 @@ export class Rectangle {
         this.context.moveTo(this.position.x, this.position.y);
 
         // top
-        this.context.lineTo(this.position.x + this.size.width, this.position.y);
+        this.context.lineTo(this.position.x + this._size.width, this.position.y);
 
         // right
-        this.context.lineTo(this.position.x + this.size.width, this.position.y + this.size.height);
+        this.context.lineTo(this.position.x + this._size.width, this.position.y + this._size.height);
 
         // bottom
-        this.context.lineTo(this.position.x, this.position.y + this.size.height);
+        this.context.lineTo(this.position.x, this.position.y + this._size.height);
 
         // left
         this.context.lineTo(this.position.x, this.position.y);
@@ -213,6 +218,19 @@ export class Rectangle {
         this.context.quadraticCurveTo(tlc.controlPoint.x, tlc.controlPoint.y, tlc.endingPoint.x, tlc.endingPoint.y);
 
         this.context.closePath();
+    }
+
+    pointWithinBounds(point: Vector): boolean {
+        let topLeft = this.topLeft;
+        let bottomRight = this.bottomRight;
+
+        if (point.x >= topLeft.x && point.x <= bottomRight.x) {
+            if (point.y >= topLeft.y && point.y <= bottomRight.y) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

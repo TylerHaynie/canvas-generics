@@ -1,13 +1,15 @@
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
-import { CollisionUtility } from '@canvas/utilities/collision-utility';
 import { QuadTree, QuadVector } from '../../quadtree/quad-tree';
-import { CanvasUIElement } from '@canvas/user-interface/canvas-ui-element';
 import { MouseManager } from '@canvas/managers/mouse-manager';
 import { MouseEventType, UIEventType } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { LineStyle } from '@canvas/models/line-style';
 import { Vector } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
+import { Circle } from '@canvas/shapes/circle';
+import { CircularUIElement } from '@canvas/user-interface/element/circular-element';
+import { InteractiveElement } from '@canvas/user-interface/element/interactive-element';
+import { RectangularUIElement } from '@canvas/user-interface/element/rectangular-element';
 
 export class UIManager {
     public get uiEnabled(): boolean { return this._uiEnabled; }
@@ -19,10 +21,9 @@ export class UIManager {
 
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
-    private collision: CollisionUtility;
 
     // elements
-    private uiElements: CanvasUIElement[] = [];
+    private uiElements: InteractiveElement[] = [];
 
     private _uiEnabled: boolean = true;
     private _uiBuffer: [{ callback: () => void }];
@@ -40,8 +41,6 @@ export class UIManager {
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
         this.context = context;
         this.mouseManager = mouseManager;
-
-        this.collision = new CollisionUtility();
 
         this.registerEvents();
     }
@@ -68,12 +67,12 @@ export class UIManager {
 
     //#region Public UI Element Functions
 
-    addUIElement(element: CanvasUIElement) {
+    addUIElement(element: InteractiveElement) {
         this.uiElements.push(element);
         this.addToUiBuffer(() => element.draw());
     }
 
-    addUIElements(elements: CanvasUIElement[]) {
+    addUIElements(elements: InteractiveElement[]) {
         if (elements) {
             elements.forEach(element => {
                 this.addUIElement(element);
@@ -81,12 +80,12 @@ export class UIManager {
         }
     }
 
-    removeUIElement(element: CanvasUIElement) {
+    removeUIElement(element: InteractiveElement) {
         let bi = this.uiElements.indexOf(element);
         this.uiElements.splice(bi, 1);
     }
 
-    removeUIElements(elements: CanvasUIElement[]) {
+    removeUIElements(elements: InteractiveElement[]) {
         if (elements) {
             elements.forEach(element => {
                 let bi = this.uiElements.indexOf(element);
@@ -140,8 +139,6 @@ export class UIManager {
             this._uiBuffer.forEach(buffer => {
                 buffer.callback();
             });
-
-            // TODO: only clear UI buffer when it not being shown
         }
     }
 
@@ -176,11 +173,9 @@ export class UIManager {
 
     private checkPointerOver(e: MouseData) {
         let mp = e.mousePosition;
-        let cu = this.collision;
 
-        // TODO: Add rectangle search
         this.uiElements.forEach(element => {
-            if (cu.checkRadiusCollision(mp, 1, element.position, element.radius)) {
+            if (element.baseElement.pointWithinBounds(mp)) {
                 element.buttonHover();
             }
             else {
@@ -191,11 +186,9 @@ export class UIManager {
 
     private checkPointerDown(e: MouseData) {
         let mp = e.mousePosition;
-        let cu = this.collision;
 
-        // TODO: Add rectangle search
         this.uiElements.forEach(element => {
-            if (cu.checkRadiusCollision(mp, 1, element.position, element.radius)) {
+            if (element.baseElement.pointWithinBounds(mp)) {
                 element.buttonDown();
             }
         });
@@ -203,11 +196,9 @@ export class UIManager {
 
     private checkPointerUp(e: MouseData) {
         let mp = e.mousePosition;
-        let cu = this.collision;
 
-        // TODO: Add rectangle search
         this.uiElements.forEach(element => {
-            if (cu.checkRadiusCollision(mp, 1, element.position, element.radius)) {
+            if (element.baseElement.pointWithinBounds(mp)) {
                 element.buttonUp();
             }
         });
