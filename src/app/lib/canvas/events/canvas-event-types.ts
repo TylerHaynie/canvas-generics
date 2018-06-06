@@ -16,5 +16,7 @@ export enum UIEventType {
     DOWN = 'down',
     UP = 'up',
     HOVER = 'hover',
-    LEAVE = 'leave'
+    LEAVE = 'leave',
+    MOVE = 'move',
+    OUT = 'out'
 }

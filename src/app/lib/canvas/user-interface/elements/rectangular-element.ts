@@ -9,18 +9,26 @@ export class RectangularUIElement extends InteractiveElement {
     public set cornerRadius(v: number) {
         (<Rectangle>this.baseElement).cornerRadius = v;
     }
-    size: Size = new Size(50, 50);
 
+    size: Size = new Size(50, 50);
     icon?: HTMLImageElement;
     text?: string;
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
-        super(context, position);
+        super(context);
 
-        let r = new Rectangle(this.context, this.position);
+        let r = new Rectangle(this.context, position);
         r.size = this.size;
         r.cornerRadius = this._cornerRadius;
 
         this.baseElement = r;
+    }
+
+    setPosition(position: Vector) {
+        this.baseElement.position = position;
+    }
+
+    getposition() {
+        return this.baseElement.position;
     }
 }

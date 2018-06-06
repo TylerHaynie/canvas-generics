@@ -48,7 +48,7 @@ export class UIManager {
     private registerEvents() {
         this.mouseManager.on(MouseEventType.MOVE, (e: MouseData) => {
             if (this._uiEnabled) {
-                this.checkPointerOver(e);
+                this.pointerMoved(e);
             }
         });
 
@@ -62,6 +62,12 @@ export class UIManager {
             if (this._uiEnabled) {
                 this.checkPointerUp(e);
             }
+        });
+
+        this.mouseManager.on(MouseEventType.OUT, (e: MouseData) => {
+            this.uiElements.forEach(element => {
+                element.elementMouseOut(e);
+            });
         });
     }
 
@@ -171,15 +177,14 @@ export class UIManager {
 
     //#region User Interaction
 
-    private checkPointerOver(e: MouseData) {
+    private pointerMoved(e: MouseData) {
         let mp = e.mousePosition;
 
         this.uiElements.forEach(element => {
-            if (element.baseElement.pointWithinBounds(mp)) {
-                element.buttonHover();
-            }
-            else {
-                element.buttonleave();
+            element.elementMouseMove(e);
+
+            if (element.baseElement.pointWithinBounds(mp) && !(e.leftMouseState === 'down')) {
+                element.elementMouseHover(e);
             }
         });
     }
@@ -189,7 +194,7 @@ export class UIManager {
 
         this.uiElements.forEach(element => {
             if (element.baseElement.pointWithinBounds(mp)) {
-                element.buttonDown();
+                element.elementMouseDown(e);
             }
         });
     }
@@ -199,7 +204,7 @@ export class UIManager {
 
         this.uiElements.forEach(element => {
             if (element.baseElement.pointWithinBounds(mp)) {
-                element.buttonUp();
+                element.elementMouseUp(e);
             }
         });
     }
