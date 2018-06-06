@@ -3,7 +3,7 @@ import { Vector } from '@canvas/objects/vector';
 export class RandomUtility {
     /// returns a random number between -1 and 1
     randomWithNegative() {
-        return (((Math.random() * 200) - 100) / 100);
+        return Math.fround(((Math.random() * 200) - 100) / 100);
     }
 
     /// returns a random number between n1 and n2
@@ -12,8 +12,8 @@ export class RandomUtility {
     }
 
     randomVectorInBounds(w: number, h: number): Vector {
-        let rx = Math.random() * w;
-        let ry = Math.random() * h;
+        let rx = Math.fround(Math.random() * w);
+        let ry = Math.fround(Math.random() * h);
         return <Vector>{ x: rx, y: ry };
     }
 }

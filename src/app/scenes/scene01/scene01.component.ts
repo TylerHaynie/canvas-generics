@@ -153,7 +153,7 @@ export class scene01Component implements OnInit {
     grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
     grd.addColorStop(this.foregroundEnd2, this.foregroundColorEndColor);
 
-    let p = new Vector(bounds.left, bounds.top); 
+    let p = new Vector(bounds.left, bounds.top);
     let f = new Rectangle(this.cw.drawingContext, p);
     f.size = new Size(bounds.width, bounds.height);
     f.color = new Color(grd);
@@ -213,9 +213,12 @@ export class scene01Component implements OnInit {
 
     for (let x = this.floatingParticles.length; x < this.maxParticles; x++) {
 
-      let pLocation = new Vector(Math.random() * (this.cw.width - this.particleMaxRadius), Math.random() * (this.cw.height - this.particleMaxRadius));
-      let p = new Particle(pLocation);
+      let pLocation = new Vector(
+        Math.fround(Math.random() * (this.cw.width - this.particleMaxRadius)),
+        Math.fround(Math.random() * (this.cw.height - this.particleMaxRadius))
+      );
 
+      let p = new Particle(pLocation);
       p.velocity = new Velocity(
         this.cw.random.randomWithNegative() * this.particleSpeedModifier,
         this.cw.random.randomWithNegative() * this.particleSpeedModifier
@@ -223,7 +226,7 @@ export class scene01Component implements OnInit {
 
       let r = new Rectangle(this.cw.drawingContext, p.position);
       let rad = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
-      r.size = new Size(rad * 2, rad * 2);
+      r.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
       r.color = new Color(this.cw.color.randomColorFromArray(this.colorArray));
 
       let fp = new FloatingParticle(this.cw.drawingContext, pLocation, p, r);
