@@ -59,11 +59,11 @@ export class Line {
                 this.context.restore();
             }
             else {
-                // console.warn('You are trying to draw a line without any segments');
+                console.warn('You are trying to draw a line without any segments');
             }
         }
         else {
-            console.log('no context');
+            console.error('no context');
         }
     }
 }

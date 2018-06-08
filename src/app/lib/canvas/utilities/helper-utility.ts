@@ -103,6 +103,7 @@ export class HelperUtility {
                 this.holdMeMouse(position);
                 break;
             default:
+                this.redDotMouse(position);
                 break;
         }
     }

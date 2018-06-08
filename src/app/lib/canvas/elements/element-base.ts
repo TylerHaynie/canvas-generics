@@ -70,7 +70,10 @@ export class ElementBase {
     private _defaultActiveOutline: LineStyle;
 
     // dragging
-    private isDragging = false;
+    private _dragging = false;
+    public set isDragging(v: boolean) { this._dragging = v; }
+    public get isDragging(): boolean { return this._dragging; }
+
     private dragOffset: Vector = new Vector(0, 0);
 
     // event
@@ -95,12 +98,11 @@ export class ElementBase {
     }
 
     private fireEvent(e: MouseData) {
-        if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
-            this.canvasEvent.fireEvent(this._eventType, e);
-            this.previousEventType = this._eventType;
-
-            console.log(`Event: ${e.eventType}, dragging: ${this.isDragging}`);
-        }
+        // to avoid spamming events
+        // if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
+        this.canvasEvent.fireEvent(this._eventType, e);
+        this.previousEventType = this._eventType;
+        // }
     }
 
     elementMouseDown(e: MouseData) {
@@ -108,7 +110,7 @@ export class ElementBase {
         e.uiMouseState = MOUSE_STATE.DEFAULT;
 
         if (this._isDraggable) {
-            if (!this.isDragging) { this.isDragging = true; }
+            if (!this._dragging) { this._dragging = true; }
             e.uiMouseState = MOUSE_STATE.GRAB;
 
             let elementPosition = this.getposition();
@@ -130,7 +132,7 @@ export class ElementBase {
             this._eventType = UI_EVENT_TYPE.UP;
         }
 
-        this.isDragging = false;
+        this._dragging = false;
         e.uiMouseState = MOUSE_STATE.DEFAULT;
 
         this.fireEvent(e);
@@ -148,23 +150,23 @@ export class ElementBase {
     elementMouseMove(e: MouseData) {
         this._eventType = UI_EVENT_TYPE.MOVE;
 
-        if (this.isDragging) {
-            e.uiMouseState = MOUSE_STATE.GRAB;
-            let p = new Vector(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
-
-            this.setPosition(p);
-        }
-        else {
-            e.uiMouseState = MOUSE_STATE.DEFAULT;
+        if (this._dragging) {
+            this.dragElement(e);
         }
 
         this.fireEvent(e);
     }
 
+    private dragElement(e: MouseData) {
+        e.uiMouseState = MOUSE_STATE.GRAB;
+        let p = new Vector(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
+        this.setPosition(p);
+    }
+
     elementMouseOut(e: MouseData) {
         this._eventType = UI_EVENT_TYPE.OUT;
 
-        this.isDragging = false;
+        this._dragging = false;
         e.uiMouseState = MOUSE_STATE.DEFAULT;
 
         this.fireEvent(e);
@@ -194,7 +196,7 @@ export class ElementBase {
 
         switch (this._eventType) {
             case UI_EVENT_TYPE.MOVE:
-                if (this.isDragging) {
+                if (this._dragging) {
                     this._activeOutline = this._defaultActiveOutline;
                 }
                 break;

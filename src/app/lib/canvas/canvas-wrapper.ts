@@ -262,7 +262,6 @@ export class CanvasWrapper {
 
         if (kbm.isDirty) {
             if (kbm.hasKeyDown) {
-                console.log(kbm.key);
                 if (this._pauseKeys.includes(kbm.key)) {
                     this.paused = !this.paused;
                 }

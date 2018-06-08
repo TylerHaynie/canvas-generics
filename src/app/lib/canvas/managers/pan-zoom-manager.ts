@@ -237,7 +237,6 @@ export class PanZoomManager {
             this.totalPanning.x += dx;
             this.totalPanning.y += dy;
 
-            console.log('pan changed');
             this.eventType = PAN_ZOOM_EVENT_TYPE.PAN;
             this.fireEvent();
         }
@@ -258,7 +257,6 @@ export class PanZoomManager {
             }
         }
 
-        console.log('Scale Up');
         this.eventType = PAN_ZOOM_EVENT_TYPE.ZOOM;
         this.fireEvent();
     }
@@ -279,7 +277,6 @@ export class PanZoomManager {
                 }
             }
 
-            console.log('Scale Down');
             this.eventType = PAN_ZOOM_EVENT_TYPE.ZOOM;
             this.fireEvent();
         }

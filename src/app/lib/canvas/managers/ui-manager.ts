@@ -179,7 +179,7 @@ export class UIManager {
         this.uiElements.forEach(element => {
             element.elementMouseMove(e);
 
-            if (element.baseElement.pointWithinBounds(e.mousePosition) && !(e.leftMouseState === 'down')) {
+            if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseHover(e);
             }
         });
