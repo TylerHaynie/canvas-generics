@@ -1,4 +1,4 @@
-export class GraidentUtility {
+export class GradientUtility {
     private context: CanvasRenderingContext2D;
 
     constructor(context: CanvasRenderingContext2D) {

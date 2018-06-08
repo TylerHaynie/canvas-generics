@@ -97,10 +97,12 @@ export class Rectangle extends ShapeBase {
 
     private _size: Size;
     private _cornerRadius: number = 2;
+    private context: CanvasRenderingContext2D;
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         super(context, position);
 
+        this.context = context;
         this.size = new Size(50, 50);
     }
 
@@ -147,7 +149,7 @@ export class Rectangle extends ShapeBase {
                     this.context.shadowOffsetX = 0;
                     this.context.shadowOffsetY = 0;
 
-                    this.context.lineWidth = this.outline.lineWidth;
+                    this.context.lineWidth = this.outline.width;
                     this.context.globalAlpha = this.outline.alpha;
                     this.context.strokeStyle = this.outline.shade;
                     this.context.stroke();

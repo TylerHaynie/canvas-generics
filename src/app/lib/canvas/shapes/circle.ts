@@ -5,23 +5,13 @@ import { Shadow } from '@canvas/models/shadow';
 import { ShapeBase } from '@canvas/shapes/shape-base';
 
 export class Circle extends ShapeBase {
+    private context: CanvasRenderingContext2D;
     radius: number;
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         super(context, position);
-
+        this.context = context;
         this.radius = 10;
-    }
-
-    center(): Vector {
-        if (this.position && this.radius) {
-            return <Vector>{
-                x: Math.fround(this.position.x - this.radius / 2),
-                y: Math.fround(this.position.y - this.radius / 2)
-            };
-        }
-
-        return;
     }
 
     draw() {
@@ -51,7 +41,7 @@ export class Circle extends ShapeBase {
 
             // does it have an outline
             if (this.outline) {
-                this.context.lineWidth = this.outline.lineWidth;
+                this.context.lineWidth = this.outline.width;
                 this.context.globalAlpha = this.outline.alpha;
                 this.context.strokeStyle = this.outline.shade;
 

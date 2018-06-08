@@ -5,10 +5,6 @@ import { Shadow } from '@canvas/models/shadow';
 
 export class ShapeBase {
     private _context: CanvasRenderingContext2D;
-    public get context(): CanvasRenderingContext2D {
-        return this._context;
-    }
-
     private _position: Vector;
     public get position(): Vector { return this._position; }
     public set position(position: Vector) {

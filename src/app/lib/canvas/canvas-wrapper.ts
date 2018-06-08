@@ -1,6 +1,6 @@
 import { RandomUtility } from '@canvas/utilities/random-utility';
 import { ColorUtility } from '@canvas/utilities/color-utility';
-import { GraidentUtility } from '@canvas/utilities/graident-utility';
+import { GradientUtility } from '@canvas/utilities/gradient-utility';
 import { ImageDataUtility } from '@canvas/utilities/image-data-utility';
 import { PatternUtility } from '@canvas/utilities/pattern-utility';
 import { HelperUtility } from '@canvas/utilities/helper-utility';
@@ -17,22 +17,14 @@ export class CanvasWrapper {
 
     // public properties
     public get drawingContext(): CanvasRenderingContext2D { return this._context; }
-
     public get mouseManager() { return this._mouseManager; }
     public get panZoomManager() { return this._panZoomManager; }
     public get keyboardManager() { return this._keyboardManager; }
     public get uiManager() { return this._uiManager; }
-
-    public set pauseKeys(v: string[]) { this._pauseKeys = v; }
-    public set frameForwardKeys(v: string[]) { this.frameForwardKeys = v; }
-
-    public set enableGrid(v) { this._enableGrid = v; }
-    public set overlayAsBackground(v) { this._overlayAsBackground = v; }
-    public set trackMouse(v) { this._trackMouse = v; }
-
     public get random() { return this.randomUtil; }
+
     public get color() { return this.colorUtil; }
-    public get graident() { return this.graidentUtility; }
+    public get gradient() { return this.gradientUtility; }
     public get imageData() { return this.imageDataUtility; }
     public get pattern() { return this.patternUtility; }
     public get helper() { return this.helperUtility; }
@@ -40,6 +32,12 @@ export class CanvasWrapper {
     public get bounds() { return this._context.canvas.getBoundingClientRect(); }
     public get width() { return this._context.canvas.width; }
     public get height() { return this._context.canvas.height; }
+
+    public set pauseKeys(v: string[]) { this._pauseKeys = v; }
+    public set frameForwardKeys(v: string[]) { this.frameForwardKeys = v; }
+    public set enableGrid(v) { this._enableGrid = v; }
+    public set overlayAsBackground(v) { this._overlayAsBackground = v; }
+    public set trackMouse(v) { this._trackMouse = v; }
 
     // context
     private _context: CanvasRenderingContext2D;
@@ -58,7 +56,7 @@ export class CanvasWrapper {
     // utils
     private randomUtil: RandomUtility;
     private colorUtil: ColorUtility;
-    private graidentUtility: GraidentUtility;
+    private gradientUtility: GradientUtility;
     private imageDataUtility: ImageDataUtility;
     private patternUtility: PatternUtility;
     private helperUtility: HelperUtility;
@@ -71,7 +69,7 @@ export class CanvasWrapper {
     private _WindowManager: WindowManager;
 
     // mouse
-    private translatedMouse: Vector;
+    private currentMouseData: MouseData;
 
     // pan-zoom
     private transformChanged: boolean = false;
@@ -87,7 +85,7 @@ export class CanvasWrapper {
         this.setupCanvas();
 
         this.uiManager.addToMainBuffer(drawCallback);
-        this._WindowManager.resize();
+        this._WindowManager.fit();
     }
 
     start() {
@@ -122,7 +120,7 @@ export class CanvasWrapper {
     private setupUtilities() {
         this.randomUtil = new RandomUtility();
         this.colorUtil = new ColorUtility();
-        this.graidentUtility = new GraidentUtility(this._context);
+        this.gradientUtility = new GradientUtility(this._context);
         this.imageDataUtility = new ImageDataUtility(this._context);
         this.patternUtility = new PatternUtility(this._context);
         this.helperUtility = new HelperUtility(this._context);
@@ -159,19 +157,19 @@ export class CanvasWrapper {
     }
 
     private mouseMoved(e: MouseData) {
-        this.translatedMouse = e.translatedPosition ? e.translatedPosition : e.mousePosition;
+        this.currentMouseData = e;
     }
 
     private mouseDown(e: MouseData) {
-        // check UI quad tree for down
+        this.currentMouseData = e;
     }
 
     private mouseUp(e: MouseData) {
-        // check UI quad tree for up
+        this.currentMouseData = e;
     }
 
     private mouseLeave(e: MouseData) {
-        // mouse is off canvas
+        this.currentMouseData = e;
     }
 
     private panZoomChanged(e: PanZoomData) {
@@ -245,15 +243,18 @@ export class CanvasWrapper {
     }
 
     private trackMousePosition() {
-        if (this._trackMouse && this.translatedMouse) {
-            this.helperUtility.trackMouse(this.translatedMouse, 'rgba(255, 255, 255, .80)');
+        if (this._mouseManager.mouseOnCanvas) {
+            if (this.trackMouse) {
+                this.helperUtility.trackMouse(this.currentMouseData.mousePosition, 'rgba(255, 255, 255, .80)');
+            }
         }
     }
 
     private drawMouse() {
-        if (this.translatedMouse && this._mouseManager.mouseOnCanvas) {
-            this.helperUtility.drawMouse(this.translatedMouse, this._uiManager.uiMouseState);
+        if (this._mouseManager.mouseOnCanvas) {
+            this.helperUtility.drawMouse(this.currentMouseData.mousePosition, this.currentMouseData.uiMouseState);
         }
+
     }
 
     private checkKeys() {

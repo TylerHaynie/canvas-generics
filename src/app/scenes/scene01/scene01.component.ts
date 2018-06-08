@@ -45,10 +45,10 @@ export class scene01Component implements OnInit {
   private backgroundColor: string = '#0C101E';
   private foregroundColorStartColor: string = 'rgba(12, 16, 30, 0.000)';
   private foregroundColorEndColor: string = 'rgba(0, 0, 0, 0.750)';
-  private foregroundStart1: number = .250; // where the top graident starts
-  private foregroundEnd1: number = 0.000; // where the top graident ends
-  private foregroundStart2: number = .750; // where the bottom graident starts
-  private foregroundEnd2: number = 1.000; // where the bottom graident ends
+  private foregroundStart1: number = .250; // where the top gradient starts
+  private foregroundEnd1: number = 0.000; // where the top gradient ends
+  private foregroundStart2: number = .750; // where the bottom gradient starts
+  private foregroundEnd2: number = 1.000; // where the bottom gradient ends
 
   // particles
   private maxParticles: number = 6000;
@@ -119,7 +119,7 @@ export class scene01Component implements OnInit {
     // update and draw particles
     this.drawParticles();
 
-    // drawing the graident on the top
+    // drawing the gradient on the top
     this.drawForeground();
 
     // debug
@@ -144,7 +144,7 @@ export class scene01Component implements OnInit {
     let bounds = this.cw.bounds;
 
     // Create gradient
-    let grd = this.cw.graident.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
+    let grd = this.cw.gradient.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
 
     // Top Color
     grd.addColorStop(this.foregroundEnd1, this.foregroundColorEndColor);

@@ -97,17 +97,17 @@ export class HelperUtility {
     drawMouse(position: Vector, state: MOUSE_STATE) {
         switch (state) {
             case MOUSE_STATE.DEFAULT:
-                this.drawDefaultMouse(position);
+                this.redDotMouse(position);
                 break;
             case MOUSE_STATE.GRAB:
-                this.drawGrabMouse(position);
+                this.holdMeMouse(position);
                 break;
             default:
                 break;
         }
     }
 
-    private drawDefaultMouse(position: Vector) {
+    private redDotMouse(position: Vector) {
         // circle outline
         let co = new Circle(this.context, position);
         co.radius = 20;
@@ -121,24 +121,15 @@ export class HelperUtility {
         cp.color.shade = '#e80000';
         cp.radius = 1;
 
-        let cpc = new Circle(this.context, new Vector(position.x, position.y));
-        cpc.color = undefined;
-        cpc.outline = new LineStyle();
-        cpc.outline.shade = '#000';
-        cpc.outline.lineWidth = 1;
-        cpc.radius = 2;
-
         cp.draw();
-        cpc.draw();
         co.draw();
     }
 
-    private drawGrabMouse(position: Vector) {
-
+    private holdMeMouse(position: Vector) {
         let lineLength = 10;
         let line = new Line(this.context);
         line.style.shade = '#d14d02';
-        line.style.lineWidth = .65;
+        line.style.width = .65;
         line.shadow = new Shadow();
         line.shadow.shadowColor = '#000';
         line.shadow.shadowBlur = 4;
@@ -188,7 +179,7 @@ export class HelperUtility {
         r1.color.shade = '#121212';
         r1.outline = new LineStyle();
         r1.outline.shade = 'red';
-        r1.outline.lineWidth = .5;
+        r1.outline.width = .5;
         r1.radius = 2;
         r1.draw();
 
@@ -197,7 +188,7 @@ export class HelperUtility {
         trc.color.shade = '#121212';
         trc.outline = new LineStyle();
         trc.outline.shade = 'red';
-        trc.outline.lineWidth = .5;
+        trc.outline.width = .5;
         trc.radius = 6;
         trc.draw();
 
@@ -206,7 +197,7 @@ export class HelperUtility {
         tlc.color.shade = '#121212';
         tlc.outline = new LineStyle();
         tlc.outline.shade = 'red';
-        tlc.outline.lineWidth = .5;
+        tlc.outline.width = .5;
         tlc.radius = 3;
         tlc.draw();
 
@@ -215,7 +206,7 @@ export class HelperUtility {
         brc.color.shade = '#121212';
         brc.outline = new LineStyle();
         brc.outline.shade = 'red';
-        brc.outline.lineWidth = .5;
+        brc.outline.width = .5;
         brc.radius = 4;
         brc.draw();
 
@@ -224,7 +215,7 @@ export class HelperUtility {
         blc.color.shade = '#121212';
         blc.outline = new LineStyle();
         blc.outline.shade = 'red';
-        blc.outline.lineWidth = .5;
+        blc.outline.width = .5;
         blc.radius = 4;
         blc.draw();
     }

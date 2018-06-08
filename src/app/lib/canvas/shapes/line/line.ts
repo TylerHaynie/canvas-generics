@@ -49,7 +49,7 @@ export class Line {
                     this.context.shadowOffsetY = this.shadow.offsetY;
                 }
 
-                this.context.lineWidth = this.style.lineWidth;
+                this.context.lineWidth = this.style.width;
                 this.context.strokeStyle = this.style.shade;
                 this.context.globalAlpha = this.style.alpha;
 

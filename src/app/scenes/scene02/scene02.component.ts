@@ -146,7 +146,7 @@ export class Scene02Component implements OnInit {
     let line = new Line(this.cw.drawingContext);
     line.style.shade = '#ffe70f';
     line.style.alpha = 1;
-    line.style.lineWidth = .25;
+    line.style.width = .25;
 
     // add points to create line
     let seg = new LineSegment(this.focalPoint.position);
