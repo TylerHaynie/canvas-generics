@@ -23,13 +23,13 @@ export class ElementBase {
     public set isResizable(v: boolean) { this._isResizable = v; }
 
     // styles
-    hoverColor?: Color;
-    hoverOutline?: LineStyle;
-    hoverShadow?: Shadow;
+    hoverColor: Color;
+    hoverOutline: LineStyle;
+    hoverShadow: Shadow;
 
-    downColor?: Color;
-    downOutline?: LineStyle;
-    downShadow?: Shadow;
+    downColor: Color;
+    downOutline: LineStyle;
+    downShadow: Shadow;
 
     // TODO: define a base and build content types off of that
     content: any;
@@ -110,14 +110,7 @@ export class ElementBase {
         e.uiMouseState = MOUSE_STATE.DEFAULT;
 
         if (this._isDraggable) {
-            if (!this._dragging) { this._dragging = true; }
-            e.uiMouseState = MOUSE_STATE.GRAB;
-
-            let elementPosition = this.getposition();
-            let dx = e.mousePosition.x - elementPosition.x;
-            let dy = e.mousePosition.y - elementPosition.y;
-
-            this.dragOffset = new Vector(dx, dy);
+            this.startDrag(e);
         }
 
         this.fireEvent(e);
@@ -155,12 +148,6 @@ export class ElementBase {
         }
 
         this.fireEvent(e);
-    }
-
-    private dragElement(e: MouseData) {
-        e.uiMouseState = MOUSE_STATE.GRAB;
-        let p = new Vector(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
-        this.setPosition(p);
     }
 
     elementMouseOut(e: MouseData) {
@@ -214,5 +201,22 @@ export class ElementBase {
         this._baseElement.color = this._activeColor;
         this._baseElement.outline = this._activeOutline;
         this._baseElement.shadow = this._activeShadow;
+    }
+
+    private startDrag(e: MouseData) {
+        if (!this._dragging) { this._dragging = true; }
+        e.uiMouseState = MOUSE_STATE.GRAB;
+
+        let elementPosition = this.getposition();
+        let dx = e.mousePosition.x - elementPosition.x;
+        let dy = e.mousePosition.y - elementPosition.y;
+
+        this.dragOffset = new Vector(dx, dy);
+    }
+
+    private dragElement(e: MouseData) {
+        e.uiMouseState = MOUSE_STATE.GRAB;
+        let p = new Vector(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
+        this.setPosition(p);
     }
 }

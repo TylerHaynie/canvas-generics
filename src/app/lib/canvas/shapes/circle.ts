@@ -15,43 +15,42 @@ export class Circle extends ShapeBase {
     }
 
     draw() {
-        if (this.context) {
-            this.context.save();
-            this.context.beginPath();
-            this.context.globalAlpha = 0;
+        this.context.save();
+        this.context.beginPath();
+        this.context.globalAlpha = 0;
 
-            // create the circle
-            this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.fround(2 * Math.PI));
+        // create the circle
+        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.fround(2 * Math.PI));
 
-            // does it have a shadow
-            if (this.shadow) {
-                this.context.shadowBlur = this.shadow.shadowBlur;
-                this.context.shadowColor = this.shadow.shadowColor;
-                this.context.shadowOffsetX = this.shadow.offsetX;
-                this.context.shadowOffsetY = this.shadow.offsetY;
-            }
-
-            // draw solid circle
-            if (this.color) {
-                this.context.globalAlpha = this.color.alpha;
-                this.context.fillStyle = this.color.shade;
-
-                this.context.fill();
-            }
-
-            // does it have an outline
-            if (this.outline) {
-                this.context.lineWidth = this.outline.width;
-                this.context.globalAlpha = this.outline.alpha;
-                this.context.strokeStyle = this.outline.shade;
-
-                // outline the circle
-                this.context.stroke();
-            }
-
-            this.context.restore();
+        // does it have a shadow
+        if (this.shadow !== undefined) {
+            this.context.shadowBlur = this.shadow.shadowBlur;
+            this.context.shadowColor = this.shadow.shadowColor;
+            this.context.shadowOffsetX = this.shadow.offsetX;
+            this.context.shadowOffsetY = this.shadow.offsetY;
         }
+
+        // draw solid circle
+        if (this.color !== undefined) {
+            this.context.globalAlpha = this.color.alpha;
+            this.context.fillStyle = this.color.shade;
+
+            this.context.fill();
+        }
+
+        // does it have an outline
+        if (this.outline !== undefined) {
+            this.context.lineWidth = this.outline.width;
+            this.context.globalAlpha = this.outline.alpha;
+            this.context.strokeStyle = this.outline.shade;
+
+            // outline the circle
+            this.context.stroke();
+        }
+
+        this.context.restore();
     }
+
 
     pointWithinBounds(point: Vector) {
         let withinBounds: boolean = false;

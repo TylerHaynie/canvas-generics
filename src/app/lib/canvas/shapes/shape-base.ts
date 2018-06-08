@@ -11,9 +11,9 @@ export class ShapeBase {
         this._position = new Vector(Math.fround(position.x), Math.fround(position.y));
     }
 
-    color?: Color;
-    outline?: LineStyle;
-    shadow?: Shadow;
+    color: Color = undefined;
+    outline: LineStyle = undefined;
+    shadow: Shadow = undefined;
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         this._context = context;

@@ -61,7 +61,7 @@ export class Scene03Component implements OnInit {
   interactiveCircle() {
     // create a circle element for testing
     let ce = new ElementCircle(this.cw.drawingContext, new Vector(525, 100));
-
+    ce.isDraggable = false;
     let ls = new LineStyle(2);
     ls.shade = '#f442d7';
     ce.defaultOutline = ls;
@@ -80,6 +80,7 @@ export class Scene03Component implements OnInit {
   interactiveRectangle() {
     // create a rectangular element for testing
     let re = new ElementRect(this.cw.drawingContext, new Vector(800, 250));
+    re.isDraggable = false;
     re.cornerRadius = 8;
 
     let rls = new LineStyle(2);

@@ -51,10 +51,10 @@ export class scene01Component implements OnInit {
   private foregroundEnd2: number = 1.000; // where the bottom gradient ends
 
   // particles
-  private maxParticles: number = 6000;
+  private maxParticles: number = 6000; // play with the amount
   private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
   private particleSpeedModifier: number = .05;
-  private particleCornerRadius: number = 0; // high particle count will lag with corner radius set
+  private particleCornerRadius: number = 2; // check code below for optimization when using this on a large scale
   private particleMaxRadius: number = 4.25;
   private particleMinRadius: number = 0.15;
   private maxParticleLifespan: number = 325;
@@ -226,8 +226,14 @@ export class scene01Component implements OnInit {
       );
 
       let r = new Rectangle(this.cw.drawingContext, p.position);
-      r.cornerRadius = this.particleCornerRadius;
+
       let rad = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
+
+      // if they are too small we can skip the corners. corner calculations are expensive
+      if (rad > 3 && rad > 3) {
+        r.cornerRadius = this.particleCornerRadius;
+      }
+
       r.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
       r.color = new Color(this.cw.color.randomColorFromArray(this.colorArray));
 
