@@ -1,23 +1,20 @@
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Circle } from '@canvas/shapes/circle';
-import { Particle } from '@canvas/objects/particle';
 import { Line } from '@canvas/shapes/line/line';
 import { Vector } from '@canvas/objects/vector';
+import { ParticleBase } from '@canvas/objects/particle/particle-base';
+import { Color } from '@canvas/models/color';
+import { Velocity } from '@canvas/models/velocity';
 
-export class FadableParticle extends Particle {
+export class FadableParticle extends ParticleBase {
 
     maximumAlpha: number = 1;
     currentLifeTime: number = 0;
     maximumLifeTime: number = 30;
     fadeSpan: number = 10;
-    alive: boolean = true;
 
-    private shape: Rectangle | Circle | Line;
-
-    constructor(position: Vector, shape: Rectangle | Circle | Line) {
-        super(position);
-
-        this.shape = shape;
+    constructor(shape: Rectangle, v: Velocity) {
+        super(shape, v);
     }
 
     tick() {
@@ -49,11 +46,7 @@ export class FadableParticle extends Particle {
     }
 
     private setAlpha(a: number) {
-        if ((<Line>this.shape).style) {
-            (<Line>this.shape).style.alpha = a;
-        }
-        else {
-            (<Circle | Rectangle>this.shape).color.alpha = a;
-        }
+        (<Circle | Rectangle>this.shape).color.alpha = a;
     }
+
 }

@@ -6,7 +6,7 @@ export class WindowManager {
         this.registerEvents();
     }
 
-    resize() {
+    fit(){
         this.fitCanvasToContainer();
     }
 

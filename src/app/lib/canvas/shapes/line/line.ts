@@ -5,7 +5,7 @@ import { Shadow } from '@canvas/models/shadow';
 export class Line {
     private context: CanvasRenderingContext2D;
 
-    segments: LineSegment[] = [];
+    private segments: LineSegment[] = [];
     style: LineStyle;
     shadow?: Shadow;
 
@@ -49,7 +49,7 @@ export class Line {
                     this.context.shadowOffsetY = this.shadow.offsetY;
                 }
 
-                this.context.lineWidth = this.style.lineWidth;
+                this.context.lineWidth = this.style.width;
                 this.context.strokeStyle = this.style.shade;
                 this.context.globalAlpha = this.style.alpha;
 
@@ -59,11 +59,11 @@ export class Line {
                 this.context.restore();
             }
             else {
-                // console.warn('You are trying to draw a line without any segments');
+                console.warn('You are trying to draw a line without any segments');
             }
         }
         else {
-            console.log('no context');
+            console.error('no context');
         }
     }
 }

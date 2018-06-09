@@ -14,6 +14,6 @@ export class RandomUtility {
     randomVectorInBounds(w: number, h: number): Vector {
         let rx = Math.fround(Math.random() * w);
         let ry = Math.fround(Math.random() * h);
-        return <Vector>{ x: rx, y: ry };
+        return new Vector(rx, ry);
     }
 }

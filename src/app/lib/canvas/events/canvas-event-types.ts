@@ -25,7 +25,7 @@ export enum UI_EVENT_TYPE {
     DOWN = 'down',
     UP = 'up',
     HOVER = 'hover',
-    LEAVE = 'leave',
     MOVE = 'move',
-    OUT = 'out'
+    OUT = 'out',
+    CLICK = 'click'
 }

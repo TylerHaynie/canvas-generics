@@ -30,7 +30,7 @@ export class Boundary {
         this.h = h;
     }
 
-    containsvector(p: QuadVector) {
+    containsVector(p: QuadVector) {
         if (p.x > this.x && p.x < this.x + this.w) {
             if (p.y > this.y && p.y < this.y + this.h) {
                 return true;
@@ -78,9 +78,9 @@ export class QuadTree {
         this.capicity = c;
     }
 
-    public insert(p: QuadVector) {
+    insert(p: QuadVector) {
         // Ignore objects that do not belong in this quad tree
-        if (!this.boundary.containsvector(p)) {
+        if (!this.boundary.containsVector(p)) {
             // vector does not belong here
             return false;
         }
@@ -136,7 +136,7 @@ export class QuadTree {
         this.isDivided = true;
     }
 
-    public searchBoundary(b: Boundary): QuadVector[] {
+    searchBoundary(b: Boundary): QuadVector[] {
         // Prepare an array of results
         let vectorsInRange: QuadVector[] = [];
 
@@ -147,7 +147,7 @@ export class QuadTree {
 
         // Check objects on this quad
         for (let x = 0; x < this.vectors.length; x++) {
-            if (b.containsvector(this.vectors[x])) {
+            if (b.containsVector(this.vectors[x])) {
                 vectorsInRange.push(this.vectors[x]);
             }
         }
@@ -177,13 +177,7 @@ export class QuadTree {
         return vectorsInRange;
     }
 
-
-
-    // searchRayCrossing() {
-
-    // }
-
-    public reset(w: number, h: number) {
+    reset(w: number, h: number) {
         this.boundary.w = w;
         this.boundary.h = h;
 
@@ -196,7 +190,7 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    public debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
+    debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
 
         let p = new Vector(this.boundary.x, this.boundary.y);
         let rect = new Rectangle(context, p);

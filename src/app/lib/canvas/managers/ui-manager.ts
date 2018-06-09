@@ -1,19 +1,16 @@
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { QuadTree, QuadVector } from '../../quadtree/quad-tree';
 import { MouseManager } from '@canvas/managers/mouse-manager';
-import { MOUSE_EVENT_TYPE, UI_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { LineStyle } from '@canvas/models/line-style';
 import { Vector } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
 import { Circle } from '@canvas/shapes/circle';
-import { CircularUIElement } from '@canvas/user-interface/elements/circular-element';
-import { InteractiveElement } from '@canvas/user-interface/elements/interactive-element';
-import { RectangularElement } from '@canvas/user-interface/elements/rectangular-element';
+import { ElementBase } from '@canvas/elements/element-base';
 
 export class UIManager {
     public get uiEnabled(): boolean { return this._uiEnabled; }
-    public get uiMouseState(): MOUSE_STATE { return this._uiMouseState; }
     public set enableUI(v: boolean) { this._uiEnabled = v; }
     public get debugEnabled(): boolean { return this._debugEnabled; }
     public set enableDebug(v: boolean) { this._debugEnabled = v; }
@@ -24,7 +21,7 @@ export class UIManager {
     private mouseManager: MouseManager;
 
     // elements
-    private uiElements: InteractiveElement[] = [];
+    private uiElements: ElementBase[] = [];
 
     private _uiEnabled: boolean = true;
     private _uiBuffer: [{ callback: () => void }];
@@ -35,11 +32,14 @@ export class UIManager {
 
     private _debugEnabled: boolean = false;
     private _debugBuffer: [{ callback: () => void }];
-    public get debugBuffer() { return this._uiBuffer; }
-
-    private _uiMouseState: MOUSE_STATE = MOUSE_STATE.DEFAULT;
+    public get debugBuffer() { return this._debugBuffer; }
 
     //#endregion
+
+    //#region Init
+
+
+    // TODO: need to fire off UI events and refactor a bit after that.
 
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
         this.context = context;
@@ -74,14 +74,16 @@ export class UIManager {
         });
     }
 
+    //#endregion
+
     //#region Public UI Element Functions
 
-    addUIElement(element: InteractiveElement) {
+    addUIElement(element: ElementBase) {
         this.uiElements.push(element);
         this.addToUiBuffer(() => element.draw());
     }
 
-    addUIElements(elements: InteractiveElement[]) {
+    addUIElements(elements: ElementBase[]) {
         if (elements) {
             elements.forEach(element => {
                 this.addUIElement(element);
@@ -89,12 +91,12 @@ export class UIManager {
         }
     }
 
-    removeUIElement(element: InteractiveElement) {
+    removeUIElement(element: ElementBase) {
         let bi = this.uiElements.indexOf(element);
         this.uiElements.splice(bi, 1);
     }
 
-    removeUIElements(elements: InteractiveElement[]) {
+    removeUIElements(elements: ElementBase[]) {
         if (elements) {
             elements.forEach(element => {
                 let bi = this.uiElements.indexOf(element);
@@ -103,10 +105,6 @@ export class UIManager {
                 }
             });
         }
-    }
-
-    clearUIElements() {
-        this.uiElements = [];
     }
 
     //#endregion
@@ -180,40 +178,27 @@ export class UIManager {
 
     //#region User Interaction
 
-    mouseStateChange(mouseState: MOUSE_STATE) {
-        this._uiMouseState = mouseState;
-    }
-
     private pointerMoved(e: MouseData) {
-        e.uiMouseState = this._uiMouseState;
-        let mp = e.mousePosition;
-
         this.uiElements.forEach(element => {
             element.elementMouseMove(e);
 
-            if (element.baseElement.pointWithinBounds(mp) && !(e.leftMouseState === 'down')) {
+            if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseHover(e);
             }
         });
     }
 
     private checkPointerDown(e: MouseData) {
-        e.uiMouseState = this._uiMouseState;
-        let mp = e.mousePosition;
-
         this.uiElements.forEach(element => {
-            if (element.baseElement.pointWithinBounds(mp)) {
+            if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseDown(e);
             }
         });
     }
 
     private checkPointerUp(e: MouseData) {
-        e.uiMouseState = this._uiMouseState;
-        let mp = e.mousePosition;
-
         this.uiElements.forEach(element => {
-            if (element.baseElement.pointWithinBounds(mp)) {
+            if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseUp(e);
             }
         });

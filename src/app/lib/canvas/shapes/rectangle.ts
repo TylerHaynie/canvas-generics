@@ -6,12 +6,17 @@ import { Shadow } from '@canvas/models/shadow';
 import { ShapeBase } from '@canvas/shapes/shape-base';
 
 export class Corner {
-    controlPoint: Vector;
-    endingPoint: Vector;
+    private _controlPoint: Vector;
+    public get controlPoint(): Vector { return this._controlPoint; }
+    public set controlPoint(v: Vector) { this._controlPoint = v; }
 
-    constructor(controlPoint: Vector, endingPoint: Vector) {
-        this.controlPoint = controlPoint;
-        this.endingPoint = endingPoint;
+    private _endingPoint: Vector;
+    public get endingPoint(): Vector { return this._endingPoint; }
+    public set endingPoint(v: Vector) { this._endingPoint = v; }
+
+    constructor(_controlPoint: Vector, _endingPoint: Vector) {
+        this._controlPoint = _controlPoint;
+        this._endingPoint = _endingPoint;
     }
 }
 
@@ -95,70 +100,58 @@ export class Rectangle extends ShapeBase {
 
     //#endregion
 
-    private _size: Size;
-    private _cornerRadius: number = 2;
+    private _size: Size = new Size(50, 50);
+    private _cornerRadius: number = 0;
+    private context: CanvasRenderingContext2D;
 
     constructor(context: CanvasRenderingContext2D, position: Vector) {
         super(context, position);
-
-        this.size = new Size(50, 50);
+        this.context = context;
     }
 
     draw() {
-        if (this.context) {
-            if (this.position && this._size) {
-                this.context.save();
 
-                if (this._cornerRadius > 0) {
-                    if (this._cornerRadius < Math.fround(this._size.width * 0.25) && this._cornerRadius < Math.fround(this._size.height * 0.25)) {
-                        // it's large enough to draw the rounded corners
-                        this.drawComplexRectangle();
-                    }
-                    else {
-                        // save some number crunching and draw a basic rectangle if it's too small for rounded corners
-                        this.drawBasicRectangle();
-                    }
-                }
-                else {
-                    this.drawBasicRectangle();
-                }
+        this.context.save();
 
-                // does it have a shadow
-                if (this.shadow) {
-                    this.context.shadowBlur = this.shadow.shadowBlur;
-                    this.context.shadowColor = this.shadow.shadowColor;
-                    this.context.shadowOffsetX = this.shadow.offsetX;
-                    this.context.shadowOffsetY = this.shadow.offsetY;
-                }
-
-                // fill it
-                if (this.color) {
-                    this.context.globalAlpha = this.color.alpha;
-                    this.context.fillStyle = this.color.shade;
-                    this.context.fill();
-                }
-
-                // draw the outline
-                if (this.outline) {
-
-                    // reset shadow for line
-                    this.context.shadowColor = '';
-                    this.context.shadowBlur = 0;
-                    this.context.shadowOffsetX = 0;
-                    this.context.shadowOffsetY = 0;
-
-                    this.context.lineWidth = this.outline.lineWidth;
-                    this.context.globalAlpha = this.outline.alpha;
-                    this.context.strokeStyle = this.outline.shade;
-                    this.context.stroke();
-                }
-
-                this.context.restore();
-            }
-            else {
-                console.warn('You are trying to draw a rectangle without one or all of the following properties: {position, size}');
-            }
+        // craeate rectangle path
+        if (this._cornerRadius > 0) {
+            this.drawComplexRectangle();
         }
+        else {
+            this.drawBasicRectangle();
+        }
+
+        // does it have a shadow
+        if (this.shadow !== undefined) {
+            this.context.shadowBlur = this.shadow.shadowBlur;
+            this.context.shadowColor = this.shadow.shadowColor;
+            this.context.shadowOffsetX = this.shadow.offsetX;
+            this.context.shadowOffsetY = this.shadow.offsetY;
+        }
+
+        // fill it
+        if (this.color !== undefined) {
+            this.context.globalAlpha = this.color.alpha;
+            this.context.fillStyle = this.color.shade;
+            this.context.fill();
+        }
+
+        // draw the outline
+        if (this.outline !== undefined) {
+
+            // reset shadow for line
+            this.context.shadowColor = '';
+            this.context.shadowBlur = 0;
+            this.context.shadowOffsetX = 0;
+            this.context.shadowOffsetY = 0;
+
+            this.context.lineWidth = this.outline.width;
+            this.context.globalAlpha = this.outline.alpha;
+            this.context.strokeStyle = this.outline.shade;
+            this.context.stroke();
+        }
+
+        this.context.restore();
     }
 
     private drawBasicRectangle() {
