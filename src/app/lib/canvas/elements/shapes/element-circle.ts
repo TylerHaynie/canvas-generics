@@ -10,9 +10,9 @@ export class ElementCircle extends ElementBase {
 
         let c = new Circle(context, position);
         c.radius = this.radius;
-        c.color = this.activeColor;
-        c.outline = this.activeOutline;
-        c.shadow = this.activeShadow;
+        c.color = this.defaultColor;
+        c.outline = this.defaultOutline;
+        c.shadow = this.defaultShadow;
 
         this.baseElement = c;
     }

@@ -38,27 +38,37 @@ export class Scene03Component implements OnInit {
     this.cw.start();
   }
 
-  draw() {
+  private draw() {
 
   }
 
   // testing
   private createTestUI() {
-    this.defaultInteractiveSquare();
-    this.interactiveCircle();
-    this.interactiveRectangle();
+    this.createTestRect();
+    // this.circleButton();
+    // this.rectangleButton();
   }
 
-  defaultInteractiveSquare() {
+  private createTestRect() {
     // create rectangle
-    let nr = new ElementRect(this.cw.drawingContext, new Vector(this.cw.width / 2, this.cw.height / 2));
-    nr.cornerRadius = 8;
+    let rect = new ElementRect(this.cw.drawingContext, new Vector(600, 300));
+    rect.size = new Size(200, 100);
+    rect.cornerRadius = 8;
+    rect.isDraggable = true;
 
     // add to buffer
-    this.cw.uiManager.addUIElement(nr);
+    this.cw.uiManager.addUIElement(rect);
   }
 
-  interactiveCircle() {
+  private hideHoverMenu(rect: ElementRect, event: MouseData) {
+    // hide the menu
+  }
+
+  private useMenuItem(rect: ElementRect, event: MouseData) {
+    // use the item / perform action clicked
+  }
+
+  private circleButton() {
     // create a circle element for testing
     let ce = new ElementCircle(this.cw.drawingContext, new Vector(525, 100));
     ce.isDraggable = false;
@@ -77,7 +87,7 @@ export class Scene03Component implements OnInit {
     this.cw.uiManager.addUIElement(ce);
   }
 
-  interactiveRectangle() {
+  private rectangleButton() {
     // create a rectangular element for testing
     let re = new ElementRect(this.cw.drawingContext, new Vector(800, 250));
     re.isDraggable = false;

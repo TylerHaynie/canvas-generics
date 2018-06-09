@@ -185,6 +185,9 @@ export class UIManager {
             if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseHover(e);
             }
+            else {
+                element.elementMouseOut(e);
+            }
         });
     }
 

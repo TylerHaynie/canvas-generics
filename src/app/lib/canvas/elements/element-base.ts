@@ -14,7 +14,7 @@ export class ElementBase {
     public get baseElement(): Rectangle | Circle { return this._baseElement; }
     public set baseElement(v: Rectangle | Circle) { this._baseElement = v; }
 
-    private _isDraggable: boolean = true;
+    private _isDraggable: boolean = false;
     public get isDraggable(): boolean { return this._isDraggable; }
     public set isDraggable(v: boolean) { this._isDraggable = v; }
 
@@ -32,40 +32,37 @@ export class ElementBase {
     downShadow: Shadow;
 
     // TODO: define a base and build content types off of that
-    content: any;
+    // content: any;
+    protected childElements: ElementBase[] = [];
+
+    // hover menu
+    private hoverMenuEnabled: boolean = false;
+    protected hoverMenu: (context: CanvasRenderingContext2D) => void;
 
     // styles
     private _defaultColor: Color;
     public set defaultColor(v: Color) {
         this._defaultColor = v;
-        this._activeColor = v;
+        this.activeColor = v;
     }
 
     private _defaultOutline: LineStyle;
     public set defaultOutline(v: LineStyle) {
         this._defaultOutline = v;
-        this._activeOutline = v;
+        this.activeOutline = v;
     }
 
     private _defaultShadow: Shadow;
     public set defaultShadow(v: Shadow) {
         this._defaultShadow = v;
-        this._activeShadow = v;
+        this.activeShadow = v;
     }
 
-    private _activeColor: Color;
-    public set activeColor(v: Color) { this._activeColor = v; }
-    public get activeColor(): Color { return this._activeColor; }
+    protected activeColor: Color;
+    protected activeOutline: LineStyle;
+    protected activeShadow: Shadow;
 
-    private _activeOutline: LineStyle;
-    public set activeOutline(v: LineStyle) { this._activeOutline = v; }
-    public get activeOutline(): LineStyle { return this._activeOutline; }
-
-    private _activeShadow: Shadow;
-    public set activeShadow(v: Shadow) { this._activeShadow = v; }
-    public get activeShadow(): Shadow { return this._activeShadow; }
-
-    private _context: CanvasRenderingContext2D;
+    protected _context: CanvasRenderingContext2D;
     private previousEventType: UI_EVENT_TYPE;
     private _defaultActiveOutline: LineStyle;
 
@@ -87,22 +84,22 @@ export class ElementBase {
         this._context = context;
         this.previousEventType = UI_EVENT_TYPE.UP;
 
-        this._activeColor = new Color();
-        this._activeOutline = new LineStyle();
-        this._activeShadow = new Shadow();
+        this.activeColor = new Color();
+        this.activeOutline = new LineStyle();
+        this.activeShadow = new Shadow();
 
-        this.defaultColor = new Color();
-        this._defaultActiveOutline = new LineStyle();
-        this._defaultActiveOutline.width = 1;
-        this._defaultActiveOutline.shade = '#54ff5f';
+        this._defaultColor = new Color();
+        // this._defaultActiveOutline = new LineStyle();
+        // this._defaultActiveOutline.width = 1;
+        // this._defaultActiveOutline.shade = '#54ff5f';
     }
 
     private fireEvent(e: MouseData) {
         // to avoid spamming events
-        // if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
-        this.canvasEvent.fireEvent(this._eventType, e);
-        this.previousEventType = this._eventType;
-        // }
+        if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
+            this.canvasEvent.fireEvent(this._eventType, e);
+            this.previousEventType = this._eventType;
+        }
     }
 
     elementMouseDown(e: MouseData) {
@@ -135,6 +132,7 @@ export class ElementBase {
         if (this.previousEventType !== UI_EVENT_TYPE.DOWN) {
             // we won't fire hover while mouse is down
             this._eventType = UI_EVENT_TYPE.HOVER;
+            this.hoverMenuEnabled = true;
         }
 
         this.fireEvent(e);
@@ -156,6 +154,8 @@ export class ElementBase {
         this._dragging = false;
         e.uiMouseState = MOUSE_STATE.DEFAULT;
 
+        this.hoverMenuEnabled = false;
+
         this.fireEvent(e);
     }
 
@@ -170,6 +170,14 @@ export class ElementBase {
     draw() {
         this.styleElement();
         this._baseElement.draw();
+        if (this.hoverMenuEnabled) {
+            this.hoverMenu(this._context);
+        }
+
+        // now draw children
+        this.childElements.forEach(childElement => {
+            childElement.draw();
+        });
     }
 
     private styleElement() {
@@ -177,30 +185,30 @@ export class ElementBase {
     }
 
     private applyColors() {
-        this._activeColor = this._defaultColor;
-        this._activeOutline = this._defaultOutline;
-        this._activeShadow = this._defaultShadow;
+        this.activeColor = this._defaultColor;
+        this.activeOutline = this._defaultOutline;
+        this.activeShadow = this._defaultShadow;
 
         switch (this._eventType) {
             case UI_EVENT_TYPE.MOVE:
                 if (this._dragging) {
-                    this._activeOutline = this._defaultActiveOutline;
+                    this.activeOutline = this._defaultActiveOutline;
                 }
                 break;
             case UI_EVENT_TYPE.DOWN:
-                if (this.downColor) { this._activeColor = this.downColor; }
-                if (this.downOutline) { this._activeOutline = this.downOutline; } else { this._activeOutline = this._defaultActiveOutline; }
-                if (this.downShadow) { this._activeShadow = this.downShadow; }
+                if (this.downColor) { this.activeColor = this.downColor; }
+                if (this.downOutline) { this.activeOutline = this.downOutline; } else { this.activeOutline = this._defaultActiveOutline; }
+                if (this.downShadow) { this.activeShadow = this.downShadow; }
                 break;
             case UI_EVENT_TYPE.HOVER:
-                if (this.hoverColor) { this._activeColor = this.hoverColor; }
-                if (this.hoverOutline) { this._activeOutline = this.hoverOutline; } else { this._activeOutline = this._defaultActiveOutline; }
-                if (this.hoverShadow) { this._activeShadow = this.hoverShadow; }
+                if (this.hoverColor) { this.activeColor = this.hoverColor; }
+                if (this.hoverOutline) { this.activeOutline = this.hoverOutline; } else { this.activeOutline = this._defaultActiveOutline; }
+                if (this.hoverShadow) { this.activeShadow = this.hoverShadow; }
         }
 
-        this._baseElement.color = this._activeColor;
-        this._baseElement.outline = this._activeOutline;
-        this._baseElement.shadow = this._activeShadow;
+        this._baseElement.color = this.activeColor;
+        this._baseElement.outline = this.activeOutline;
+        this._baseElement.shadow = this.activeShadow;
     }
 
     private startDrag(e: MouseData) {

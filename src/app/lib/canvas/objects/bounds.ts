@@ -30,7 +30,7 @@ export class Bounds {
     }
 
     public get bottomLeft(): Vector {
-        return <Vector>{ x: this._x, y: this._y - this._height };
+        return <Vector>{ x: this._x, y: this._y + this._height };
     }
 
     public get bottomRight(): Vector {
