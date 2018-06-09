@@ -10,6 +10,7 @@ import { Color } from '@canvas/models/color';
 import { RayCastUtility } from '@canvas/utilities/raycast-utility';
 import { Line } from '@canvas/shapes/line/line';
 import { LineSegment } from '@canvas/shapes/line/line-segment';
+import { RandomUtility } from '@canvas/utilities/random-utility';
 
 interface Ray {
   a: Vector;
@@ -28,6 +29,7 @@ export class Scene02Component implements OnInit {
   private squares: Rectangle[] = [];
   private qtSquares: QuadTree;
   private focalPoint: Circle;
+  private _random: RandomUtility = new RandomUtility();
 
   // mouse
   private mouseOnCanvas: boolean = false;
@@ -82,7 +84,7 @@ export class Scene02Component implements OnInit {
 
   generateSquares() {
     for (let x = 0; x < 10; x++) {
-      let p = this.cw.random.randomVectorInBounds(this.cw.width, this.cw.height);
+      let p = this._random.randomVectorInBounds(this.cw.width, this.cw.height);
       let r = new Rectangle(this.cw.drawingContext, p);
       r.size = { width: 30, height: 30 };
       r.color = new Color();

@@ -5,7 +5,7 @@ import { Shadow } from '@canvas/models/shadow';
 export class Line {
     private context: CanvasRenderingContext2D;
 
-    segments: LineSegment[] = [];
+    private segments: LineSegment[] = [];
     style: LineStyle;
     shadow?: Shadow;
 

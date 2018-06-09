@@ -114,7 +114,6 @@ export class Rectangle extends ShapeBase {
         this.context.save();
 
         // craeate rectangle path
-        // *important* dont not add a corner radius to a tiny ractangle. you are just hurting yourself
         if (this._cornerRadius > 0) {
             this.drawComplexRectangle();
         }
@@ -189,7 +188,7 @@ export class Rectangle extends ShapeBase {
 
         // top right corner
         let trc = this.topRightCorner;
-        this.context.quadraticCurveTo(trc._controlPoint.x, trc._controlPoint.y, trc._endingPoint.x, trc._endingPoint.y);
+        this.context.quadraticCurveTo(trc.controlPoint.x, trc.controlPoint.y, trc.endingPoint.x, trc.endingPoint.y);
 
         // right line
         let rle = this.rightLineEnd;
@@ -197,7 +196,7 @@ export class Rectangle extends ShapeBase {
 
         // bottom right corner
         let brc = this.bottomRightCorner;
-        this.context.quadraticCurveTo(brc._controlPoint.x, brc._controlPoint.y, brc._endingPoint.x, brc._endingPoint.y);
+        this.context.quadraticCurveTo(brc.controlPoint.x, brc.controlPoint.y, brc.endingPoint.x, brc.endingPoint.y);
 
         // bottom line
         let ble = this.bottomLineEnd;
@@ -205,7 +204,7 @@ export class Rectangle extends ShapeBase {
 
         // bottom left corner
         let blc = this.bottomLeftCorner;
-        this.context.quadraticCurveTo(blc._controlPoint.x, blc._controlPoint.y, blc._endingPoint.x, blc._endingPoint.y);
+        this.context.quadraticCurveTo(blc.controlPoint.x, blc.controlPoint.y, blc.endingPoint.x, blc.endingPoint.y);
 
         // left line
         let lle = this.leftLineEnd;
@@ -213,7 +212,7 @@ export class Rectangle extends ShapeBase {
 
         // top left corner
         let tlc = this.topLeftCorner;
-        this.context.quadraticCurveTo(tlc._controlPoint.x, tlc._controlPoint.y, tlc._endingPoint.x, tlc._endingPoint.y);
+        this.context.quadraticCurveTo(tlc.controlPoint.x, tlc.controlPoint.y, tlc.endingPoint.x, tlc.endingPoint.y);
 
         this.context.closePath();
     }

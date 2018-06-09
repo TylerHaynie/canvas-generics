@@ -7,10 +7,13 @@ import { Rectangle } from '@canvas/shapes/rectangle';
 import { Size } from '@canvas/models/size';
 import { Color } from '@canvas/models/color';
 import { Bounds } from '@canvas/objects/bounds';
-import { Particle } from '@canvas/objects/particle';
+import { ParticleBase } from '@canvas/objects/particle/particle-base';
 import { Velocity } from '@canvas/models/velocity';
-import { FloatingParticle } from '@canvas/objects/particle/floating-particle';
 import { QuadTree, Boundary, QuadVector } from '@quadtree/quad-tree';
+import { GradientUtility } from '@canvas/utilities/gradient-utility';
+import { RandomUtility } from '@canvas/utilities/random-utility';
+import { ColorUtility } from '@canvas/utilities/color-utility';
+import { FadableParticle } from '@canvas/objects/particle/fadable-particle';
 
 @Component({
   selector: 'app-scene01',
@@ -22,17 +25,20 @@ export class scene01Component implements OnInit {
   //#region Variables
 
   private cw: CanvasWrapper;
+  private _foregroundGradient: CanvasGradient;
+  private _random: RandomUtility = new RandomUtility();
+  private _color: ColorUtility = new ColorUtility;
 
   private debugParticles = false;
 
   // points-of-interest
-  private pointsOfIntrest: FloatingParticle[] = [];
+  // private pointsOfIntrest: FloatingParticle[] = [];
 
   // quads
   private particleQuad: QuadTree;
 
   // particles
-  private floatingParticles: FloatingParticle[] = [];
+  private floatingParticles: FadableParticle[] = [];
 
   //#endregion
 
@@ -51,7 +57,7 @@ export class scene01Component implements OnInit {
   private foregroundEnd2: number = 1.000; // where the bottom gradient ends
 
   // particles
-  private maxParticles: number = 6000; // play with the amount
+  private maxParticles: number = 4500; // play with the amount
   private colorArray: string[] = ['#165572', '#87DAFF', '#33447E'];
   private particleSpeedModifier: number = .05;
   private particleCornerRadius: number = 2; // check code below for optimization when using this on a large scale
@@ -84,9 +90,11 @@ export class scene01Component implements OnInit {
 
     this.registerEvents();
 
+
     // set up quad trees
     let boundary: Boundary = new Boundary(0, 0, this.cw.width, this.cw.height);
     this.particleQuad = new QuadTree(boundary, 1);
+    this._foregroundGradient = this.createGradient();
 
     // start the draw loop
     this.cw.start();
@@ -143,8 +151,19 @@ export class scene01Component implements OnInit {
   private drawForeground() {
     let bounds = this.cw.bounds;
 
+    let p = new Vector(bounds.left, bounds.top);
+    let f = new Rectangle(this.cw.drawingContext, p);
+    f.size = new Size(bounds.width, bounds.height);
+    f.color = new Color(this._foregroundGradient);
+
+    f.draw();
+  }
+
+  private createGradient(): CanvasGradient {
+    let bounds = this.cw.bounds;
+    let gradUtil = new GradientUtility(this.cw.drawingContext);
     // Create gradient
-    let grd = this.cw.gradient.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
+    let grd = gradUtil.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
 
     // Top Color
     grd.addColorStop(this.foregroundEnd1, this.foregroundColorEndColor);
@@ -154,12 +173,7 @@ export class scene01Component implements OnInit {
     grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
     grd.addColorStop(this.foregroundEnd2, this.foregroundColorEndColor);
 
-    let p = new Vector(bounds.left, bounds.top);
-    let f = new Rectangle(this.cw.drawingContext, p);
-    f.size = new Size(bounds.width, bounds.height);
-    f.color = new Color(grd);
-
-    f.draw();
+    return grd;
   }
 
   private drawParticles() {
@@ -171,7 +185,7 @@ export class scene01Component implements OnInit {
     this.drawFloatingParticle(this.floatingParticles, this.particleQuad);
   }
 
-  private drawFloatingParticle(particles: FloatingParticle[], trackingTree: QuadTree = undefined) {
+  private drawFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined) {
     if (trackingTree) {
       // clear the quad
       trackingTree.reset(this.cw.width, this.cw.height);
@@ -189,11 +203,12 @@ export class scene01Component implements OnInit {
         fp.move(particleBounds);
 
         // update particle
-        fp.update();
+        fp.tick();
 
         if (trackingTree) {
           // insert particle
-          trackingTree.insert({ x: fp.particle.position.x, y: fp.particle.position.y, data: fp });
+          let pPosition = fp.getPosition();
+          trackingTree.insert({ x: pPosition.x, y: pPosition.y, data: fp });
         }
 
         // draw particle
@@ -219,29 +234,27 @@ export class scene01Component implements OnInit {
         Math.fround(Math.random() * (this.cw.height - this.particleMaxRadius))
       );
 
-      let p = new Particle(pLocation);
-      p.velocity = new Velocity(
-        this.cw.random.randomWithNegative() * this.particleSpeedModifier,
-        this.cw.random.randomWithNegative() * this.particleSpeedModifier
-      );
-
-      let r = new Rectangle(this.cw.drawingContext, p.position);
-
-      let rad = this.cw.random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
+      let rect = new Rectangle(this.cw.drawingContext, pLocation);
+      let rad = this._random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
 
       // if they are too small we can skip the corners. corner calculations are expensive
       if (rad > 3 && rad > 3) {
-        r.cornerRadius = this.particleCornerRadius;
+        rect.cornerRadius = this.particleCornerRadius;
       }
 
-      r.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
-      r.color = new Color(this.cw.color.randomColorFromArray(this.colorArray));
+      rect.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
+      rect.color = new Color(this._color.randomColorFromArray(this.colorArray));
 
-      let fp = new FloatingParticle(this.cw.drawingContext, pLocation, p, r);
-      fp.maximumLifeTime = this.cw.random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan);
+      let v = new Velocity(
+        this._random.randomWithNegative() * this.particleSpeedModifier,
+        this._random.randomWithNegative() * this.particleSpeedModifier
+      );
+
+      let fp = new FadableParticle(rect, v);
+
+      fp.maximumLifeTime = this._random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan);
       fp.currentLifeTime = 0;
-      fp.fadeable = true;
-      fp.maximumAlpha = this.cw.random.randomNumberBetween(1, this.maxOpacity * 100) / 100;
+      fp.maximumAlpha = this._random.randomNumberBetween(1, this.maxOpacity * 100) / 100;
       fp.fadeSpan = this.particleFadeTime;
 
       this.floatingParticles.push(fp);
@@ -267,9 +280,9 @@ export class scene01Component implements OnInit {
       // update particles in range
       if (particlesInRange.length > 0) {
         particlesInRange.forEach(p => {
-          let fp = <FloatingParticle>(p.data);
+          let fp = <FadableParticle>(p.data);
           fp.maximumAlpha = 1;
-          fp.floatingObject.color.shade = this.particleHighlightColor;
+          fp.changeColor(new Color(this.particleHighlightColor));
         });
       }
     }

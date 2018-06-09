@@ -2,29 +2,39 @@ import { Size } from '@canvas/models/size';
 import { Vector } from '@canvas/objects/vector';
 
 export class Bounds {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+    private _x: number;
+    public get x(): number { return this._x; }
+
+    private _y: number;
+    public get y(): number { return this._y; }
+
+    private _width: number;
+    public get width(): number { return this._width; }
+
+    private _height: number;
+    public get height(): number { return this._height; }
 
     constructor(point: Vector, size: Size) {
-        this.x = point.x;
-        this.y = point.y;
-        this.width = size.width;
-        this.height = size.height;
+        this._x = point.x;
+        this._y = point.y;
+        this._width = size.width;
+        this._height = size.height;
     }
 
     public get topLeft(): Vector {
-        return <Vector>{ x: this.x, y: this.y };
+        return <Vector>{ x: this._x, y: this._y };
     }
+
     public get topRight(): Vector {
-        return <Vector>{ x: this.x + this.width, y: this.y };
+        return <Vector>{ x: this._x + this._width, y: this._y };
     }
+
     public get bottomLeft(): Vector {
-        return <Vector>{ x: this.x, y: this.y - this.height };
+        return <Vector>{ x: this._x, y: this._y - this._height };
     }
+
     public get bottomRight(): Vector {
-        return <Vector>{ x: this.x + this.width, y: this.y + this.height };
+        return <Vector>{ x: this._x + this._width, y: this._y + this._height };
     }
 
     public get topLength(): number {
@@ -35,12 +45,11 @@ export class Bounds {
         return Math.max(this.bottomLeft.x, this.bottomRight.x) - Math.max(this.bottomLeft.x, this.bottomRight.x);
     }
 
-    public get leftHeight(): number {
+    public get left_height(): number {
         return Math.max(this.topLeft.y, this.bottomLeft.y) - Math.max(this.topLeft.y, this.bottomLeft.y);
     }
 
-    public get rightHeight(): number {
+    public get right_height(): number {
         return Math.max(this.topRight.y, this.bottomRight.y) - Math.max(this.topRight.y, this.bottomRight.y);
     }
-
 }

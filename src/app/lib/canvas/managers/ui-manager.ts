@@ -1,7 +1,7 @@
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { QuadTree, QuadVector } from '../../quadtree/quad-tree';
 import { MouseManager } from '@canvas/managers/mouse-manager';
-import { MOUSE_EVENT_TYPE, UI_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { LineStyle } from '@canvas/models/line-style';
 import { Vector } from '@canvas/objects/vector';
@@ -37,6 +37,9 @@ export class UIManager {
     //#endregion
 
     //#region Init
+
+
+    // TODO: need to fire off UI events and refactor a bit after that.
 
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
         this.context = context;

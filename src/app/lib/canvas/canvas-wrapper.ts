@@ -1,8 +1,3 @@
-import { RandomUtility } from '@canvas/utilities/random-utility';
-import { ColorUtility } from '@canvas/utilities/color-utility';
-import { GradientUtility } from '@canvas/utilities/gradient-utility';
-import { ImageDataUtility } from '@canvas/utilities/image-data-utility';
-import { PatternUtility } from '@canvas/utilities/pattern-utility';
 import { HelperUtility } from '@canvas/utilities/helper-utility';
 import { PanZoomManager } from '@canvas/managers/pan-zoom-manager';
 import { MouseManager } from '@canvas/managers/mouse-manager';
@@ -21,13 +16,6 @@ export class CanvasWrapper {
     public get panZoomManager() { return this._panZoomManager; }
     public get keyboardManager() { return this._keyboardManager; }
     public get uiManager() { return this._uiManager; }
-    public get random() { return this.randomUtil; }
-
-    public get color() { return this.colorUtil; }
-    public get gradient() { return this.gradientUtility; }
-    public get imageData() { return this.imageDataUtility; }
-    public get pattern() { return this.patternUtility; }
-    public get helper() { return this.helperUtility; }
 
     public get bounds() { return this._context.canvas.getBoundingClientRect(); }
     public get width() { return this._context.canvas.width; }
@@ -54,11 +42,6 @@ export class CanvasWrapper {
     private _trackMouse: boolean = true;
 
     // utils
-    private randomUtil: RandomUtility;
-    private colorUtil: ColorUtility;
-    private gradientUtility: GradientUtility;
-    private imageDataUtility: ImageDataUtility;
-    private patternUtility: PatternUtility;
     private helperUtility: HelperUtility;
 
     // managers
@@ -118,11 +101,6 @@ export class CanvasWrapper {
     }
 
     private setupUtilities() {
-        this.randomUtil = new RandomUtility();
-        this.colorUtil = new ColorUtility();
-        this.gradientUtility = new GradientUtility(this._context);
-        this.imageDataUtility = new ImageDataUtility(this._context);
-        this.patternUtility = new PatternUtility(this._context);
         this.helperUtility = new HelperUtility(this._context);
     }
 
