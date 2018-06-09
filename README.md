@@ -12,3 +12,10 @@ I use `@angular/cli` because it allows anyone to build and execute the applicati
 This will launch a development server and watch for file changes. 
 * Navigate to `http://localhost:4200/`. 
 The app will automatically reload if you save any changes made to source while the server is running.
+
+### Code Map
+
+
+<p align="center">
+  <a href="./src/assets/CanvasCodeMap.png" ><img src="./src/assets/CanvasCodeMap.png" width="100%" title="codemap"></a>
+</p>
