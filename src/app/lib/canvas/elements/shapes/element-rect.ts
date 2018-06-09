@@ -41,11 +41,12 @@ export class ElementRect extends ElementBase {
     }
 
     buildMenus() {
-        let r = new ResizeProperty(this.getposition(), this.size);
-
         if (this.allowResize) {
+            let resizeMenu = new ResizeProperty(this._context, this.getposition(), this.size);
+
             this.hoverMenu = (context) => {
-                r.drawHoverMenu(context);
+                console.log('hovering');
+                resizeMenu.show();
             };
         }
     }

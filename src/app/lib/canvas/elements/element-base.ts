@@ -12,7 +12,12 @@ export class ElementBase {
 
     private _baseElement: Rectangle | Circle;
     public get baseElement(): Rectangle | Circle { return this._baseElement; }
-    public set baseElement(v: Rectangle | Circle) { this._baseElement = v; }
+    public set baseElement(v: Rectangle | Circle) {
+        this._baseElement = v;
+        this.defaultColor = v.color;
+        this.defaultOutline = v.outline;
+        this.defaultShadow = v.shadow;
+    }
 
     private _isDraggable: boolean = false;
     public get isDraggable(): boolean { return this._isDraggable; }
@@ -89,9 +94,6 @@ export class ElementBase {
         this.activeShadow = new Shadow();
 
         this._defaultColor = new Color();
-        // this._defaultActiveOutline = new LineStyle();
-        // this._defaultActiveOutline.width = 1;
-        // this._defaultActiveOutline.shade = '#54ff5f';
     }
 
     private fireEvent(e: MouseData) {
@@ -170,14 +172,16 @@ export class ElementBase {
     draw() {
         this.styleElement();
         this._baseElement.draw();
-        if (this.hoverMenuEnabled) {
-            this.hoverMenu(this._context);
-        }
 
         // now draw children
         this.childElements.forEach(childElement => {
             childElement.draw();
         });
+
+        // draw menu(s)
+        if (this.hoverMenuEnabled) {
+            this.hoverMenu(this._context);
+        }
     }
 
     private styleElement() {
