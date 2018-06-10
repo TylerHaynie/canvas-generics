@@ -180,6 +180,11 @@ export class UIManager {
 
     private pointerMoved(e: MouseData) {
         this.uiElements.forEach(element => {
+
+            element.childElements.forEach(element => {
+                element.elementMouseMove(e);
+            });
+
             element.elementMouseMove(e);
 
             if (element.baseElement.pointWithinBounds(e.mousePosition)) {
@@ -195,6 +200,10 @@ export class UIManager {
         this.uiElements.forEach(element => {
             if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseDown(e);
+
+                element.childElements.forEach(element => {
+                    element.elementMouseDown(e);
+                });
             }
         });
     }
@@ -203,6 +212,10 @@ export class UIManager {
         this.uiElements.forEach(element => {
             if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseUp(e);
+
+                element.childElements.forEach(element => {
+                    element.elementMouseUp(e);
+                });
             }
         });
     }

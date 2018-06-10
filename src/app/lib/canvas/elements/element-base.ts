@@ -7,6 +7,7 @@ import { CanvasEvent } from '@canvas/events/canvas-event';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Circle } from '@canvas/shapes/circle';
 import { MouseData } from '@canvas/events/event-data';
+import { ResizeProperty } from '@canvas/elements/element-properties/resize-property';
 
 export class ElementBase {
 
@@ -26,6 +27,7 @@ export class ElementBase {
     private _isResizable: boolean = false;
     public get isResizable(): boolean { return this._isResizable; }
     public set isResizable(v: boolean) { this._isResizable = v; }
+    protected resizeMenu: ResizeProperty;
 
     // styles
     hoverColor: Color;
@@ -38,7 +40,7 @@ export class ElementBase {
 
     // TODO: define a base and build content types off of that
     // content: any;
-    protected childElements: ElementBase[] = [];
+    childElements: ElementBase[] = [];
 
     // hover menu
     private hoverMenuEnabled: boolean = false;
@@ -98,10 +100,16 @@ export class ElementBase {
 
     private fireEvent(e: MouseData) {
         // to avoid spamming events
-        if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
-            this.canvasEvent.fireEvent(this._eventType, e);
-            this.previousEventType = this._eventType;
-        }
+        // if ((this._eventType !== this.previousEventType) || this._eventType === UI_EVENT_TYPE.MOVE) {
+        this.canvasEvent.fireEvent(this._eventType, e);
+        this.previousEventType = this._eventType;
+
+        // update child objects with event
+        this.childElements.forEach(childElement => {
+            childElement.fireEvent(e);
+        });
+
+        // }
     }
 
     elementMouseDown(e: MouseData) {
@@ -180,8 +188,11 @@ export class ElementBase {
 
         // draw menu(s)
         if (this.hoverMenuEnabled) {
-            this.hoverMenu(this._context);
+            if (this.resizeMenu) {
+                this.resizeMenu.draw();
+            }
         }
+
     }
 
     private styleElement() {

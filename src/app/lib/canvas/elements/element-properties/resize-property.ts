@@ -5,22 +5,45 @@ import { Vector } from '@canvas/objects/vector';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { ElementBase } from '@canvas/elements/element-base';
 import { ElementRect } from '@canvas/elements/shapes/element-rect';
+import { UI_EVENT_TYPE } from '@canvas/events/canvas-event-types';
+import { MouseData } from '@canvas/events/event-data';
+import { collectExternalReferences } from '@angular/compiler';
 
 export class ResizeProperty {
     private context: CanvasRenderingContext2D;
     private position: Vector;
     private size: Size;
 
+    private topLeftCorner: ElementBase;
+    private topRightCorner: ElementBase;
+    private bottomRightCorner: ElementBase;
+    private bottomLeftCorner: ElementBase;
+    private leftMidRect: ElementBase;
+    private rightMidRect: ElementBase;
+    private topMidRect: ElementBase;
+    private bottomMidRect: ElementBase;
+
     constructor(context: CanvasRenderingContext2D, position: Vector, size: Size) {
-        // super(context);
         this.context = context;
         this.position = position;
         this.size = size;
-        // this.setupBase(this._context);
-        // this.baseElement = new Rectangle(context, position);
+
+        this.buildMenu();
     }
 
-    show() {
+    draw() {
+        this.topLeftCorner.draw();
+        this.topRightCorner.draw();
+        this.bottomRightCorner.draw();
+        this.bottomLeftCorner.draw();
+
+        this.leftMidRect.draw();
+        this.rightMidRect.draw();
+        this.topMidRect.draw();
+        this.bottomMidRect.draw();
+    }
+
+    private buildMenu() {
         // parent position
         let pp = this.position;
 
@@ -34,46 +57,174 @@ export class ResizeProperty {
         let cornerSize = new Size(15, 15);
         let cornerColor = new Color('lime');
         let straightColor = new Color('yellow');
+        let hoverColor = new Color('pink');
+        hoverColor.alpha = 1;
 
         // top left corner
-        let tlc = this.buildRect(this.context, b.topLeft, cornerSize, cornerColor);
-        // this.childElements.push(tlc);
-        tlc.draw();
+        this.topLeftCorner = this.buildRect(this.context, b.topLeft, cornerSize, cornerColor);
+        this.topLeftCorner.hoverColor = hoverColor;
+        this.topLeftCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.cornerHover(e, this.topLeftCorner);
+        });
 
         // top Right corner
-        let trc = this.buildRect(this.context, new Vector(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
-        // this.childElements.push(trc);
-        trc.draw();
+        this.topRightCorner = this.buildRect(this.context, new Vector(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
+        this.topRightCorner.hoverColor = hoverColor;
+        this.topRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.cornerHover(e, this.topRightCorner);
+        });
 
         // bottom Right corner
-        let brc = this.buildRect(this.context, new Vector(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
-        // this.childElements.push(brc);
-        brc.draw();
+        this.bottomRightCorner = this.buildRect(this.context, new Vector(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
+        this.bottomRightCorner.hoverColor = hoverColor;
+        this.bottomRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.cornerHover(e, this.bottomRightCorner);
+        });
 
         // bottom left corner
-        let blc = this.buildRect(this.context, new Vector(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
-        // this.childElements.push(blc);
-        blc.draw();
+        this.bottomLeftCorner = this.buildRect(this.context, new Vector(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
+        this.bottomLeftCorner.hoverColor = hoverColor;
+        this.bottomLeftCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.cornerHover(e, this.bottomLeftCorner);
+        });
 
         // left center rectangle
-        let lcr = this.leftCenterRect(this.context, b, cornerSize, straightColor);
-        // this.childElements.push(lcr);
-        lcr.draw();
+        this.leftMidRect = this.leftCenterRect(this.context, b, cornerSize, straightColor);
+        this.leftMidRect.hoverColor = hoverColor;
+        this.leftMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.verticalHovered(e, this.leftMidRect);
+        });
 
         // right center rectangle
-        let rcr = this.rightCenterRect(this.context, b, cornerSize, straightColor);
-        // this.childElements.push(rcr);
-        rcr.draw();
+        this.rightMidRect = this.rightCenterRect(this.context, b, cornerSize, straightColor);
+        this.rightMidRect.hoverColor = hoverColor;
+        this.rightMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.verticalHovered(e, this.rightMidRect);
+        });
 
         // top center rectangle
-        let topStraight = this.topCenterRect(this.context, b, cornerSize, straightColor);
-        // this.childElements.push(topStraight);
-        topStraight.draw();
+        this.topMidRect = this.topCenterRect(this.context, b, cornerSize, straightColor);
+        this.topMidRect.hoverColor = hoverColor;
+        this.topMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.horizontalHovered(e, this.topMidRect);
+        });
+
 
         // bottom center rectangle
-        let bottomStraight = this.bottomCenterRect(this.context, b, cornerSize, straightColor);
-        // this.childElements.push(bottomStraight);
-        bottomStraight.draw();
+        this.bottomMidRect = this.bottomCenterRect(this.context, b, cornerSize, straightColor);
+        this.bottomMidRect.hoverColor = hoverColor;
+        this.bottomMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
+            this.horizontalHovered(e, this.bottomMidRect);
+        });
+    }
+
+    mouseMove(e) {
+        // check top left
+        if (this.topLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.topLeftCorner.elementMouseHover(e);
+        }
+        else {
+            this.topLeftCorner.elementMouseOut(e);
+        }
+
+        // check top middle
+        if (this.topMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.topMidRect.elementMouseHover(e);
+        }
+        else {
+            this.topMidRect.elementMouseOut(e);
+        }
+
+        // check top right
+        if (this.topRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.topRightCorner.elementMouseHover(e);
+        }
+        else {
+            this.topRightCorner.elementMouseOut(e);
+        }
+
+        // check right middle
+        if (this.rightMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.rightMidRect.elementMouseHover(e);
+        }
+        else {
+            this.rightMidRect.elementMouseOut(e);
+        }
+
+        // check bottom right
+        if (this.bottomRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.bottomRightCorner.elementMouseHover(e);
+        }
+        else {
+            this.bottomRightCorner.elementMouseOut(e);
+        }
+
+        // check bottom middle
+        if (this.bottomMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.bottomMidRect.elementMouseHover(e);
+        }
+        else {
+            this.bottomMidRect.elementMouseOut(e);
+        }
+
+        // check bottom left
+        if (this.bottomLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.bottomLeftCorner.elementMouseHover(e);
+        }
+        else {
+            this.bottomLeftCorner.elementMouseOut(e);
+        }
+
+        // check left middle
+        if (this.leftMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.leftMidRect.elementMouseHover(e);
+        }
+        else {
+            this.leftMidRect.elementMouseOut(e);
+        }
+    }
+
+    mouseDown(e) {
+
+        // check top left
+        if (this.topLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.topLeftCorner.elementMouseDown(e);
+        }
+
+        // check top middle
+        if (this.topMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.topMidRect.elementMouseDown(e);
+        }
+
+        // check top right
+        if (this.topRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.topRightCorner.elementMouseDown(e);
+        }
+
+        // check right middle
+        if (this.rightMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.rightMidRect.elementMouseDown(e);
+        }
+
+        // check bottom right
+        if (this.bottomRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.bottomRightCorner.elementMouseDown(e);
+        }
+
+        // check bottom middle
+        if (this.bottomMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.bottomMidRect.elementMouseDown(e);
+        }
+
+        // check bottom left
+        if (this.bottomLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.bottomLeftCorner.elementMouseDown(e);
+        }
+
+        // check left middle
+        if (this.leftMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+            this.leftMidRect.elementMouseDown(e);
+        }
     }
 
     private buildRect(context: CanvasRenderingContext2D, position: Vector, size: Size, color: Color): ElementBase {
@@ -118,5 +269,17 @@ export class ResizeProperty {
         let s = new Size(cornerSize.width, h);
 
         return this.buildRect(context, p, s, color);
+    }
+
+    private cornerHover(e: MouseData, element: ElementBase) {
+        
+    }
+
+    private horizontalHovered(e: MouseData, element: ElementBase) {
+        
+    }
+
+    private verticalHovered(e: MouseData, element: ElementBase) {
+        
     }
 }
