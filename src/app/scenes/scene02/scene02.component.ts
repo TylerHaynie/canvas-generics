@@ -152,24 +152,30 @@ export class Scene02Component implements OnInit {
     line.style.alpha = 1;
     line.style.width = .25;
 
-    // add points to create line
-    let seg = new LineSegment(this.focalPoint.position);
-
-    let intersection: Vector;
     this.squares.forEach(square => {
-      intersection = square.lineIntersects({ p1: this.focalPoint.position, p2: this.mousePosition });
+      let intersection = square.lineIntersects({ p1: this.focalPoint.position, p2: this.mousePosition });
+
       if (intersection) {
-        console.log(intersection);
+        // add points to create line
+        let seg = new LineSegment(this.focalPoint.position);
+        seg.addPoint(intersection);
+
+        let ip = new Circle(this.cw.drawingContext, intersection);
+        ip.radius = 2;
+        ip.color = new Color('red');
+
+        ip.draw();
+        // add segments to the line
+        line.addSegment(seg);
+
+        // draw the line
+        line.draw();
       }
+
     });
 
-    seg.addPoint(intersection ? intersection : this.mousePosition);
+    // seg.addPoint(intersection ? intersection : this.mousePosition);
 
-    // add segments to the line
-    line.addSegment(seg);
-
-    // draw the line
-    line.draw();
   }
 
   //#region close

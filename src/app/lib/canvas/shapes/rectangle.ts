@@ -285,6 +285,8 @@ export class Rectangle extends ShapeBase {
 
     lineIntersects(other: { p1: Vector, p2: Vector }) {
         let intersects: Vector;
+
+        let closestPoint: Vector;
         // foreach line
         let tl = this.topLine;
         intersects = this.checkLineIntersection({ p1: tl.p1, p2: tl.p2 }, other);
@@ -316,30 +318,27 @@ export class Rectangle extends ShapeBase {
     // Returns 1 if the lines intersect, otherwise 0. In addition, if the lines
     // intersect the intersection point may be stored in the floats i_x and i_y.
     private checkLineIntersection(line1: { p1: Vector, p2: Vector }, line2: { p1: Vector, p2: Vector }) {
-        let s1_x, s1_y;
-        let s2_x, s2_y;
+        let s1x = line1.p2.x - line1.p1.x;
+        let s1y = line1.p2.y - line1.p1.y;
+        let s2x = line2.p2.x - line2.p1.x;
+        let s2y = line2.p2.y - line2.p1.y;
 
-        s1_x = line1.p2.x - line1.p1.x;
-        s1_y = line1.p2.y - line1.p1.y;
-        s2_x = line2.p2.x - line2.p1.x;
-        s2_y = line2.p2.y - line2.p1.y;
-
-        let s, t;
-        s = (-s1_y *
-            (line1.p1.x - line2.p1.x) + s1_x *
+        let s = (-s1y *
+            (line1.p1.x - line2.p1.x) + s1x *
             (line1.p1.y - line2.p1.y)) /
-            (-s2_x * s1_y + s1_x * s2_y);
+            (-s2x * s1y + s1x * s2y);
 
-        t = (s2_x *
-            (line1.p1.y - line2.p1.y) - s2_y *
+        let t = (s2x *
+            (line1.p1.y - line2.p1.y) - s2y *
             (line1.p1.x - line2.p1.x)) /
-            (-s2_x * s1_y + s1_x * s2_y);
+            (-s2x * s1y + s1x * s2y);
 
         if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
             // Collision detected
-            let i_x = line1.p1.x + (t * s1_x);
-            let i_y = line1.p1.y + (t * s1_y);
-            return new Vector(i_x, i_y);
+            let ix = line1.p1.x + (t * s1x);
+            let iy = line1.p1.y + (t * s1y);
+
+            return new Vector(ix, iy);
         }
 
         return; // No collision
