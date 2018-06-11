@@ -67,7 +67,7 @@ export class scene01Component implements OnInit {
   private minParticleLifespan: number = 175;
   private particleFadeTime: number = 100;
 
-  private maxOpacity: number = .75;
+  private maxOpacity: number = .35;
   private particleHighlightColor: string = '#ff2dd4';
 
   // mouse
@@ -254,7 +254,7 @@ export class scene01Component implements OnInit {
 
       fp.maximumLifeTime = this._random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan);
       fp.currentLifeTime = 0;
-      fp.maximumAlpha = this._random.randomNumberBetween(1, this.maxOpacity * 100) / 100;
+      fp.maximumAlpha = this._random.randomNumberBetween(0, this.maxOpacity * 100) / 100;
       fp.fadeSpan = this.particleFadeTime;
 
       this.floatingParticles.push(fp);

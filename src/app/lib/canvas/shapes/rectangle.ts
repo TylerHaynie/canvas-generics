@@ -284,64 +284,97 @@ export class Rectangle extends ShapeBase {
     }
 
     lineIntersects(other: { p1: Vector, p2: Vector }) {
-        let intersects: Vector;
+        let segments = [];
+        segments.push(this.topLine);
+        segments.push(this.rightLine);
+        segments.push(this.bottomLine);
+        segments.push(this.leftLine);
 
-        let closestPoint: Vector;
-        // foreach line
-        let tl = this.topLine;
-        intersects = this.checkLineIntersection({ p1: tl.p1, p2: tl.p2 }, other);
-        if (intersects) {
-            return intersects;
+        let closestIntersect: { intersection: Vector, param: number } = null;
+
+        for (let i = 0; i < segments.length; i++) {
+            let intersect = this.getIntersection(other, segments[i]);
+            if (!intersect) { continue; }
+            if (!closestIntersect || intersect.param < closestIntersect.param) {
+                closestIntersect = intersect;
+            }
         }
 
-        let rl = this.rightLine;
-        intersects = this.checkLineIntersection({ p1: rl.p1, p2: rl.p2 }, other);
-        if (intersects) {
-            return intersects;
+        return closestIntersect ? closestIntersect.intersection : undefined;
+    }
+
+    getIntersection(ray: { p1: Vector, p2: Vector }, segment: { p1: Vector, p2: Vector }) {
+        // top used research
+        // https://www.youtube.com/watch?v=c065KoXooSw
+        // https://ncase.me/sight-and-light/ - ended up using their equation. I tried a few of my own, but this worked best :(
+
+        // RAY in parametric: Point + Direction*T1
+        let r_px = ray.p1.x;
+        let r_py = ray.p1.y;
+        let r_dx = ray.p2.x - ray.p1.x;
+        let r_dy = ray.p2.y - ray.p1.y;
+
+        // SEGMENT in parametric: Point + Direction*T2
+        let s_px = segment.p1.x;
+        let s_py = segment.p1.y;
+        let s_dx = segment.p2.x - segment.p1.x;
+        let s_dy = segment.p2.y - segment.p1.y;
+
+        // Are they parallel? If so, no intersect
+        let r_mag = Math.sqrt(r_dx * r_dx + r_dy * r_dy);
+        let s_mag = Math.sqrt(s_dx * s_dx + s_dy * s_dy);
+        if (r_dx / r_mag === s_dx / s_mag && r_dy / r_mag === s_dy / s_mag) { // Directions are the same.
+            return null;
         }
 
-        let bl = this.bottomLine;
-        intersects = this.checkLineIntersection({ p1: bl.p1, p2: bl.p2 }, other);
-        if (intersects) {
-            return intersects;
-        }
+        // SOLVE FOR T1 & T2
+        let T2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx);
+        let T1 = (s_px + s_dx * T2 - r_px) / r_dx;
 
-        let ll = this.leftLine;
-        intersects = this.checkLineIntersection({ p1: ll.p1, p2: ll.p2 }, other);
-        if (intersects) {
-            return intersects;
-        }
+        // Must be within parametic whatevers for RAY/SEGMENT
+        if (T1 < 0) { return null; }
+        if (T2 < 0 || T2 > 1) { return null; }
 
-        return;
+        // Return the POINT OF INTERSECTION
+        return {
+            intersection: new Vector(
+                r_px + r_dx * T1,
+                r_py + r_dy * T1
+            ),
+            param: T1
+        };
+
     }
 
     // Returns 1 if the lines intersect, otherwise 0. In addition, if the lines
     // intersect the intersection point may be stored in the floats i_x and i_y.
-    private checkLineIntersection(line1: { p1: Vector, p2: Vector }, line2: { p1: Vector, p2: Vector }) {
-        let s1x = line1.p2.x - line1.p1.x;
-        let s1y = line1.p2.y - line1.p1.y;
-        let s2x = line2.p2.x - line2.p1.x;
-        let s2y = line2.p2.y - line2.p1.y;
+    // private checkLineIntersection(line1: { p1: Vector, p2: Vector }, line2: { p1: Vector, p2: Vector }) {
 
-        let s = (-s1y *
-            (line1.p1.x - line2.p1.x) + s1x *
-            (line1.p1.y - line2.p1.y)) /
-            (-s2x * s1y + s1x * s2y);
 
-        let t = (s2x *
-            (line1.p1.y - line2.p1.y) - s2y *
-            (line1.p1.x - line2.p1.x)) /
-            (-s2x * s1y + s1x * s2y);
+    //     let s1x = line1.p2.x - line1.p1.x;
+    //     let s1y = line1.p2.y - line1.p1.y;
+    //     let s2x = line2.p2.x - line2.p1.x;
+    //     let s2y = line2.p2.y - line2.p1.y;
 
-        if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-            // Collision detected
-            let ix = line1.p1.x + (t * s1x);
-            let iy = line1.p1.y + (t * s1y);
+    //     let s = (-s1y *
+    //         (line1.p1.x - line2.p1.x) + s1x *
+    //         (line1.p1.y - line2.p1.y)) /
+    //         (-s2x * s1y + s1x * s2y);
 
-            return new Vector(ix, iy);
-        }
+    //     let t = (s2x *
+    //         (line1.p1.y - line2.p1.y) - s2y *
+    //         (line1.p1.x - line2.p1.x)) /
+    //         (-s2x * s1y + s1x * s2y);
 
-        return; // No collision
-    }
+    //     if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+    //         // Collision detected
+    //         let ix = line1.p1.x + (t * s1x);
+    //         let iy = line1.p1.y + (t * s1y);
+
+    //         return { intersection: new Vector(ix, iy), t: t, s: s };
+    //     }
+
+    //     return; // No collision
+    // }
 
 }

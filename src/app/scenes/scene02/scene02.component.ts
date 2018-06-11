@@ -44,6 +44,7 @@ export class Scene02Component implements OnInit {
     this.cw.panZoomManager.minScale = 1;
     this.cw.panZoomManager.panningAllowed = false;
     this.cw.panZoomManager.scalingAllowed = false;
+    this.cw.overlayAsBackground = true;
 
     let b: Boundary = new Boundary(0, 0, this.cw.width, this.cw.height);
     this.qtSquares = new QuadTree(b, 1);
@@ -52,7 +53,6 @@ export class Scene02Component implements OnInit {
 
     this.setFocalPoint();
     this.generateSquares();
-    this.testLineIntersection();
 
     // start the draw loop
     this.cw.start();
@@ -72,15 +72,13 @@ export class Scene02Component implements OnInit {
   setFocalPoint() {
     let p = new Vector(this.cw.width / 2, this.cw.height / 2);
     this.focalPoint = new Circle(this.cw.drawingContext, p);
-    this.focalPoint.radius = 2;
+    this.focalPoint.radius = 4;
     this.focalPoint.color = new Color('lime');
   }
 
   draw() {
     this.cw.saveContext();
-
     this.doSomething();
-
     this.cw.restoreContext();
   }
 
@@ -97,28 +95,8 @@ export class Scene02Component implements OnInit {
   }
 
   doSomething() {
-
     this.drawSquares();
-    this.drawMousePosition();
     this.castRay();
-  }
-
-  testLineIntersection() {
-    let rcu: RayCastUtility = new RayCastUtility();
-
-    // should return the intersection vector
-    let pa = <Vector>{ x: 0, y: 0 };
-    let pb = <Vector>{ x: 3, y: 3 };
-    let pc = <Vector>{ x: 3, y: 0 };
-    let pd = <Vector>{ x: 0, y: 3 };
-    console.log(rcu.lineIntersects(pa, pb, pc, pd));
-
-    // should be undefined
-    let pa2 = <Vector>{ x: 0, y: 0 };
-    let pb2 = <Vector>{ x: 3, y: 3 };
-    let pc2 = <Vector>{ x: 3, y: 0 };
-    let pd2 = <Vector>{ x: 6, y: 3 };
-    console.log(rcu.lineIntersects(pa2, pb2, pc2, pd2));
   }
 
   drawSquares() {
@@ -130,16 +108,6 @@ export class Scene02Component implements OnInit {
     });
   }
 
-  drawMousePosition() {
-    if (this.mouseOnCanvas) {
-      let mp = new Circle(this.cw.drawingContext, this.mousePosition);
-      mp.radius = 2;
-      mp.color = new Color('red');
-
-      mp.draw();
-    }
-  }
-
   castRay() {
     if (!this.mouseOnCanvas) { return; }
 
@@ -148,34 +116,43 @@ export class Scene02Component implements OnInit {
 
     // define line
     let line = new Line(this.cw.drawingContext);
-    line.style.shade = '#ffe70f';
-    line.style.alpha = 1;
-    line.style.width = .25;
+    line.style.shade = 'rgba(0, 255, 0, 1)';
+    line.style.width = 1;
+
+    let found: boolean = false;
+    let seg = new LineSegment(this.focalPoint.position);
 
     this.squares.forEach(square => {
       let intersection = square.lineIntersects({ p1: this.focalPoint.position, p2: this.mousePosition });
 
       if (intersection) {
+        found = true;
         // add points to create line
-        let seg = new LineSegment(this.focalPoint.position);
         seg.addPoint(intersection);
 
         let ip = new Circle(this.cw.drawingContext, intersection);
-        ip.radius = 2;
+        ip.radius = 4;
         ip.color = new Color('red');
 
         ip.draw();
-        // add segments to the line
-        line.addSegment(seg);
-
-        // draw the line
-        line.draw();
       }
 
     });
 
-    // seg.addPoint(intersection ? intersection : this.mousePosition);
+    if (!found) {
+      let ip = new Circle(this.cw.drawingContext, this.mousePosition);
+      ip.radius = 4;
+      ip.color = new Color('red');
 
+      ip.draw();
+      seg.addPoint(this.mousePosition);
+    }
+
+    // add segments to the line
+    line.addSegment(seg);
+
+    // draw the line
+    line.draw();
   }
 
   //#region close

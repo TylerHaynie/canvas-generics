@@ -4,7 +4,7 @@ export class RayCastUtility {
     constructor() { }
 
     lineIntersects(pa: Vector, pb: Vector, pc: Vector, pd: Vector) {
-        // credit goes to: https://www.youtube.com/watch?v=c065KoXooSw
+        
         // he has a very good explination of the equation
         let r = <Vector>{ x: pb.x - pa.x, y: pb.y - pa.y };
         let s = <Vector>{ x: pd.x - pc.x, y: pd.y - pc.y };
