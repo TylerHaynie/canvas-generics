@@ -1,10 +1,7 @@
-import { Rectangle } from '@canvas/shapes/rectangle';
-import { Circle } from '@canvas/shapes/circle';
-import { Line } from '@canvas/shapes/line/line';
-import { Vector } from '@canvas/objects/vector';
 import { ParticleBase } from '@canvas/objects/particle/particle-base';
-import { Color } from '@canvas/models/color';
+import { Rectangle } from '@canvas/shapes/rectangle';
 import { Velocity } from '@canvas/models/velocity';
+import { Circle } from '@canvas/shapes/circle';
 
 export class FadableParticle extends ParticleBase {
 

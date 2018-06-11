@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { Rectangle } from '@canvas/shapes/rectangle';
@@ -67,12 +67,12 @@ export class scene01Component implements OnInit {
   private minParticleLifespan: number = 175;
   private particleFadeTime: number = 100;
 
-  private maxOpacity: number = .75;
+  private maxOpacity: number = .35;
   private particleHighlightColor: string = '#ff2dd4';
 
   // mouse
   private mouseOnCanvas: boolean = false;
-  private mousePosition: Vector;
+  private mousePosition: Vector2D;
 
   //#endregion
 
@@ -140,7 +140,7 @@ export class scene01Component implements OnInit {
 
   private drawBackground() {
     let bounds = this.cw.bounds;
-    let p = new Vector(bounds.left, bounds.top);
+    let p = new Vector2D(bounds.left, bounds.top);
     let b = new Rectangle(this.cw.drawingContext, p);
     b.size = new Size(bounds.width, bounds.height);
     b.color = new Color(this.backgroundColor);
@@ -151,7 +151,7 @@ export class scene01Component implements OnInit {
   private drawForeground() {
     let bounds = this.cw.bounds;
 
-    let p = new Vector(bounds.left, bounds.top);
+    let p = new Vector2D(bounds.left, bounds.top);
     let f = new Rectangle(this.cw.drawingContext, p);
     f.size = new Size(bounds.width, bounds.height);
     f.color = new Color(this._foregroundGradient);
@@ -191,7 +191,7 @@ export class scene01Component implements OnInit {
       trackingTree.reset(this.cw.width, this.cw.height);
     }
 
-    let bp = new Vector(0, 0);
+    let bp = new Vector2D(0, 0);
     let bs = new Size(this.cw.width, this.cw.height);
     let particleBounds = new Bounds(bp, bs);
 
@@ -229,7 +229,7 @@ export class scene01Component implements OnInit {
 
     for (let x = this.floatingParticles.length; x < this.maxParticles; x++) {
 
-      let pLocation = new Vector(
+      let pLocation = new Vector2D(
         Math.fround(Math.random() * (this.cw.width - this.particleMaxRadius)),
         Math.fround(Math.random() * (this.cw.height - this.particleMaxRadius))
       );
@@ -239,7 +239,7 @@ export class scene01Component implements OnInit {
 
       // if they are too small we can skip the corners. corner calculations are expensive
       if (rad > 3 && rad > 3) {
-        rect.cornerRadius = this.particleCornerRadius;
+        rect.endGap = this.particleCornerRadius;
       }
 
       rect.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
@@ -254,7 +254,7 @@ export class scene01Component implements OnInit {
 
       fp.maximumLifeTime = this._random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan);
       fp.currentLifeTime = 0;
-      fp.maximumAlpha = this._random.randomNumberBetween(1, this.maxOpacity * 100) / 100;
+      fp.maximumAlpha = this._random.randomNumberBetween(0, this.maxOpacity * 100) / 100;
       fp.fadeSpan = this.particleFadeTime;
 
       this.floatingParticles.push(fp);

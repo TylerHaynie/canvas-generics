@@ -1,11 +1,11 @@
-import { Vector } from '@canvas/objects/vector';
-import { Size } from '@canvas/models/size';
 import { Velocity } from '@canvas/models/velocity';
 import { RandomUtility } from '@canvas/utilities/random-utility';
-import { Bounds } from '@canvas/objects/bounds';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Circle } from '@canvas/shapes/circle';
+import { Vector2D } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
+import { Size } from '@canvas/models/size';
+import { Bounds } from '@canvas/objects/bounds';
 
 export class ParticleBase {
     private velocity: Velocity;
@@ -21,7 +21,7 @@ export class ParticleBase {
         this.velocity = v;
     }
 
-    setPosition(p: Vector) {
+    setPosition(p: Vector2D) {
         this.shape.position = p;
     }
 
@@ -71,12 +71,16 @@ export class ParticleBase {
         }
 
         // update vector with speed
-        this.shape.position = new Vector(this.shape.position.x + this.velocity.vx, this.shape.position.y + this.velocity.vy);
+        this.shape.position = new Vector2D(
+            this.shape.position.x + this.velocity.vx,
+            this.shape.position.y + this.velocity.vy
+        );
     }
 
     wiggle() {
-        this.shape.position.x = this.shape.position.x + this.randomUtil.randomWithNegative();
-        this.shape.position.y = this.shape.position.y + this.randomUtil.randomWithNegative();
+        let nx = this.shape.position.x + this.randomUtil.randomWithNegative();
+        let ny = this.shape.position.y + this.randomUtil.randomWithNegative();
+        this.shape.position = new Vector2D(nx, ny);
     }
 
     draw() {

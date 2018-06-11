@@ -1,13 +1,13 @@
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 
 export class RayCastUtility {
     constructor() { }
 
-    lineIntersects(pa: Vector, pb: Vector, pc: Vector, pd: Vector) {
-        // credit goes to: https://www.youtube.com/watch?v=c065KoXooSw
+    lineIntersects(pa: Vector2D, pb: Vector2D, pc: Vector2D, pd: Vector2D) {
+
         // he has a very good explination of the equation
-        let r = <Vector>{ x: pb.x - pa.x, y: pb.y - pa.y };
-        let s = <Vector>{ x: pd.x - pc.x, y: pd.y - pc.y };
+        let r = new Vector2D(pb.x - pa.x, pb.y - pa.y);
+        let s = new Vector2D(pd.x - pc.x, pd.y - pc.y);
 
         let d = r.x * s.y - r.y * s.x;
         let u = ((pc.x - pa.x) * r.y - (pc.y - pa.y) * r.x) / d;
@@ -15,10 +15,10 @@ export class RayCastUtility {
 
         if (u >= 0 && u <= 1) {
             if (t >= 0 && t <= 1) {
-                return <Vector>{
-                    x: pa.x + t * r.x,
-                    y: pa.y + t * r.y
-                };
+                return new Vector2D(
+                    pa.x + t * r.x,
+                    pa.y + t * r.y
+                );
             }
         }
 

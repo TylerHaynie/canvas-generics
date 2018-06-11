@@ -4,7 +4,7 @@ import { MouseManager } from '@canvas/managers/mouse-manager';
 import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { LineStyle } from '@canvas/models/line-style';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
 import { Circle } from '@canvas/shapes/circle';
 import { ElementBase } from '@canvas/elements/element-base';
@@ -180,10 +180,18 @@ export class UIManager {
 
     private pointerMoved(e: MouseData) {
         this.uiElements.forEach(element => {
+
+            element.childElements.forEach(element => {
+                element.elementMouseMove(e);
+            });
+
             element.elementMouseMove(e);
 
             if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseHover(e);
+            }
+            else {
+                element.elementMouseOut(e);
             }
         });
     }
@@ -192,6 +200,10 @@ export class UIManager {
         this.uiElements.forEach(element => {
             if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseDown(e);
+
+                element.childElements.forEach(element => {
+                    element.elementMouseDown(e);
+                });
             }
         });
     }
@@ -200,6 +212,10 @@ export class UIManager {
         this.uiElements.forEach(element => {
             if (element.baseElement.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseUp(e);
+
+                element.childElements.forEach(element => {
+                    element.elementMouseUp(e);
+                });
             }
         });
     }

@@ -1,5 +1,5 @@
 import { MouseManager } from '@canvas/managers/mouse-manager';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { PAN_ZOOM_EVENT_TYPE, MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { CanvasEvent } from '@canvas/events/canvas-event';
 import { PanZoomData } from '@canvas/events/event-data';
@@ -24,7 +24,7 @@ export class PanZoomManager {
 
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
-    private mousePosition: Vector;
+    private mousePosition: Vector2D;
 
     // canvas
     private canvasScaleStep: number = .10;
@@ -33,16 +33,16 @@ export class PanZoomManager {
     // panning
     private minimumPanSpeed: number = 0;
     private maximumPanSpeed: number = 2;
-    private allowPanning: boolean = true;
+    private allowPanning: boolean = false;
     private pannableModifier: number = 1;
-    private panOffset: Vector;
+    private panOffset: Vector2D;
     private isPanning = false;
-    private panStartPosition: Vector;
-    private totalPanning: Vector = new Vector(0, 0);
+    private panStartPosition: Vector2D;
+    private totalPanning: Vector2D = new Vector2D(0, 0);
     private panModifier: number = 1;
 
     // scaling
-    private allowScaling: boolean = true;
+    private allowScaling: boolean = false;
     private maximumScale: number = 0;
     private minimumScale: number = 0;
 
@@ -92,13 +92,15 @@ export class PanZoomManager {
         });
 
         this.mouseManager.on(MOUSE_EVENT_TYPE.WHEEL, (e) => {
-            switch (e.scrollDirection) {
-                case 'up':
-                    this.zoomIn();
-                    break;
-                case 'down':
-                    this.zoomOut();
-                    break;
+            if (this.scalingAllowed) {
+                switch (e.scrollDirection) {
+                    case 'up':
+                        this.zoomIn();
+                        break;
+                    case 'down':
+                        this.zoomOut();
+                        break;
+                }
             }
         });
 
@@ -183,15 +185,15 @@ export class PanZoomManager {
 
     //#region Input logic
 
-    private mouseDown(mousePosition: Vector) {
+    private mouseDown(mousePosition: Vector2D) {
         if (!this.isPanning) {
-            this.panStartPosition = new Vector(mousePosition.x - this.panOffset.x, mousePosition.y - this.panOffset.y);
+            this.panStartPosition = new Vector2D(mousePosition.x - this.panOffset.x, mousePosition.y - this.panOffset.y);
 
             this.isPanning = true;
         }
     }
 
-    private mouseMove(mousePosition: Vector) {
+    private mouseMove(mousePosition: Vector2D) {
         this.mousePosition = mousePosition;
         this.pan(mousePosition);
     }
@@ -222,7 +224,7 @@ export class PanZoomManager {
 
     //#endregion
 
-    private pan(mousePosition: Vector) {
+    private pan(mousePosition: Vector2D) {
         // are we panning?
         if (this.isPanning && this.allowPanning) {
             // movement delta
@@ -230,12 +232,10 @@ export class PanZoomManager {
             let dy = (mousePosition.y - this.panStartPosition.y) * this.panModifier;
 
             // update panstart
-            this.panStartPosition.x = mousePosition.x;
-            this.panStartPosition.y = mousePosition.y;
+            this.panStartPosition = new Vector2D(mousePosition.x, mousePosition.y);
 
             // total pan amount
-            this.totalPanning.x += dx;
-            this.totalPanning.y += dy;
+            this.totalPanning = new Vector2D(this.totalPanning.x + dx, this.totalPanning.y + dy);
 
             this.eventType = PAN_ZOOM_EVENT_TYPE.PAN;
             this.fireEvent();
@@ -283,8 +283,8 @@ export class PanZoomManager {
     }
 
     private resetView() {
-        this.panOffset = <Vector>{ x: 0, y: 0 };
-        this.totalPanning = <Vector>{ x: 0, y: 0 };
+        this.panOffset = new Vector2D(0, 0);
+        this.totalPanning = new Vector2D(0, 0);
 
         this.canvasScale = 1;
         this.eventType = PAN_ZOOM_EVENT_TYPE.RESET;

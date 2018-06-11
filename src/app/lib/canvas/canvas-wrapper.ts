@@ -3,12 +3,16 @@ import { PanZoomManager } from '@canvas/managers/pan-zoom-manager';
 import { MouseManager } from '@canvas/managers/mouse-manager';
 import { KeyboardManager } from '@canvas/managers/keyboard-manager';
 import { WindowManager } from '@canvas/managers/window-manager';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { PanZoomData, MouseData } from '@canvas/events/event-data';
 import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 import { UIManager } from '@canvas/managers/ui-manager';
 
 export class CanvasWrapper {
+    private delta;
+    private lastRender;
+    private fps: number;
+
 
     // public properties
     public get drawingContext(): CanvasRenderingContext2D { return this._context; }
@@ -164,7 +168,12 @@ export class CanvasWrapper {
         this._context.imageSmoothingEnabled = false; // everything else
     }
 
+
+
     private draw() {
+        this.delta = performance.now() - this.lastRender;
+        this.fps = Math.floor(1000 / this.delta);
+
         // check for key input
         this.checkKeys();
 
@@ -200,6 +209,11 @@ export class CanvasWrapper {
         // update keyboard
         this._keyboardManager.update();
 
+        this._context.fillStyle = 'yellow';
+        this._context.font = '14px courier new';
+        this._context.fillText(this.fps.toString(), 15, 15);
+
+        this.lastRender = performance.now();
         // do it all again
         requestAnimationFrame(() => this.start());
     }

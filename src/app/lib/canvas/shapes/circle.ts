@@ -1,4 +1,4 @@
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
 import { LineStyle } from '@canvas/models/line-style';
 import { Shadow } from '@canvas/models/shadow';
@@ -8,7 +8,7 @@ export class Circle extends ShapeBase {
     private context: CanvasRenderingContext2D;
     radius: number;
 
-    constructor(context: CanvasRenderingContext2D, position: Vector) {
+    constructor(context: CanvasRenderingContext2D, position: Vector2D) {
         super(context, position);
         this.context = context;
         this.radius = 10;
@@ -52,7 +52,7 @@ export class Circle extends ShapeBase {
     }
 
 
-    pointWithinBounds(point: Vector) {
+    pointWithinBounds(point: Vector2D) {
         let withinBounds: boolean = false;
 
         let circle1 = { radius: 1, x: point.x, y: point.y };

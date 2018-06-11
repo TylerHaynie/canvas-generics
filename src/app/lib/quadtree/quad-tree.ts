@@ -1,5 +1,5 @@
 import { Rectangle } from '@canvas/shapes/rectangle';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { Size } from '@canvas/models/size';
 import { LineStyle } from '@canvas/models/line-style';
 
@@ -192,7 +192,7 @@ export class QuadTree {
 
     debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
 
-        let p = new Vector(this.boundary.x, this.boundary.y);
+        let p = new Vector2D(this.boundary.x, this.boundary.y);
         let rect = new Rectangle(context, p);
         rect.size = new Size(this.boundary.w, this.boundary.h);
         rect.outline = new LineStyle(lineWidth);

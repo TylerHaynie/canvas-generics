@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Size } from '@canvas/models/size';
 import { Color } from '@canvas/models/color';
@@ -21,7 +21,7 @@ export class Scene03Component implements OnInit {
 
   // moving
   private isDragging = false;
-  private dragOffset: Vector = new Vector(0, 0);
+  private dragOffset: Vector2D = new Vector2D(0, 0);
 
   constructor() { }
 
@@ -38,29 +38,31 @@ export class Scene03Component implements OnInit {
     this.cw.start();
   }
 
-  draw() {
+  private draw() {
 
   }
 
   // testing
   private createTestUI() {
-    this.defaultInteractiveSquare();
-    this.interactiveCircle();
-    this.interactiveRectangle();
+    this.createTestRect();
+    // this.circleButton();
+    // this.rectangleButton();
   }
 
-  defaultInteractiveSquare() {
+  private createTestRect() {
     // create rectangle
-    let nr = new ElementRect(this.cw.drawingContext, new Vector(this.cw.width / 2, this.cw.height / 2));
-    nr.cornerRadius = 8;
+    let rect = new ElementRect(this.cw.drawingContext, new Vector2D(600, 300));
+    rect.size = new Size(200, 100);
+    rect.endGap = 8;
+    rect.isDraggable = true;
 
     // add to buffer
-    this.cw.uiManager.addUIElement(nr);
+    this.cw.uiManager.addUIElement(rect);
   }
 
-  interactiveCircle() {
+  private circleButton() {
     // create a circle element for testing
-    let ce = new ElementCircle(this.cw.drawingContext, new Vector(525, 100));
+    let ce = new ElementCircle(this.cw.drawingContext, new Vector2D(525, 100));
     ce.isDraggable = false;
     let ls = new LineStyle(2);
     ls.shade = '#f442d7';
@@ -77,11 +79,11 @@ export class Scene03Component implements OnInit {
     this.cw.uiManager.addUIElement(ce);
   }
 
-  interactiveRectangle() {
+  private rectangleButton() {
     // create a rectangular element for testing
-    let re = new ElementRect(this.cw.drawingContext, new Vector(800, 250));
+    let re = new ElementRect(this.cw.drawingContext, new Vector2D(800, 250));
     re.isDraggable = false;
-    re.cornerRadius = 8;
+    re.endGap = 8;
 
     let rls = new LineStyle(2);
     rls.shade = '#f442d7';

@@ -1,6 +1,7 @@
 export enum MOUSE_STATE {
     MOVING = 'move',
-    CORNER_RESIZE = 'corner-resize',
+    TLBR_CORNER_RESIZE = 'tlbr-corner-resize',
+    TRBL_CORNER_RESIZE = 'trbl-corner-resize',
     HORIZONTAL_RESIZE = 'horizontal-resize',
     VERTICAL_RESIZE = 'vertical-resize',
     GRAB = 'grab',
