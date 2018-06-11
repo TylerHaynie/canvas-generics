@@ -1,4 +1,4 @@
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { Size } from '@canvas/models/size';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { ElementBase } from '@canvas/elements/element-base';
@@ -21,7 +21,7 @@ export class ElementRect extends ElementBase {
         this.buildMenus();
     }
 
-    constructor(context: CanvasRenderingContext2D, position: Vector) {
+    constructor(context: CanvasRenderingContext2D, position: Vector2D) {
         super(context);
         this.setupBaseElement(context, position);
         this.on(UI_EVENT_TYPE.MOVE, (e: MouseData) => {

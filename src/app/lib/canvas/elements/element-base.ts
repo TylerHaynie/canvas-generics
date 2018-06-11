@@ -1,4 +1,4 @@
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { UI_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 import { Color } from '@canvas/models/color';
 import { LineStyle } from '@canvas/models/line-style';
@@ -77,7 +77,7 @@ export class ElementBase {
     public set isDragging(v: boolean) { this._dragging = v; }
     public get isDragging(): boolean { return this._dragging; }
 
-    private dragOffset: Vector = new Vector(0, 0);
+    private dragOffset: Vector2D = new Vector2D(0, 0);
 
     // event
     private _eventType: UI_EVENT_TYPE;
@@ -168,7 +168,7 @@ export class ElementBase {
         this.fireEvent(e);
     }
 
-    setPosition(position: Vector) {
+    setPosition(position: Vector2D) {
         this.baseElement.position = position;
     }
 
@@ -228,12 +228,12 @@ export class ElementBase {
         let dx = e.mousePosition.x - elementPosition.x;
         let dy = e.mousePosition.y - elementPosition.y;
 
-        this.dragOffset = new Vector(dx, dy);
+        this.dragOffset = new Vector2D(dx, dy);
     }
 
     private dragElement(e: MouseData) {
         e.uiMouseState = MOUSE_STATE.GRAB;
-        let p = new Vector(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
+        let p = new Vector2D(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
         this.setPosition(p);
     }
 }

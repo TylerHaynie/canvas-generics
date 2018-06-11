@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { Size } from '@canvas/models/size';
 import { Color } from '@canvas/models/color';
@@ -21,7 +21,7 @@ export class Scene03Component implements OnInit {
 
   // moving
   private isDragging = false;
-  private dragOffset: Vector = new Vector(0, 0);
+  private dragOffset: Vector2D = new Vector2D(0, 0);
 
   constructor() { }
 
@@ -51,7 +51,7 @@ export class Scene03Component implements OnInit {
 
   private createTestRect() {
     // create rectangle
-    let rect = new ElementRect(this.cw.drawingContext, new Vector(600, 300));
+    let rect = new ElementRect(this.cw.drawingContext, new Vector2D(600, 300));
     rect.size = new Size(200, 100);
     rect.endGap = 8;
     rect.isDraggable = true;
@@ -60,17 +60,9 @@ export class Scene03Component implements OnInit {
     this.cw.uiManager.addUIElement(rect);
   }
 
-  private hideHoverMenu(rect: ElementRect, event: MouseData) {
-    // hide the menu
-  }
-
-  private useMenuItem(rect: ElementRect, event: MouseData) {
-    // use the item / perform action clicked
-  }
-
   private circleButton() {
     // create a circle element for testing
-    let ce = new ElementCircle(this.cw.drawingContext, new Vector(525, 100));
+    let ce = new ElementCircle(this.cw.drawingContext, new Vector2D(525, 100));
     ce.isDraggable = false;
     let ls = new LineStyle(2);
     ls.shade = '#f442d7';
@@ -89,7 +81,7 @@ export class Scene03Component implements OnInit {
 
   private rectangleButton() {
     // create a rectangular element for testing
-    let re = new ElementRect(this.cw.drawingContext, new Vector(800, 250));
+    let re = new ElementRect(this.cw.drawingContext, new Vector2D(800, 250));
     re.isDraggable = false;
     re.endGap = 8;
 

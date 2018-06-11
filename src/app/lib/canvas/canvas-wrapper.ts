@@ -3,7 +3,7 @@ import { PanZoomManager } from '@canvas/managers/pan-zoom-manager';
 import { MouseManager } from '@canvas/managers/mouse-manager';
 import { KeyboardManager } from '@canvas/managers/keyboard-manager';
 import { WindowManager } from '@canvas/managers/window-manager';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { PanZoomData, MouseData } from '@canvas/events/event-data';
 import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from '@canvas/events/canvas-event-types';
 import { UIManager } from '@canvas/managers/ui-manager';

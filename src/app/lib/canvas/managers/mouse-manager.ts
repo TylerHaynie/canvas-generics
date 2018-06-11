@@ -1,5 +1,5 @@
 import { PanZoomData, MouseData } from '@canvas/events/event-data';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { CanvasEvent } from '@canvas/events/canvas-event';
 
@@ -13,8 +13,8 @@ export class MouseManager {
     private contextData: PanZoomData;
 
     // mouse
-    private mousePosition: Vector;
-    private translatedPosition: Vector;
+    private mousePosition: Vector2D;
+    private translatedPosition: Vector2D;
     private _mouseOnCanvas: boolean = false;
     private scrollingDirection: string = 'none';
     private leftMousePosition: string = 'up';
@@ -39,7 +39,7 @@ export class MouseManager {
             let mx = (this.mousePosition.x - data.pan.x) / data.scale;
             let my = (this.mousePosition.y - data.pan.y) / data.scale;
 
-            this.translatedPosition = new Vector(mx, my);
+            this.translatedPosition = new Vector2D(mx, my);
         }
     }
 
@@ -100,14 +100,14 @@ export class MouseManager {
     private doMouseDown(x: number, y: number) {
         this._mouseOnCanvas = true;
         this.leftMousePosition = 'down';
-        this.mousePosition = new Vector(x, y);
+        this.mousePosition = new Vector2D(x, y);
 
         this.fireEvent();
     }
 
     private updateMousePosition(x: number, y: number) {
         this.isMoving = true;
-        this.mousePosition = new Vector(x, y);
+        this.mousePosition = new Vector2D(x, y);
         this._mouseOnCanvas = true;
 
         this.fireEvent();

@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
 import { Rectangle } from '@canvas/shapes/rectangle';
 import { QuadTree, Boundary } from '../../lib/quadtree/quad-tree';
@@ -14,8 +14,8 @@ import { RandomUtility } from '@canvas/utilities/random-utility';
 import { Size } from '@canvas/models/size';
 
 interface Ray {
-  a: Vector;
-  b: Vector;
+  a: Vector2D;
+  b: Vector2D;
 }
 
 @Component({
@@ -34,7 +34,7 @@ export class Scene02Component implements OnInit {
 
   // mouse
   private mouseOnCanvas: boolean = false;
-  private mousePosition: Vector;
+  private mousePosition: Vector2D;
 
   constructor() { }
 
@@ -70,7 +70,7 @@ export class Scene02Component implements OnInit {
   }
 
   setFocalPoint() {
-    let p = new Vector(this.cw.width / 2, this.cw.height / 2);
+    let p = new Vector2D(this.cw.width / 2, this.cw.height / 2);
     this.focalPoint = new Circle(this.cw.drawingContext, p);
     this.focalPoint.radius = 4;
     this.focalPoint.color = new Color('lime');

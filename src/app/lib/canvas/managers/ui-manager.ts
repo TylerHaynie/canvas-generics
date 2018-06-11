@@ -4,7 +4,7 @@ import { MouseManager } from '@canvas/managers/mouse-manager';
 import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';
 import { LineStyle } from '@canvas/models/line-style';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 import { Color } from '@canvas/models/color';
 import { Circle } from '@canvas/shapes/circle';
 import { ElementBase } from '@canvas/elements/element-base';

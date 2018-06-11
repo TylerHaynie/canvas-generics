@@ -1,5 +1,5 @@
 import { Size } from '@canvas/models/size';
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 
 export class Bounds {
     private _x: number;
@@ -14,27 +14,27 @@ export class Bounds {
     private _height: number;
     public get height(): number { return this._height; }
 
-    constructor(point: Vector, size: Size) {
-        this._x = point.x;
-        this._y = point.y;
+    constructor(v: Vector2D, size: Size) {
+        this._x = v.x;
+        this._y = v.y;
         this._width = size.width;
         this._height = size.height;
     }
 
-    public get topLeft(): Vector {
-        return <Vector>{ x: this._x, y: this._y };
+    public get topLeft(): Vector2D {
+        return new Vector2D(this._x, this._y);
     }
 
-    public get topRight(): Vector {
-        return <Vector>{ x: this._x + this._width, y: this._y };
+    public get topRight(): Vector2D {
+        return new Vector2D(this._x + this._width, this._y);
     }
 
-    public get bottomLeft(): Vector {
-        return <Vector>{ x: this._x, y: this._y + this._height };
+    public get bottomLeft(): Vector2D {
+        return new Vector2D(this._x, this._y + this._height);
     }
 
-    public get bottomRight(): Vector {
-        return <Vector>{ x: this._x + this._width, y: this._y + this._height };
+    public get bottomRight(): Vector2D {
+        return new Vector2D(this._x + this._width, this._y + this._height);
     }
 
     public get topLength(): number {

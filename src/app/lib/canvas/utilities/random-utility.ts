@@ -1,4 +1,4 @@
-import { Vector } from '@canvas/objects/vector';
+import { Vector2D } from '@canvas/objects/vector';
 
 export class RandomUtility {
     /// returns a random number between -1 and 1
@@ -11,9 +11,9 @@ export class RandomUtility {
         return Math.floor(Math.random() * Math.max(n1, n2)) + Math.min(n1, n2);
     }
 
-    randomVectorInBounds(w: number, h: number): Vector {
+    randomVectorInBounds(w: number, h: number): Vector2D {
         let rx = Math.fround(Math.random() * w);
         let ry = Math.fround(Math.random() * h);
-        return new Vector(rx, ry);
+        return new Vector2D(rx, ry);
     }
 }
