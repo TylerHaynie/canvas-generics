@@ -53,7 +53,7 @@ export class Scene03Component implements OnInit {
     // create rectangle
     let rect = new ElementRect(this.cw.drawingContext, new Vector(600, 300));
     rect.size = new Size(200, 100);
-    rect.cornerRadius = 8;
+    rect.endGap = 8;
     rect.isDraggable = true;
 
     // add to buffer
@@ -91,7 +91,7 @@ export class Scene03Component implements OnInit {
     // create a rectangular element for testing
     let re = new ElementRect(this.cw.drawingContext, new Vector(800, 250));
     re.isDraggable = false;
-    re.cornerRadius = 8;
+    re.endGap = 8;
 
     let rls = new LineStyle(2);
     rls.shade = '#f442d7';

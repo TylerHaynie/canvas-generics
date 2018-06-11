@@ -71,7 +71,6 @@ export class ElementBase {
 
     protected _context: CanvasRenderingContext2D;
     private previousEventType: UI_EVENT_TYPE;
-    private _defaultActiveOutline: LineStyle;
 
     // dragging
     private _dragging = false;
@@ -205,19 +204,14 @@ export class ElementBase {
         this.activeShadow = this._defaultShadow;
 
         switch (this._eventType) {
-            case UI_EVENT_TYPE.MOVE:
-                if (this._dragging) {
-                    this.activeOutline = this._defaultActiveOutline;
-                }
-                break;
             case UI_EVENT_TYPE.DOWN:
                 if (this.downColor) { this.activeColor = this.downColor; }
-                if (this.downOutline) { this.activeOutline = this.downOutline; } else { this.activeOutline = this._defaultActiveOutline; }
+                if (this.downOutline) { this.activeOutline = this.downOutline; }
                 if (this.downShadow) { this.activeShadow = this.downShadow; }
                 break;
             case UI_EVENT_TYPE.HOVER:
                 if (this.hoverColor) { this.activeColor = this.hoverColor; }
-                if (this.hoverOutline) { this.activeOutline = this.hoverOutline; } else { this.activeOutline = this._defaultActiveOutline; }
+                if (this.hoverOutline) { this.activeOutline = this.hoverOutline; }
                 if (this.hoverShadow) { this.activeShadow = this.hoverShadow; }
         }
 

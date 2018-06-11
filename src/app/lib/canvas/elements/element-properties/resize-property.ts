@@ -64,28 +64,28 @@ export class ResizeProperty {
         this.topLeftCorner = this.buildRect(this.context, b.topLeft, cornerSize, cornerColor);
         this.topLeftCorner.hoverColor = hoverColor;
         this.topLeftCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
-            this.cornerHover(e, this.topLeftCorner);
+            this.topLeftBottomRightCornerHover(e, this.topLeftCorner);
         });
 
         // top Right corner
         this.topRightCorner = this.buildRect(this.context, new Vector(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
         this.topRightCorner.hoverColor = hoverColor;
         this.topRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
-            this.cornerHover(e, this.topRightCorner);
+            this.topRightBottomLeftCornerHover(e, this.topRightCorner);
         });
 
         // bottom Right corner
         this.bottomRightCorner = this.buildRect(this.context, new Vector(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomRightCorner.hoverColor = hoverColor;
         this.bottomRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
-            this.cornerHover(e, this.bottomRightCorner);
+            this.topLeftBottomRightCornerHover(e, this.bottomRightCorner);
         });
 
         // bottom left corner
         this.bottomLeftCorner = this.buildRect(this.context, new Vector(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomLeftCorner.hoverColor = hoverColor;
         this.bottomLeftCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
-            this.cornerHover(e, this.bottomLeftCorner);
+            this.topRightBottomLeftCornerHover(e, this.bottomLeftCorner);
         });
 
         // left center rectangle
@@ -271,15 +271,19 @@ export class ResizeProperty {
         return this.buildRect(context, p, s, color);
     }
 
-    private cornerHover(e: MouseData, element: ElementBase) {
+    private topLeftBottomRightCornerHover(e: MouseData, element: ElementBase) {
         
+    }
+
+    private topRightBottomLeftCornerHover(e: MouseData, element: ElementBase) {
+
     }
 
     private horizontalHovered(e: MouseData, element: ElementBase) {
-        
+
     }
 
     private verticalHovered(e: MouseData, element: ElementBase) {
-        
+
     }
 }

@@ -33,7 +33,7 @@ export class PanZoomManager {
     // panning
     private minimumPanSpeed: number = 0;
     private maximumPanSpeed: number = 2;
-    private allowPanning: boolean = true;
+    private allowPanning: boolean = false;
     private pannableModifier: number = 1;
     private panOffset: Vector;
     private isPanning = false;
@@ -42,7 +42,7 @@ export class PanZoomManager {
     private panModifier: number = 1;
 
     // scaling
-    private allowScaling: boolean = true;
+    private allowScaling: boolean = false;
     private maximumScale: number = 0;
     private minimumScale: number = 0;
 
@@ -92,13 +92,15 @@ export class PanZoomManager {
         });
 
         this.mouseManager.on(MOUSE_EVENT_TYPE.WHEEL, (e) => {
-            switch (e.scrollDirection) {
-                case 'up':
-                    this.zoomIn();
-                    break;
-                case 'down':
-                    this.zoomOut();
-                    break;
+            if (this.scalingAllowed) {
+                switch (e.scrollDirection) {
+                    case 'up':
+                        this.zoomIn();
+                        break;
+                    case 'down':
+                        this.zoomOut();
+                        break;
+                }
             }
         });
 

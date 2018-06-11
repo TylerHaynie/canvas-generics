@@ -239,7 +239,7 @@ export class scene01Component implements OnInit {
 
       // if they are too small we can skip the corners. corner calculations are expensive
       if (rad > 3 && rad > 3) {
-        rect.cornerRadius = this.particleCornerRadius;
+        rect.endGap = this.particleCornerRadius;
       }
 
       rect.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));

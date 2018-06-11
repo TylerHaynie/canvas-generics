@@ -11,6 +11,7 @@ import { RayCastUtility } from '@canvas/utilities/raycast-utility';
 import { Line } from '@canvas/shapes/line/line';
 import { LineSegment } from '@canvas/shapes/line/line-segment';
 import { RandomUtility } from '@canvas/utilities/random-utility';
+import { Size } from '@canvas/models/size';
 
 interface Ray {
   a: Vector;
@@ -41,7 +42,8 @@ export class Scene02Component implements OnInit {
     this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
 
     this.cw.panZoomManager.minScale = 1;
-    this.cw.panZoomManager.panningAllowed = true;
+    this.cw.panZoomManager.panningAllowed = false;
+    this.cw.panZoomManager.scalingAllowed = false;
 
     let b: Boundary = new Boundary(0, 0, this.cw.width, this.cw.height);
     this.qtSquares = new QuadTree(b, 1);
@@ -86,7 +88,7 @@ export class Scene02Component implements OnInit {
     for (let x = 0; x < 10; x++) {
       let p = this._random.randomVectorInBounds(this.cw.width, this.cw.height);
       let r = new Rectangle(this.cw.drawingContext, p);
-      r.size = { width: 30, height: 30 };
+      r.size = new Size(50, 50);
       r.color = new Color();
       r.color.shade = '#888';
 
@@ -152,7 +154,16 @@ export class Scene02Component implements OnInit {
 
     // add points to create line
     let seg = new LineSegment(this.focalPoint.position);
-    seg.addPoint(this.mousePosition);
+
+    let intersection: Vector;
+    this.squares.forEach(square => {
+      intersection = square.lineIntersects({ p1: this.focalPoint.position, p2: this.mousePosition });
+      if (intersection) {
+        console.log(intersection);
+      }
+    });
+
+    seg.addPoint(intersection ? intersection : this.mousePosition);
 
     // add segments to the line
     line.addSegment(seg);

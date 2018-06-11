@@ -14,7 +14,7 @@ import { ResizeProperty } from '@canvas/elements/element-properties/resize-prope
 export class ElementRect extends ElementBase {
     private allowResize: boolean = true;
 
-    public set cornerRadius(v: number) { (<Rectangle>this.baseElement).cornerRadius = v; }
+    public set endGap(v: number) { (<Rectangle>this.baseElement).endGap = v; }
     public get size(): Size { return (<Rectangle>this.baseElement).size; }
     public set size(v: Size) {
         (<Rectangle>this.baseElement).size = v;
@@ -50,9 +50,10 @@ export class ElementRect extends ElementBase {
             });
 
             // passing down event
-            this.on(UI_EVENT_TYPE.DOWN, (e: MouseData) => {
-                this.resizeMenu.mouseDown(e);
-            });
+            // this.on(UI_EVENT_TYPE.DOWN, (e: MouseData) => {
+            //     this.resizeMenu.mouseDown(e);
+
+            // });
 
             this.resizeMenu = resizeMenu;
         }
