@@ -1,5 +1,5 @@
 import { CanvasWrapper } from '@canvas/canvas-wrapper';
-import { QuadTree, QuadVector } from '../../quadtree/quad-tree';
+import { QuadTree, QuadData } from '../../quadtree/quad-tree';
 import { MouseManager } from '@canvas/managers/mouse-manager';
 import { MOUSE_EVENT_TYPE } from '@canvas/events/canvas-event-types';
 import { MouseData } from '@canvas/events/event-data';

@@ -46,6 +46,15 @@ export class ParticleBase {
         }
     }
 
+    getSize() {
+        if ((<Rectangle>this.shape).size) {
+             return (<Rectangle>this.shape).size;
+        }
+        else {
+            return new Size((<Circle>this.shape).radius / 2, (<Circle>this.shape).radius / 2);
+        }
+    }
+
     move(bounds: Bounds) {
         let posX = this.shape.position.x + this.velocity.vx;
         let posY = this.shape.position.y + this.velocity.vy;

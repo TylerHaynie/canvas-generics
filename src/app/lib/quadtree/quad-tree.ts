@@ -2,18 +2,19 @@ import { Rectangle } from '@canvas/shapes/rectangle';
 import { Vector2D } from '@canvas/objects/vector';
 import { Size } from '@canvas/models/size';
 import { LineStyle } from '@canvas/models/line-style';
+import { Bounds } from '@canvas/objects/bounds';
 
 /// built by referencing https://en.wikipedia.org/wiki/Quadtree
 
-export class QuadVector {
-    x: number;
-    y: number;
+export class QuadData {
+    vector: Vector2D;
+    size: Size;
     data: any;
 
-    constructor(x: number, y: number, data: any = undefined) {
-        this.x = x;
-        this.y = y;
+    constructor(x: number, y: number, data: any = undefined, size: Size = undefined) {
+        this.vector = new Vector2D(x, y);
         this.data = data;
+        this.size = size ? size : new Size(1, 1);
     }
 }
 
@@ -30,9 +31,18 @@ export class Boundary {
         this.h = h;
     }
 
-    containsVector(p: QuadVector) {
-        if (p.x > this.x && p.x < this.x + this.w) {
-            if (p.y > this.y && p.y < this.y + this.h) {
+    containsQuadData(dataPoint: QuadData) {
+        // let b = new Boundary(dataPoint.vector.x, dataPoint.vector.y, dataPoint.size.width, dataPoint.size.height);
+
+
+        // return this.intersects(b);
+
+        if (dataPoint.vector.x > this.x &&
+            dataPoint.vector.x < this.x + this.w) {
+
+            if (dataPoint.vector.y > this.y &&
+                dataPoint.vector.y < this.y + this.h) {
+
                 return true;
             }
         }
@@ -61,8 +71,8 @@ export class QuadTree {
     // how many elements can be stored in this quad tree
     capicity: number;
 
-    // This quad's vectors
-    vectors: QuadVector[] = [];
+    // This quad's data
+    dataPoints: QuadData[] = [];
 
     // division flag
     isDivided: boolean = false;
@@ -78,16 +88,16 @@ export class QuadTree {
         this.capicity = c;
     }
 
-    insert(p: QuadVector) {
+    insert(p: QuadData) {
         // Ignore objects that do not belong in this quad tree
-        if (!this.boundary.containsVector(p)) {
+        if (!this.boundary.containsQuadData(p)) {
             // vector does not belong here
             return false;
         }
 
         // If there is space in this quad tree, add the vector here
-        if (this.vectors.length < this.capicity) {
-            this.vectors.push(p);
+        if (this.dataPoints.length < this.capicity) {
+            this.dataPoints.push(p);
             return true;
         }
 
@@ -95,10 +105,10 @@ export class QuadTree {
         if (!this.isDivided) {
             this.subdivide();
 
-            // move the vectors to their new quads
-            for (let x = this.vectors.length; x > 0; x--) {
-                this.insert(this.vectors[x - 1]);
-                this.vectors.splice(x, 1);
+            // move the dataPoints to their new quads
+            for (let x = this.dataPoints.length; x > 0; x--) {
+                this.insert(this.dataPoints[x - 1]);
+                this.dataPoints.splice(x, 1);
             }
         }
 
@@ -136,45 +146,45 @@ export class QuadTree {
         this.isDivided = true;
     }
 
-    searchBoundary(b: Boundary): QuadVector[] {
+    searchBoundary(b: Boundary): QuadData[] {
         // Prepare an array of results
-        let vectorsInRange: QuadVector[] = [];
+        let dataInRange: QuadData[] = [];
 
         // leave if the boundary does not intersect this quad
         if (!this.boundary.intersects(b)) {
-            return vectorsInRange; // empty list
+            return dataInRange; // empty list
         }
 
         // Check objects on this quad
-        for (let x = 0; x < this.vectors.length; x++) {
-            if (b.containsVector(this.vectors[x])) {
-                vectorsInRange.push(this.vectors[x]);
+        for (let x = 0; x < this.dataPoints.length; x++) {
+            if (b.containsQuadData(this.dataPoints[x])) {
+                dataInRange.push(this.dataPoints[x]);
             }
         }
 
         // stop here if we haven't subdived
         if (!this.isDivided) {
-            return vectorsInRange;
+            return dataInRange;
         }
 
         // add vectors from children
         for (let p of this.topLeft.searchBoundary(b)) {
-            vectorsInRange.push(p);
+            dataInRange.push(p);
         }
 
         for (let p of this.topRight.searchBoundary(b)) {
-            vectorsInRange.push(p);
+            dataInRange.push(p);
         }
 
         for (let p of this.bottomLeft.searchBoundary(b)) {
-            vectorsInRange.push(p);
+            dataInRange.push(p);
         }
 
         for (let p of this.bottomRight.searchBoundary(b)) {
-            vectorsInRange.push(p);
+            dataInRange.push(p);
         }
 
-        return vectorsInRange;
+        return dataInRange;
     }
 
     reset(w: number, h: number) {
@@ -186,7 +196,7 @@ export class QuadTree {
         this.bottomLeft = undefined;
         this.bottomRight = undefined;
 
-        this.vectors = [];
+        this.dataPoints = [];
         this.isDivided = false;
     }
 

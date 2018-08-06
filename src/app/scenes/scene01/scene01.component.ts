@@ -9,7 +9,7 @@ import { Color } from '@canvas/models/color';
 import { Bounds } from '@canvas/objects/bounds';
 import { ParticleBase } from '@canvas/objects/particle/particle-base';
 import { Velocity } from '@canvas/models/velocity';
-import { QuadTree, Boundary, QuadVector } from '@quadtree/quad-tree';
+import { QuadTree, Boundary, QuadData } from '@quadtree/quad-tree';
 import { GradientUtility } from '@canvas/utilities/gradient-utility';
 import { RandomUtility } from '@canvas/utilities/random-utility';
 import { ColorUtility } from '@canvas/utilities/color-utility';
@@ -208,7 +208,8 @@ export class scene01Component implements OnInit {
         if (trackingTree) {
           // insert particle
           let pPosition = fp.getPosition();
-          trackingTree.insert({ x: pPosition.x, y: pPosition.y, data: fp });
+          let qd = new QuadData(pPosition.x, pPosition.y, fp, fp.getSize());
+          trackingTree.insert(qd);
         }
 
         // draw particle
@@ -275,7 +276,7 @@ export class scene01Component implements OnInit {
       let b: Boundary = new Boundary(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), this.pointerRadius, this.pointerRadius);
 
       // check particles
-      let particlesInRange: QuadVector[] = this.particleQuad.searchBoundary(b);
+      let particlesInRange: QuadData[] = this.particleQuad.searchBoundary(b);
 
       // update particles in range
       if (particlesInRange.length > 0) {

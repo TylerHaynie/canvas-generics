@@ -285,6 +285,34 @@ export class Rectangle extends ShapeBase {
 
     lineIntersects(other: { p1: Vector2D, p2: Vector2D }) {
         let segments = [];
+        let screenBounds = this.context.canvas.getBoundingClientRect();
+
+        // screen lines
+        let screenTop = {
+            p1: new Vector2D(screenBounds.left, screenBounds.top),
+            p2: new Vector2D(screenBounds.right, screenBounds.top)
+        };
+
+        let screenRight = {
+            p1: new Vector2D(screenBounds.right, screenBounds.top),
+            p2: new Vector2D(screenBounds.right, screenBounds.bottom)
+        };
+
+        let screenBottom = {
+            p1: new Vector2D(screenBounds.right, screenBounds.bottom),
+            p2: new Vector2D(screenBounds.left, screenBounds.bottom)
+        };
+
+        let screenLeft = {
+            p1: new Vector2D(screenBounds.left, screenBounds.bottom),
+            p2: new Vector2D(screenBounds.left, screenBounds.top)
+        };
+
+        segments.push(screenTop);
+        segments.push(screenRight);
+        segments.push(screenBottom);
+        segments.push(screenLeft);
+
         segments.push(this.topLine);
         segments.push(this.rightLine);
         segments.push(this.bottomLine);
