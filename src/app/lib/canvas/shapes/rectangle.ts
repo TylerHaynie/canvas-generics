@@ -1,10 +1,6 @@
 import { Vector2D } from '@canvas/objects/vector';
 import { Size } from '@canvas/models/size';
-import { Color } from '@canvas/models/color';
-import { LineStyle } from '@canvas/models/line-style';
-import { Shadow } from '@canvas/models/shadow';
 import { ShapeBase } from '@canvas/shapes/shape-base';
-import { ViewChildDecorator } from '@angular/core';
 
 export class Corner {
     private _controlPoint: Vector2D;
@@ -43,13 +39,12 @@ export class Rectangle extends ShapeBase {
         else {
             this._endGap = v;
         }
-
     }
 
     public get center(): Vector2D {
         return new Vector2D(
-            Math.fround(this.position.x - this._size.width / 2),
-            Math.fround(this.position.y - this._size.height / 2)
+            Math.fround(this.position.x + this._size.width / 2),
+            Math.fround(this.position.y + this._size.height / 2)
         );
     }
 
@@ -128,15 +123,12 @@ export class Rectangle extends ShapeBase {
     private _size: Size = new Size(50, 50);
     private _endGap: number = 0;
     private _roundedCorners: boolean = false;
-    private context: CanvasRenderingContext2D;
 
     constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        super(context, position);
-        this.context = context;
+        super(context, position, () => { this.drawRectangle(); });
     }
 
-    draw() {
-
+    private drawRectangle() {
         this.context.save();
 
         // craeate rectangle path
@@ -149,8 +141,8 @@ export class Rectangle extends ShapeBase {
 
         // does it have a shadow
         if (this.shadow !== undefined) {
-            this.context.shadowBlur = this.shadow.shadowBlur;
-            this.context.shadowColor = this.shadow.shadowColor;
+            this.context.shadowBlur = this.shadow.blur;
+            this.context.shadowColor = this.shadow.shade;
             this.context.shadowOffsetX = this.shadow.offsetX;
             this.context.shadowOffsetY = this.shadow.offsetY;
         }
@@ -165,7 +157,7 @@ export class Rectangle extends ShapeBase {
         // draw the outline
         if (this.outline !== undefined) {
 
-            // reset shadow for line
+            // reset shadow for line ( otherwise, the shadow would show on top of the rectangle)
             this.context.shadowColor = '';
             this.context.shadowBlur = 0;
             this.context.shadowOffsetX = 0;

@@ -45,10 +45,10 @@ export class scene01Component implements OnInit {
   //#region Configuration
 
   // pointer
-  private pointerRadius = 55;
+  private pointerRadius = 40;
 
   // background and foreground
-  private backgroundColor: string = '#0C101E';
+  private backgroundColor: string = '#010101';
   private foregroundColorStartColor: string = 'rgba(12, 16, 30, 0.000)';
   private foregroundColorEndColor: string = 'rgba(0, 0, 0, 0.750)';
   private foregroundStart1: number = .250; // where the top gradient starts
@@ -87,6 +87,7 @@ export class scene01Component implements OnInit {
     this.cw.panZoomManager.scalingAllowed = false;
     this.cw.enableGrid = false;
     this.cw.trackMouse = false;
+    this.cw.uiManager.debugEnabled = true;
 
     this.registerEvents();
 
@@ -132,7 +133,7 @@ export class scene01Component implements OnInit {
 
     // debug
     if (this.debugParticles) {
-      this.particleQuad.debugQuad(this.cw.drawingContext, '#777');
+      this.particleQuad.debugQuad(this.cw.drawingContext, new Color('#777'));
     }
 
     this.cw.restoreContext();

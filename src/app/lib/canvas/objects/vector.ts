@@ -1,7 +1,7 @@
 import { vec2 } from 'gl-matrix';
 
 export class Vector2D {
-    vector: vec2;
+    protected vector: vec2;
 
     public get x() {
         return <number>this.vector[0];
@@ -27,12 +27,23 @@ export class Vector2D {
     }
 
     public distance(other: Vector2D) {
-         let outResult = vec2.dist(this.vector, other.vector);
+        let outResult = vec2.dist(this.vector, other.vector);
         return outResult;
     }
 
-    // public set(x: number, y: number) {
-    //     this.vector.set([x, y]);
-    // }
+    /// moves by this amount
+    public move(x: number, y: number) {
+        this.vector[0] = <number>this.vector[0] + x;
+        this.vector[1] = <number>this.vector[1] + y;
+
+        return this;
+    }
+
+    public positionOn(current: Vector2D) {
+        this.vector[0] = current.x;
+        this.vector[1] = current.y;
+
+        return this;
+    }
 
 }

@@ -9,7 +9,6 @@ import { Bounds } from '@canvas/objects/bounds';
 
 export class ParticleBase {
     private velocity: Velocity;
-    private _random: RandomUtility = new RandomUtility();
     protected shape: Rectangle | Circle;
     protected alive: boolean = true;
     public get isAlive(): boolean { return this.alive; }

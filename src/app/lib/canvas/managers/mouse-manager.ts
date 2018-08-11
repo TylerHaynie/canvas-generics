@@ -62,12 +62,12 @@ export class MouseManager {
         // mouse events
         cv.onmousemove = (e: MouseEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.MOVE;
-            this.updateMousePosition(e.clientX, e.clientY);
+            this.updateMousePosition(e.offsetX, e.offsetY);
         };
 
         cv.onmousedown = (e: MouseEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.DOWN;
-            this.doMouseDown(e.clientX, e.clientY);
+            this.doMouseDown(e.offsetX, e.offsetY);
         };
 
         cv.onmouseup = (e: MouseEvent) => {

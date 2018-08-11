@@ -11,9 +11,9 @@ import { ElementBase } from '@canvas/elements/element-base';
 
 export class UIManager {
     public get uiEnabled(): boolean { return this._uiEnabled; }
-    public set enableUI(v: boolean) { this._uiEnabled = v; }
+    public set uiEnabled(v: boolean) { this._uiEnabled = v; }
     public get debugEnabled(): boolean { return this._debugEnabled; }
-    public set enableDebug(v: boolean) { this._debugEnabled = v; }
+    public set debugEnabled(v: boolean) { this._debugEnabled = v; }
 
     //#region Private Properites
 

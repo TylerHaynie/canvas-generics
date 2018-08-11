@@ -2,7 +2,7 @@ import { Rectangle } from '@canvas/shapes/rectangle';
 import { Vector2D } from '@canvas/objects/vector';
 import { Size } from '@canvas/models/size';
 import { LineStyle } from '@canvas/models/line-style';
-import { Bounds } from '@canvas/objects/bounds';
+import { Color } from '@canvas/models/color';
 
 /// built by referencing https://en.wikipedia.org/wiki/Quadtree
 
@@ -200,22 +200,21 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
+    debugQuad(context: CanvasRenderingContext2D, color: Color, lineWidth: number = .25) {
 
         let p = new Vector2D(this.boundary.x, this.boundary.y);
         let rect = new Rectangle(context, p);
         rect.size = new Size(this.boundary.w, this.boundary.h);
-        rect.outline = new LineStyle(lineWidth);
-        rect.outline.shade = color;
-        rect.outline.alpha = alpha;
+        rect.outline = new LineStyle(color.shade, lineWidth);
+        rect.outline.alpha = color.alpha;
 
         rect.draw();
 
         if (this.isDivided) {
-            this.topLeft.debugQuad(context, color, alpha, lineWidth);
-            this.topRight.debugQuad(context, color, alpha, lineWidth);
-            this.bottomLeft.debugQuad(context, color, alpha, lineWidth);
-            this.bottomRight.debugQuad(context, color, alpha, lineWidth);
+            this.topLeft.debugQuad(context, color, lineWidth);
+            this.topRight.debugQuad(context, color, lineWidth);
+            this.bottomLeft.debugQuad(context, color, lineWidth);
+            this.bottomRight.debugQuad(context, color, lineWidth);
         }
     }
 }

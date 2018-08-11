@@ -1,20 +1,15 @@
 import { Vector2D } from '@canvas/objects/vector';
-import { Color } from '@canvas/models/color';
-import { LineStyle } from '@canvas/models/line-style';
-import { Shadow } from '@canvas/models/shadow';
 import { ShapeBase } from '@canvas/shapes/shape-base';
 
 export class Circle extends ShapeBase {
-    private context: CanvasRenderingContext2D;
     radius: number;
 
     constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        super(context, position);
-        this.context = context;
+        super(context, position, () => { this.drawCircle(); });
         this.radius = 10;
     }
 
-    draw() {
+    private drawCircle() {
         this.context.save();
         this.context.beginPath();
         this.context.globalAlpha = 0;
@@ -24,8 +19,8 @@ export class Circle extends ShapeBase {
 
         // does it have a shadow
         if (this.shadow !== undefined) {
-            this.context.shadowBlur = this.shadow.shadowBlur;
-            this.context.shadowColor = this.shadow.shadowColor;
+            this.context.shadowBlur = this.shadow.blur;
+            this.context.shadowColor = this.shadow.shade;
             this.context.shadowOffsetX = this.shadow.offsetX;
             this.context.shadowOffsetY = this.shadow.offsetY;
         }
@@ -51,7 +46,6 @@ export class Circle extends ShapeBase {
         this.context.restore();
     }
 
-
     pointWithinBounds(point: Vector2D) {
         let withinBounds: boolean = false;
 
@@ -68,5 +62,4 @@ export class Circle extends ShapeBase {
 
         return withinBounds;
     }
-
 }

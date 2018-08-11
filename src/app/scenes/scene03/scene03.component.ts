@@ -31,6 +31,7 @@ export class Scene03Component implements OnInit {
     this.cw.panZoomManager.scalingAllowed = false;
     this.cw.trackMouse = false;
     this.cw.overlayAsBackground = true;
+    this.cw.uiManager.debugEnabled = true;
 
     this.createTestUI();
 
@@ -64,8 +65,7 @@ export class Scene03Component implements OnInit {
     // create a circle element for testing
     let ce = new ElementCircle(this.cw.drawingContext, new Vector2D(525, 100));
     ce.isDraggable = false;
-    let ls = new LineStyle(2);
-    ls.shade = '#f442d7';
+    let ls = new LineStyle('#f442d7', 2);
     ce.defaultOutline = ls;
 
     ce.defaultColor = new Color('#333');
@@ -85,8 +85,7 @@ export class Scene03Component implements OnInit {
     re.isDraggable = false;
     re.endGap = 8;
 
-    let rls = new LineStyle(2);
-    rls.shade = '#f442d7';
+    let rls = new LineStyle('#f442d7', 2);
     re.defaultOutline = rls;
 
     re.defaultColor = new Color('#333');
