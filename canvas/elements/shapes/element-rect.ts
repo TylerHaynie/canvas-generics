@@ -29,7 +29,7 @@ export class ElementRect extends ElementBase {
         });
     }
 
-    private setupBaseElement(context, position) {
+    private setupBaseElement(context: CanvasRenderingContext2D, position: Vector2D) {
         let r = new Rectangle(context, position);
         this.baseElement = r;
     }

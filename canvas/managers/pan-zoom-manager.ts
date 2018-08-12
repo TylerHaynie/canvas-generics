@@ -7,12 +7,12 @@ import { PanZoomData } from 'canvas/events/event-data';
 export class PanZoomManager {
 
     //#region Public Properties
-    public set scalingAllowed(v) { this.allowScaling = v; }
-    public set minScale(v) { this.minimumScale = v; }
-    public set maxScale(v) { this.maximumScale = v; }
-    public set scaleStep(v) { this.canvasScaleStep = v; }
-    public set panningAllowed(v) { this.allowPanning = v; }
-    public set panSpeed(v) {
+    public set scalingAllowed(v: boolean) { this.allowScaling = v; }
+    public set minScale(v: number) { this.minimumScale = v; }
+    public set maxScale(v: number) { this.maximumScale = v; }
+    public set scaleStep(v: number) { this.canvasScaleStep = v; }
+    public set panningAllowed(v: boolean) { this.allowPanning = v; }
+    public set panSpeed(v: number) {
         if (v <= this.minimumPanSpeed) { this.panModifier = this.minimumPanSpeed; }
         else if (v > this.maximumPanSpeed) { this.panModifier = this.maximumPanSpeed; }
         else { this.panModifier = v; }

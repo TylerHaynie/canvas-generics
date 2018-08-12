@@ -4,7 +4,6 @@ import { Color } from 'canvas/models/color';
 import { Vector2D } from 'canvas/objects/vector';
 import { Rectangle } from 'canvas/shapes/rectangle';
 import { ElementBase } from 'canvas/elements/element-base';
-import { ElementRect } from 'canvas/elements/shapes/element-rect';
 import { UI_EVENT_TYPE } from 'canvas/events/canvas-event-types';
 import { MouseData } from 'canvas/events/event-data';
 

@@ -11,7 +11,7 @@ export class KeyboardManager {
     private hasChanges: boolean = false;
 
     private isKeyDown: boolean = true;
-    private keyPressed: string;
+    private keyPressed: string = '';
     private controlKeyPressed: boolean = false;
     private shiftKeyPressed: boolean = false;
     private altKeyPressed: boolean = false;
@@ -44,14 +44,13 @@ export class KeyboardManager {
 
         cv.onkeyup = (e: KeyboardEvent) => {
             this.isKeyDown = false;
-
             this.hasChanges = true;
         };
 
     }
 
     private reset() {
-        this.keyPressed = undefined;
+        this.keyPressed = '';
         this.shiftKeyPressed = false;
         this.controlKeyPressed = false;
         this.altKeyPressed = false;

@@ -9,8 +9,8 @@ import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from 'canvas/event
 import { UIManager } from 'canvas/managers/ui-manager';
 
 export class CanvasWrapper {
-    private delta;
-    private lastRender;
+    private delta: number;
+    private lastRender: number;
     private fps: number;
 
     // public properties
@@ -26,9 +26,9 @@ export class CanvasWrapper {
 
     public set pauseKeys(v: string[]) { this._pauseKeys = v; }
     public set frameForwardKeys(v: string[]) { this.frameForwardKeys = v; }
-    public set enableGrid(v) { this._enableGrid = v; }
-    public set overlayAsBackground(v) { this._overlayAsBackground = v; }
-    public set trackMouse(v) { this._trackMouse = v; }
+    public set enableGrid(v: boolean) { this._enableGrid = v; }
+    public set overlayAsBackground(v: boolean) { this._overlayAsBackground = v; }
+    public set trackMouse(v: boolean) { this._trackMouse = v; }
 
     // context
     private _context: CanvasRenderingContext2D;

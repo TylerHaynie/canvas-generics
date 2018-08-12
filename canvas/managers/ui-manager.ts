@@ -1,12 +1,6 @@
-import { CanvasWrapper } from 'canvas/canvas-wrapper';
-import { QuadTree, QuadData } from '../../quadtree/quad-tree';
 import { MouseManager } from 'canvas/managers/mouse-manager';
 import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-event-types';
 import { MouseData } from 'canvas/events/event-data';
-import { LineStyle } from 'canvas/models/line-style';
-import { Vector2D } from 'canvas/objects/vector';
-import { Color } from 'canvas/models/color';
-import { Circle } from 'canvas/shapes/circle';
 import { ElementBase } from 'canvas/elements/element-base';
 
 export class UIManager {
@@ -129,7 +123,7 @@ export class UIManager {
     }
 
     clearMainBuffer() {
-        this._mainBuffer = undefined;
+        this._mainBuffer = <any>[];
     }
 
     addToUiBuffer(drawCallback: () => void) {
@@ -150,7 +144,7 @@ export class UIManager {
     }
 
     clearUiBuffer() {
-        this._uiBuffer = undefined;
+        this._uiBuffer = <any>[];
     }
 
     addToDeubgBuffer(drawCallback: () => void) {
@@ -171,7 +165,7 @@ export class UIManager {
     }
 
     clearDebugBuffer() {
-        this._debugBuffer = undefined;
+        this._debugBuffer = <any>[];
     }
 
     //#endregion
