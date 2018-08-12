@@ -1,12 +1,11 @@
 {
   "name": "canvas-elements-project",
   "version": "0.0.1",
-  "description": "Elements for HTML5 Canvas",
+  "description": "A library of HTML5 Canvas elements",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build-library && npm run-client",
-    "build-library": "cd library && npm run build",
-    "run-client": "cd client && npm start"
+    "start": "npm run build",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -26,5 +25,9 @@
   "bugs": {
     "url": "https://github.com/Tyshark9/canvas-elements/issues"
   },
-  "homepage": "https://github.com/Tyshark9/canvas-elements#readme"
+  "homepage": "https://github.com/Tyshark9/canvas-elements#readme",
+  "dependencies": {
+    "gl-matrix": "^2.6.1"
+  },
+  "devDependencies": {}
 }
