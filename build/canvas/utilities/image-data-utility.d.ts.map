@@ -1,0 +1,1 @@
+{"version":3,"file":"image-data-utility.d.ts","sourceRoot":"","sources":["../../../src/canvas/utilities/image-data-utility.ts"],"names":[],"mappings":"AAAA,qBAAa,gBAAgB;IACzB,OAAO,CAAC,OAAO,CAA2B;gBAE9B,OAAO,EAAE,wBAAwB;IAI7C,qBAAqB,CAAC,CAAC,EAAE,MAAM,EAAE,CAAC,EAAE,MAAM,GAAG,SAAS;IAItD,wBAAwB,CAAC,EAAE,EAAE,SAAS,GAAG,SAAS;CAGrD"}

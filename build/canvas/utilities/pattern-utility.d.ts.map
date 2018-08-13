@@ -1,0 +1,1 @@
+{"version":3,"file":"pattern-utility.d.ts","sourceRoot":"","sources":["../../../src/canvas/utilities/pattern-utility.ts"],"names":[],"mappings":"AAAA,qBAAa,cAAc;IACvB,OAAO,CAAC,OAAO,CAA2B;gBAE9B,OAAO,EAAE,wBAAwB;IAI7C,aAAa,CAAC,KAAK,EAAE,GAAG,EAAE,MAAM,EAAE,MAAM,GAAG,aAAa;CAG3D"}

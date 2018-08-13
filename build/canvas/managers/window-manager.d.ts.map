@@ -1,0 +1,1 @@
+{"version":3,"file":"window-manager.d.ts","sourceRoot":"","sources":["../../../src/canvas/managers/window-manager.ts"],"names":[],"mappings":"AAAA,qBAAa,aAAa;IACtB,OAAO,CAAC,OAAO,CAA2B;gBAE9B,OAAO,EAAE,wBAAwB;IAK7C,GAAG;IAIH,OAAO,CAAC,cAAc;IAQtB,OAAO,CAAC,oBAAoB;CAS/B"}

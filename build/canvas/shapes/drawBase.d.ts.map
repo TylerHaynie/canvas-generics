@@ -1,0 +1,1 @@
+{"version":3,"file":"drawBase.d.ts","sourceRoot":"","sources":["../../../src/canvas/shapes/drawBase.ts"],"names":[],"mappings":"AAAA,qBAAa,QAAQ;IACjB,SAAS,CAAC,OAAO,EAAE,wBAAwB,CAAC;IAC5C,OAAO,CAAC,aAAa,CAAa;gBAEtB,OAAO,EAAE,wBAAwB,EAAE,YAAY,EAAE,MAAM,IAAI;IAKhE,IAAI;CAGd"}

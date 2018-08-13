@@ -1,0 +1,1 @@
+{"version":3,"file":"line-style.d.ts","sourceRoot":"","sources":["../../../src/canvas/models/line-style.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,qBAAqB,CAAC;AAE5C,qBAAa,SAAU,SAAQ,KAAK;IAChC,KAAK,EAAE,MAAM,CAAC;gBAEF,KAAK,CAAC,EAAE,MAAM,GAAG,cAAc,GAAG,aAAa,EAAE,SAAS,CAAC,EAAE,MAAM;CAIlF"}

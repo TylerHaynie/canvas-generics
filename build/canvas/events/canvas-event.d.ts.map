@@ -1,0 +1,1 @@
+{"version":3,"file":"canvas-event.d.ts","sourceRoot":"","sources":["../../../src/canvas/events/canvas-event.ts"],"names":[],"mappings":"AAEA,qBAAa,WAAW,CAAC,CAAC;IACtB,OAAO,CAAC,YAAY,CAKlB;IAEF,SAAS,CAAC,EAAE,EAAE,MAAM,EAAE,QAAQ,EAAE,CAAC,CAAC,EAAE,CAAC,KAAK,IAAI;IAS9C,OAAO,CAAC,iBAAiB;IAWzB,SAAS,CAAC,SAAS,EAAE,MAAM,EAAE,CAAC,EAAE,CAAC;CAIpC"}
