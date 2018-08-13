@@ -10,4 +10,3 @@ export declare class Vector2D {
     move(x: number, y: number): this;
     positionOn(current: Vector2D): this;
 }
-//# sourceMappingURL=vector.d.ts.map

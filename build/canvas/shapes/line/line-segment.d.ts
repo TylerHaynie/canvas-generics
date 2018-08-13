@@ -9,4 +9,3 @@ export declare class LineSegment {
     removePoint(point: Vector2D): void;
     clearPoints(): void;
 }
-//# sourceMappingURL=line-segment.d.ts.map

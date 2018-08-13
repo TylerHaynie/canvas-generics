@@ -1,1 +1,1 @@
-{"version":3,"file":"size.js","sourceRoot":"","sources":["../../../src/canvas/models/size.ts"],"names":[],"mappings":";;AAAA,MAAa,IAAI;IAIb,YAAY,KAAa,EAAE,MAAc;QACrC,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;QACnB,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACzB,CAAC;CACJ;AARD,oBAQC"}
+{"version":3,"file":"size.js","sourceRoot":"C:/dev/CanvasProjects/typescript-code-mapper/client/library/canvas-elements/src/","sources":["canvas/models/size.ts"],"names":[],"mappings":";;AAAA;IAII,YAAY,KAAa,EAAE,MAAc;QACrC,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;QACnB,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACzB,CAAC;CACJ;AARD,oBAQC"}

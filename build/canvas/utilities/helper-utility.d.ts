@@ -6,7 +6,6 @@ export declare class HelperUtility {
     drawGrid(color: string, spacing: number): void;
     trackMouse(v: Vector2D, color: string, drawArrows?: boolean): void;
     drawMouse(position: Vector2D, state: MOUSE_STATE): void;
-    private redDotMouse;
-    private holdMeMouse;
+    private redDotMouse(position);
+    private holdMeMouse(position);
 }
-//# sourceMappingURL=helper-utility.d.ts.map

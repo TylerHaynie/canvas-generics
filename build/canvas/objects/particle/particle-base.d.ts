@@ -22,4 +22,3 @@ export declare class ParticleBase {
     wiggle(): void;
     draw(): void;
 }
-//# sourceMappingURL=particle-base.d.ts.map

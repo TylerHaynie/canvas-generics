@@ -4,4 +4,3 @@ export declare class RandomUtility {
     randomNumberBetween(n1: any, n2: any): number;
     randomVectorInBounds(w: number, h: number): Vector2D;
 }
-//# sourceMappingURL=random-utility.d.ts.map

@@ -5,7 +5,7 @@ export declare enum ALIGNMENT {
     'END' = "end",
     'LEFT' = "left",
     'RIGHT' = "right",
-    'CENTER' = "center"
+    'CENTER' = "center",
 }
 export declare enum BASELINE {
     'TOP' = "top",
@@ -13,23 +13,23 @@ export declare enum BASELINE {
     'MIDDLE' = "middle",
     'ALPHABETIC' = "alphabetic",
     'IDEOGRAPHIC' = "ideographic",
-    'BOTTOM' = "bottom"
+    'BOTTOM' = "bottom",
 }
 export declare enum DIRECTION {
     'LTR' = "ltr",
     'RTL' = "rtl",
-    'INHERIT' = "inherit"
+    'INHERIT' = "inherit",
 }
 export declare enum FONT_STYLE {
     'NORMAL' = "normal",
     'ITALIC' = "italic",
-    'OBLIQUE' = "oblique"
+    'OBLIQUE' = "oblique",
 }
 export declare enum FONT_VARIANT {
     'NORMAL' = "normal",
     'SMALL_CAPS' = "small-caps",
     'INITIAL' = "initial",
-    'INHERIT' = "inherit"
+    'INHERIT' = "inherit",
 }
 export declare enum FONT_WEIGHT {
     'NORMAL' = "normal",
@@ -46,7 +46,7 @@ export declare enum FONT_WEIGHT {
     '*600' = "600",
     '*700' = "700",
     '*800' = "800",
-    '*900' = "900"
+    '*900' = "900",
 }
 export declare enum FONT_SIZE {
     'MEDIUM' = "medium",
@@ -61,7 +61,7 @@ export declare enum FONT_SIZE {
     'LENGTH' = "length",
     'PERCENT' = "%",
     'INITIAL' = "initial",
-    'INHERIT' = "inherit"
+    'INHERIT' = "inherit",
 }
 export declare enum LENGTH_UNIT {
     'EM' = "em",
@@ -72,7 +72,7 @@ export declare enum LENGTH_UNIT {
     'MM' = "mm",
     'IN' = "in",
     'PT' = "pt",
-    'PC' = "pc"
+    'PC' = "pc",
 }
 export declare class FontSize {
     size: FONT_SIZE;
@@ -108,6 +108,5 @@ export declare class TextObject extends ShapeBase {
     private _textOptions;
     readonly textWidth: number;
     constructor(context: CanvasRenderingContext2D, position: Vector2D, options?: TextOptions);
-    private drawText;
+    private drawText();
 }
-//# sourceMappingURL=text-object.d.ts.map

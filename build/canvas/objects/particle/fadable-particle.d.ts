@@ -8,6 +8,5 @@ export declare class FadableParticle extends ParticleBase {
     fadeSpan: number;
     constructor(shape: Rectangle, v: Velocity);
     tick(): void;
-    private setAlpha;
+    private setAlpha(a);
 }
-//# sourceMappingURL=fadable-particle.d.ts.map

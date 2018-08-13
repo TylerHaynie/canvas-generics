@@ -3,4 +3,3 @@ export declare class Velocity {
     vy: number;
     constructor(vx?: number, vy?: number);
 }
-//# sourceMappingURL=velocity.d.ts.map

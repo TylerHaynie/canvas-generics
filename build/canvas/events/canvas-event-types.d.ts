@@ -5,19 +5,19 @@ export declare enum MOUSE_STATE {
     HORIZONTAL_RESIZE = "horizontal-resize",
     VERTICAL_RESIZE = "vertical-resize",
     GRAB = "grab",
-    DEFAULT = "default"
+    DEFAULT = "default",
 }
 export declare enum MOUSE_EVENT_TYPE {
     MOVE = "move",
     DOWN = "down",
     UP = "up",
     WHEEL = "wheel",
-    OUT = "out"
+    OUT = "out",
 }
 export declare enum PAN_ZOOM_EVENT_TYPE {
     ZOOM = "zoom",
     PAN = "pan",
-    RESET = "reset"
+    RESET = "reset",
 }
 export declare enum UI_EVENT_TYPE {
     DOWN = "down",
@@ -25,6 +25,5 @@ export declare enum UI_EVENT_TYPE {
     HOVER = "hover",
     MOVE = "move",
     OUT = "out",
-    CLICK = "click"
+    CLICK = "click",
 }
-//# sourceMappingURL=canvas-event-types.d.ts.map

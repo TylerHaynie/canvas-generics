@@ -5,4 +5,3 @@ export declare class Shadow {
     offsetY: number;
     constructor(blur?: number, color?: string);
 }
-//# sourceMappingURL=shadow.d.ts.map

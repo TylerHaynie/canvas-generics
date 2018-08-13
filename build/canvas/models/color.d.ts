@@ -3,4 +3,3 @@ export declare class Color {
     alpha: number;
     constructor(shade?: string | CanvasGradient | CanvasPattern, alpha?: number);
 }
-//# sourceMappingURL=color.d.ts.map

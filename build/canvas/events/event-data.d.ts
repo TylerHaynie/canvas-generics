@@ -17,4 +17,3 @@ export declare class PanZoomData {
     pan: Vector2D;
     mousePosition: Vector2D;
 }
-//# sourceMappingURL=event-data.d.ts.map

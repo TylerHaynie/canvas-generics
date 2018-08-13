@@ -42,7 +42,7 @@ export declare class ElementBase {
     private canvasEvent;
     on(on: UI_EVENT_TYPE, callback: (e: MouseData) => void): void;
     constructor(context: CanvasRenderingContext2D);
-    private fireEvent;
+    private fireEvent(e);
     elementMouseDown(e: MouseData): void;
     elementMouseUp(e: MouseData): void;
     elementMouseHover(e: MouseData): void;
@@ -51,9 +51,8 @@ export declare class ElementBase {
     setPosition(position: Vector2D): void;
     getposition(): Vector2D;
     draw(): void;
-    private styleElement;
-    private applyColors;
-    private startDrag;
-    private dragElement;
+    private styleElement();
+    private applyColors();
+    private startDrag(e);
+    private dragElement(e);
 }
-//# sourceMappingURL=element-base.d.ts.map

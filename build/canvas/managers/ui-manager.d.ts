@@ -9,19 +9,19 @@ export declare class UIManager {
     private _uiEnabled;
     private _uiBuffer;
     readonly uiBuffer: [{
-        callback: () => void;
-    }];
+            callback: () => void;
+        }];
     private _mainBuffer;
     readonly mainBuffer: [{
-        callback: () => void;
-    }];
+            callback: () => void;
+        }];
     private _debugEnabled;
     private _debugBuffer;
     readonly debugBuffer: [{
-        callback: () => void;
-    }];
+            callback: () => void;
+        }];
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager);
-    private registerEvents;
+    private registerEvents();
     addUIElement(element: ElementBase): void;
     addUIElements(elements: ElementBase[]): void;
     removeUIElement(element: ElementBase): void;
@@ -35,8 +35,7 @@ export declare class UIManager {
     addToDeubgBuffer(drawCallback: () => void): void;
     drawDebugBuffer(): void;
     clearDebugBuffer(): void;
-    private pointerMoved;
-    private checkPointerDown;
-    private checkPointerUp;
+    private pointerMoved(e);
+    private checkPointerDown(e);
+    private checkPointerUp(e);
 }
-//# sourceMappingURL=ui-manager.d.ts.map

@@ -1,1 +1,1 @@
-{"version":3,"file":"event-data.js","sourceRoot":"","sources":["../../../src/canvas/events/event-data.ts"],"names":[],"mappings":";;AAGA,MAAa,SAAS;CAUrB;AAVD,8BAUC;AAED,MAAa,WAAW;CAKvB;AALD,kCAKC"}
+{"version":3,"file":"event-data.js","sourceRoot":"C:/dev/CanvasProjects/typescript-code-mapper/client/library/canvas-elements/src/","sources":["canvas/events/event-data.ts"],"names":[],"mappings":";;AAGA;CAUC;AAVD,8BAUC;AAED;CAKC;AALD,kCAKC"}

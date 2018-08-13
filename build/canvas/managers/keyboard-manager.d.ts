@@ -14,7 +14,6 @@ export declare class KeyboardManager {
     private altKeyPressed;
     constructor(context: CanvasRenderingContext2D);
     update(): void;
-    private registerEvents;
-    private reset;
+    private registerEvents();
+    private reset();
 }
-//# sourceMappingURL=keyboard-manager.d.ts.map

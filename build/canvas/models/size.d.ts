@@ -3,4 +3,3 @@ export declare class Size {
     height: number;
     constructor(width: number, height: number);
 }
-//# sourceMappingURL=size.d.ts.map

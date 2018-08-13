@@ -6,8 +6,7 @@ export declare class ElementRect extends ElementBase {
     endGap: number;
     size: Size;
     constructor(context: CanvasRenderingContext2D, position: Vector2D);
-    private setupBaseElement;
-    private elementMoved;
+    private setupBaseElement(context, position);
+    private elementMoved(e);
     buildMenus(): void;
 }
-//# sourceMappingURL=element-rect.d.ts.map

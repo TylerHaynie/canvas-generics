@@ -19,4 +19,3 @@ export declare class Bounds {
     readonly left_height: number;
     readonly right_height: number;
 }
-//# sourceMappingURL=bounds.d.ts.map

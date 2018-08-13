@@ -13,4 +13,3 @@ export declare class ShapeBase extends DrawBase {
     color: Color;
     constructor(context: CanvasRenderingContext2D, position: Vector2D, drawCallback: () => void);
 }
-//# sourceMappingURL=shape-base.d.ts.map

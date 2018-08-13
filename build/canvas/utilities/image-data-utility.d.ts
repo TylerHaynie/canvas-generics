@@ -4,4 +4,3 @@ export declare class ImageDataUtility {
     createImageDataBySize(w: number, h: number): ImageData;
     createImageDataImageData(id: ImageData): ImageData;
 }
-//# sourceMappingURL=image-data-utility.d.ts.map
