@@ -1,1 +1,0 @@
-{"version":3,"file":"color-utility.d.ts","sourceRoot":"","sources":["../../../src/canvas/utilities/color-utility.ts"],"names":[],"mappings":"AAAA,qBAAa,YAAY;IACrB,oBAAoB,CAAC,UAAU,EAAE,MAAM,EAAE;IAIzC,WAAW,CAAC,GAAG,SAAM,EAAE,GAAG,SAAM,GAAG,MAAM;IAezC,UAAU,CAAC,GAAG,SAAM,EAAE,GAAG,SAAM,GAAG,MAAM;CAS3C"}

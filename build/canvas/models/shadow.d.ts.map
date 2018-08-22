@@ -1,1 +1,0 @@
-{"version":3,"file":"shadow.d.ts","sourceRoot":"","sources":["../../../src/canvas/models/shadow.ts"],"names":[],"mappings":"AAAA,qBAAa,MAAM;IACf,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,MAAM,CAAC;IACd,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;gBAEJ,IAAI,GAAE,MAAU,EAAE,KAAK,GAAE,MAAkB;CAM1D"}

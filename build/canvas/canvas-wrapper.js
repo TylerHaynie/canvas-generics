@@ -5,7 +5,7 @@ const pan_zoom_manager_1 = require("canvas/managers/pan-zoom-manager");
 const mouse_manager_1 = require("canvas/managers/mouse-manager");
 const keyboard_manager_1 = require("canvas/managers/keyboard-manager");
 const window_manager_1 = require("canvas/managers/window-manager");
-const canvas_event_types_1 = require("canvas/events/canvas-event-types");
+const canvas_enums_1 = require("canvas/events/canvas-enums");
 const ui_manager_1 = require("canvas/managers/ui-manager");
 class CanvasWrapper {
     constructor(context, drawCallback) {
@@ -59,25 +59,25 @@ class CanvasWrapper {
         this.helperUtility = new helper_utility_1.HelperUtility(this._context);
     }
     registerEvents() {
-        this._mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.MOVE, (e) => {
+        this._mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.MOVE, (e) => {
             this.mouseMoved(e);
         });
-        this._mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.DOWN, (e) => {
+        this._mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.DOWN, (e) => {
             this.mouseDown(e);
         });
-        this._mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.UP, (e) => {
+        this._mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.UP, (e) => {
             this.mouseUp(e);
         });
-        this._mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.OUT, (e) => {
+        this._mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.OUT, (e) => {
             this.mouseLeave(e);
         });
-        this._panZoomManager.on(canvas_event_types_1.PAN_ZOOM_EVENT_TYPE.ZOOM, (e) => {
+        this._panZoomManager.on(canvas_enums_1.PAN_ZOOM_EVENT_TYPE.ZOOM, (e) => {
             this.panZoomChanged(e);
         });
-        this._panZoomManager.on(canvas_event_types_1.PAN_ZOOM_EVENT_TYPE.PAN, (e) => {
+        this._panZoomManager.on(canvas_enums_1.PAN_ZOOM_EVENT_TYPE.PAN, (e) => {
             this.panZoomChanged(e);
         });
-        this._panZoomManager.on(canvas_event_types_1.PAN_ZOOM_EVENT_TYPE.RESET, (e) => {
+        this._panZoomManager.on(canvas_enums_1.PAN_ZOOM_EVENT_TYPE.RESET, (e) => {
             this.panZoomChanged(e);
         });
     }

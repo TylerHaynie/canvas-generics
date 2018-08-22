@@ -8,5 +8,5 @@ export declare class FadableParticle extends ParticleBase {
     fadeSpan: number;
     constructor(shape: Rectangle, v: Velocity);
     tick(): void;
-    private setAlpha(a);
+    private setAlpha;
 }

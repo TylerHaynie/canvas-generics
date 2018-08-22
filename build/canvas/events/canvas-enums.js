@@ -33,4 +33,29 @@ var UI_EVENT_TYPE;
     UI_EVENT_TYPE["OUT"] = "out";
     UI_EVENT_TYPE["CLICK"] = "click";
 })(UI_EVENT_TYPE = exports.UI_EVENT_TYPE || (exports.UI_EVENT_TYPE = {}));
-//# sourceMappingURL=canvas-event-types.js.map
+var EIGHTS;
+(function (EIGHTS) {
+    EIGHTS[EIGHTS["ONE"] = 0.125] = "ONE";
+    EIGHTS[EIGHTS["TWO"] = 0.25] = "TWO";
+    EIGHTS[EIGHTS["THREE"] = 0.375] = "THREE";
+    EIGHTS[EIGHTS["FOUR"] = 0.5] = "FOUR";
+    EIGHTS[EIGHTS["FIVE"] = 0.625] = "FIVE";
+    EIGHTS[EIGHTS["SIX"] = 0.75] = "SIX";
+    EIGHTS[EIGHTS["SEVEN"] = 0.875] = "SEVEN";
+    EIGHTS[EIGHTS["EIGHT"] = 1] = "EIGHT";
+})(EIGHTS = exports.EIGHTS || (exports.EIGHTS = {}));
+var QUARTERS;
+(function (QUARTERS) {
+    QUARTERS[QUARTERS["ONE"] = 0.25] = "ONE";
+    QUARTERS[QUARTERS["TWO"] = 0.5] = "TWO";
+    QUARTERS[QUARTERS["THREE"] = 0.75] = "THREE";
+    QUARTERS[QUARTERS["FOUR"] = 1] = "FOUR";
+})(QUARTERS = exports.QUARTERS || (exports.QUARTERS = {}));
+var DIRECTION;
+(function (DIRECTION) {
+    DIRECTION["NORTH"] = "north";
+    DIRECTION["SOUTH"] = "south";
+    DIRECTION["EAST"] = "east";
+    DIRECTION["WEST"] = "west";
+})(DIRECTION = exports.DIRECTION || (exports.DIRECTION = {}));
+//# sourceMappingURL=canvas-enums.js.map

@@ -30,3 +30,28 @@ export enum UI_EVENT_TYPE {
     OUT = 'out',
     CLICK = 'click'
 }
+
+export enum EIGHTS {
+    ONE = 0.125,
+    TWO = 0.25,
+    THREE = 0.375,
+    FOUR = 0.50,
+    FIVE = 0.625,
+    SIX = 0.75,
+    SEVEN = 0.875,
+    EIGHT = 1.0
+}
+
+export enum QUARTERS {
+    ONE = 0.25,
+    TWO = 0.50,
+    THREE = 0.75,
+    FOUR = 1.0
+}
+
+export enum DIRECTION {
+    NORTH = 'north',
+    SOUTH = 'south',
+    EAST = 'east',
+    WEST = 'west'
+}

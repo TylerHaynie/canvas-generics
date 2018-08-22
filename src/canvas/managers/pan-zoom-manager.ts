@@ -1,6 +1,6 @@
 import { MouseManager } from 'canvas/managers/mouse-manager';
 import { Vector2D } from 'canvas/objects/vector';
-import { PAN_ZOOM_EVENT_TYPE, MOUSE_EVENT_TYPE } from 'canvas/events/canvas-event-types';
+import { PAN_ZOOM_EVENT_TYPE, MOUSE_EVENT_TYPE } from 'canvas/events/canvas-enums';
 import { CanvasEvent } from 'canvas/events/canvas-event';
 import { PanZoomData } from 'canvas/events/event-data';
 

@@ -1,5 +1,5 @@
 import { MouseManager } from 'canvas/managers/mouse-manager';
-import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-enums';
 import { MouseData } from 'canvas/events/event-data';
 import { ElementBase } from 'canvas/elements/element-base';
 

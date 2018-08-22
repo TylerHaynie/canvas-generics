@@ -1,4 +1,4 @@
-import { MOUSE_STATE } from 'canvas/events/canvas-event-types';
+import { MOUSE_STATE } from 'canvas/events/canvas-enums';
 import { Vector2D } from 'canvas/objects/vector';
 export declare class HelperUtility {
     private context;
@@ -6,6 +6,6 @@ export declare class HelperUtility {
     drawGrid(color: string, spacing: number): void;
     trackMouse(v: Vector2D, color: string, drawArrows?: boolean): void;
     drawMouse(position: Vector2D, state: MOUSE_STATE): void;
-    private redDotMouse(position);
-    private holdMeMouse(position);
+    private redDotMouse;
+    private holdMeMouse;
 }

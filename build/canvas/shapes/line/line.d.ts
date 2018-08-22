@@ -10,5 +10,5 @@ export declare class Line extends DrawBase {
     constructor(context: CanvasRenderingContext2D);
     addSegment(segment: LineSegment): void;
     addSegments(segments: LineSegment[]): void;
-    private drawLine();
+    private drawLine;
 }

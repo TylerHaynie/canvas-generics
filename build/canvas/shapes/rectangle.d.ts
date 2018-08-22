@@ -41,9 +41,9 @@ export declare class Rectangle extends ShapeBase {
     private _endGap;
     private _roundedCorners;
     constructor(context: CanvasRenderingContext2D, position: Vector2D);
-    private drawRectangle();
-    private drawBasicRectangle();
-    private drawComplexRectangle();
+    private drawRectangle;
+    private drawBasicRectangle;
+    private drawComplexRectangle;
     pointWithinBounds(v: Vector2D): boolean;
     lineIntersects(other: {
         p1: Vector2D;

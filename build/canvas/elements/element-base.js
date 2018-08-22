@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const vector_1 = require("canvas/objects/vector");
-const canvas_event_types_1 = require("canvas/events/canvas-event-types");
+const canvas_enums_1 = require("canvas/events/canvas-enums");
 const color_1 = require("canvas/models/color");
 const line_style_1 = require("canvas/models/line-style");
 const shadow_1 = require("canvas/models/shadow");
@@ -16,7 +16,7 @@ class ElementBase {
         this.dragOffset = new vector_1.Vector2D(0, 0);
         this.canvasEvent = new canvas_event_1.CanvasEvent();
         this._context = context;
-        this.previousEventType = canvas_event_types_1.UI_EVENT_TYPE.UP;
+        this.previousEventType = canvas_enums_1.UI_EVENT_TYPE.UP;
         this.activeColor = new color_1.Color();
         this.activeOutline = new line_style_1.LineStyle();
         this.activeShadow = new shadow_1.Shadow();
@@ -58,42 +58,42 @@ class ElementBase {
         });
     }
     elementMouseDown(e) {
-        this._eventType = canvas_event_types_1.UI_EVENT_TYPE.DOWN;
-        e.uiMouseState = canvas_event_types_1.MOUSE_STATE.DEFAULT;
+        this._eventType = canvas_enums_1.UI_EVENT_TYPE.DOWN;
+        e.uiMouseState = canvas_enums_1.MOUSE_STATE.DEFAULT;
         if (this._isDraggable) {
             this.startDrag(e);
         }
         this.fireEvent(e);
     }
     elementMouseUp(e) {
-        if (this.previousEventType === canvas_event_types_1.UI_EVENT_TYPE.DOWN) {
-            this._eventType = canvas_event_types_1.UI_EVENT_TYPE.HOVER;
+        if (this.previousEventType === canvas_enums_1.UI_EVENT_TYPE.DOWN) {
+            this._eventType = canvas_enums_1.UI_EVENT_TYPE.HOVER;
         }
         else {
-            this._eventType = canvas_event_types_1.UI_EVENT_TYPE.UP;
+            this._eventType = canvas_enums_1.UI_EVENT_TYPE.UP;
         }
         this._dragging = false;
-        e.uiMouseState = canvas_event_types_1.MOUSE_STATE.DEFAULT;
+        e.uiMouseState = canvas_enums_1.MOUSE_STATE.DEFAULT;
         this.fireEvent(e);
     }
     elementMouseHover(e) {
-        if (this.previousEventType !== canvas_event_types_1.UI_EVENT_TYPE.DOWN) {
-            this._eventType = canvas_event_types_1.UI_EVENT_TYPE.HOVER;
+        if (this.previousEventType !== canvas_enums_1.UI_EVENT_TYPE.DOWN) {
+            this._eventType = canvas_enums_1.UI_EVENT_TYPE.HOVER;
             this.hoverMenuEnabled = true;
         }
         this.fireEvent(e);
     }
     elementMouseMove(e) {
-        this._eventType = canvas_event_types_1.UI_EVENT_TYPE.MOVE;
+        this._eventType = canvas_enums_1.UI_EVENT_TYPE.MOVE;
         if (this._dragging) {
             this.dragElement(e);
         }
         this.fireEvent(e);
     }
     elementMouseOut(e) {
-        this._eventType = canvas_event_types_1.UI_EVENT_TYPE.OUT;
+        this._eventType = canvas_enums_1.UI_EVENT_TYPE.OUT;
         this._dragging = false;
-        e.uiMouseState = canvas_event_types_1.MOUSE_STATE.DEFAULT;
+        e.uiMouseState = canvas_enums_1.MOUSE_STATE.DEFAULT;
         this.hoverMenuEnabled = false;
         this.fireEvent(e);
     }
@@ -123,7 +123,7 @@ class ElementBase {
         this.activeOutline = this._defaultOutline;
         this.activeShadow = this._defaultShadow;
         switch (this._eventType) {
-            case canvas_event_types_1.UI_EVENT_TYPE.DOWN:
+            case canvas_enums_1.UI_EVENT_TYPE.DOWN:
                 if (this.downColor) {
                     this.activeColor = this.downColor;
                 }
@@ -134,7 +134,7 @@ class ElementBase {
                     this.activeShadow = this.downShadow;
                 }
                 break;
-            case canvas_event_types_1.UI_EVENT_TYPE.HOVER:
+            case canvas_enums_1.UI_EVENT_TYPE.HOVER:
                 if (this.hoverColor) {
                     this.activeColor = this.hoverColor;
                 }
@@ -153,14 +153,14 @@ class ElementBase {
         if (!this._dragging) {
             this._dragging = true;
         }
-        e.uiMouseState = canvas_event_types_1.MOUSE_STATE.GRAB;
+        e.uiMouseState = canvas_enums_1.MOUSE_STATE.GRAB;
         let elementPosition = this.getposition();
         let dx = e.mousePosition.x - elementPosition.x;
         let dy = e.mousePosition.y - elementPosition.y;
         this.dragOffset = new vector_1.Vector2D(dx, dy);
     }
     dragElement(e) {
-        e.uiMouseState = canvas_event_types_1.MOUSE_STATE.GRAB;
+        e.uiMouseState = canvas_enums_1.MOUSE_STATE.GRAB;
         let p = new vector_1.Vector2D(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
         this.setPosition(p);
     }

@@ -3,6 +3,6 @@ import { ShapeBase } from 'canvas/shapes/shape-base';
 export declare class Circle extends ShapeBase {
     radius: number;
     constructor(context: CanvasRenderingContext2D, position: Vector2D);
-    private drawCircle();
+    private drawCircle;
     pointWithinBounds(point: Vector2D): boolean;
 }

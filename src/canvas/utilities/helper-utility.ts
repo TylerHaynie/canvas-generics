@@ -1,6 +1,6 @@
 import { Line } from 'canvas/shapes/line/line';
 import { LineSegment } from 'canvas/shapes/line/line-segment';
-import { MOUSE_STATE } from 'canvas/events/canvas-event-types';
+import { MOUSE_STATE } from 'canvas/events/canvas-enums';
 import { Circle } from 'canvas/shapes/circle';
 import { LineStyle } from 'canvas/models/line-style';
 import { Shadow } from 'canvas/models/shadow';

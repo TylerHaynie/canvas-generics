@@ -1,5 +1,5 @@
 import { Vector2D } from 'canvas/objects/vector';
-import { UI_EVENT_TYPE, MOUSE_STATE } from 'canvas/events/canvas-event-types';
+import { UI_EVENT_TYPE, MOUSE_STATE } from 'canvas/events/canvas-enums';
 import { Color } from 'canvas/models/color';
 import { LineStyle } from 'canvas/models/line-style';
 import { Shadow } from 'canvas/models/shadow';

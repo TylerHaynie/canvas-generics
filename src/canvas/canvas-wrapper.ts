@@ -5,7 +5,7 @@ import { KeyboardManager } from 'canvas/managers/keyboard-manager';
 import { WindowManager } from 'canvas/managers/window-manager';
 import { Vector2D } from 'canvas/objects/vector';
 import { PanZoomData, MouseData } from 'canvas/events/event-data';
-import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from 'canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from 'canvas/events/canvas-enums';
 import { UIManager } from 'canvas/managers/ui-manager';
 
 export class CanvasWrapper {

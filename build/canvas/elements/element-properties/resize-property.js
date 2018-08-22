@@ -6,7 +6,7 @@ const color_1 = require("canvas/models/color");
 const vector_1 = require("canvas/objects/vector");
 const rectangle_1 = require("canvas/shapes/rectangle");
 const element_base_1 = require("canvas/elements/element-base");
-const canvas_event_types_1 = require("canvas/events/canvas-event-types");
+const canvas_enums_1 = require("canvas/events/canvas-enums");
 class ResizeProperty {
     constructor(context, position, size) {
         this.context = context;
@@ -35,42 +35,42 @@ class ResizeProperty {
         hoverColor.alpha = 1;
         this.topLeftCorner = this.buildRect(this.context, b.topLeft, cornerSize, cornerColor);
         this.topLeftCorner.hoverColor = hoverColor;
-        this.topLeftCorner.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.topLeftCorner.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.topLeftBottomRightCornerHover(e, this.topLeftCorner);
         });
         this.topRightCorner = this.buildRect(this.context, new vector_1.Vector2D(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
         this.topRightCorner.hoverColor = hoverColor;
-        this.topRightCorner.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.topRightCorner.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.topRightBottomLeftCornerHover(e, this.topRightCorner);
         });
         this.bottomRightCorner = this.buildRect(this.context, new vector_1.Vector2D(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomRightCorner.hoverColor = hoverColor;
-        this.bottomRightCorner.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.bottomRightCorner.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.topLeftBottomRightCornerHover(e, this.bottomRightCorner);
         });
         this.bottomLeftCorner = this.buildRect(this.context, new vector_1.Vector2D(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomLeftCorner.hoverColor = hoverColor;
-        this.bottomLeftCorner.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.bottomLeftCorner.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.topRightBottomLeftCornerHover(e, this.bottomLeftCorner);
         });
         this.leftMidRect = this.leftCenterRect(this.context, b, cornerSize, straightColor);
         this.leftMidRect.hoverColor = hoverColor;
-        this.leftMidRect.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.leftMidRect.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.verticalHovered(e, this.leftMidRect);
         });
         this.rightMidRect = this.rightCenterRect(this.context, b, cornerSize, straightColor);
         this.rightMidRect.hoverColor = hoverColor;
-        this.rightMidRect.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.rightMidRect.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.verticalHovered(e, this.rightMidRect);
         });
         this.topMidRect = this.topCenterRect(this.context, b, cornerSize, straightColor);
         this.topMidRect.hoverColor = hoverColor;
-        this.topMidRect.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.topMidRect.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.horizontalHovered(e, this.topMidRect);
         });
         this.bottomMidRect = this.bottomCenterRect(this.context, b, cornerSize, straightColor);
         this.bottomMidRect.hoverColor = hoverColor;
-        this.bottomMidRect.on(canvas_event_types_1.UI_EVENT_TYPE.HOVER, (e) => {
+        this.bottomMidRect.on(canvas_enums_1.UI_EVENT_TYPE.HOVER, (e) => {
             this.horizontalHovered(e, this.bottomMidRect);
         });
     }

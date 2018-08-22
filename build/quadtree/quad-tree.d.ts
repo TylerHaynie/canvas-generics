@@ -27,7 +27,7 @@ export declare class QuadTree {
     bottomRight: QuadTree;
     constructor(b: Boundary, c: number);
     insert(p: QuadData): boolean;
-    private subdivide();
+    private subdivide;
     searchBoundary(b: Boundary): QuadData[];
     reset(w: number, h: number): void;
     debugQuad(context: CanvasRenderingContext2D, color: Color, lineWidth?: number): void;

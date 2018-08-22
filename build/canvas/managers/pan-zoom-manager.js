@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const vector_1 = require("canvas/objects/vector");
-const canvas_event_types_1 = require("canvas/events/canvas-event-types");
+const canvas_enums_1 = require("canvas/events/canvas-enums");
 const canvas_event_1 = require("canvas/events/canvas-event");
 const event_data_1 = require("canvas/events/event-data");
 class PanZoomManager {
@@ -55,13 +55,13 @@ class PanZoomManager {
     }
     registerEvents() {
         const cv = this.context.canvas;
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.DOWN, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.DOWN, (e) => {
             this.mouseDown(e.mousePosition);
         });
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.MOVE, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.MOVE, (e) => {
             this.mouseMove(e.mousePosition);
         });
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.WHEEL, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.WHEEL, (e) => {
             if (this.scalingAllowed) {
                 switch (e.scrollDirection) {
                     case 'up':
@@ -73,10 +73,10 @@ class PanZoomManager {
                 }
             }
         });
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.UP, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.UP, (e) => {
             this.mouseStop();
         });
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.OUT, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.OUT, (e) => {
             this.mouseStop();
         });
     }
@@ -119,7 +119,7 @@ class PanZoomManager {
             let dy = (mousePosition.y - this.panStartPosition.y) * this.panModifier;
             this.panStartPosition = new vector_1.Vector2D(mousePosition.x, mousePosition.y);
             this.totalPanning = new vector_1.Vector2D(this.totalPanning.x + dx, this.totalPanning.y + dy);
-            this.eventType = canvas_event_types_1.PAN_ZOOM_EVENT_TYPE.PAN;
+            this.eventType = canvas_enums_1.PAN_ZOOM_EVENT_TYPE.PAN;
             this.fireEvent();
         }
     }
@@ -136,7 +136,7 @@ class PanZoomManager {
                 this.canvasScale = newScale;
             }
         }
-        this.eventType = canvas_event_types_1.PAN_ZOOM_EVENT_TYPE.ZOOM;
+        this.eventType = canvas_enums_1.PAN_ZOOM_EVENT_TYPE.ZOOM;
         this.fireEvent();
     }
     scaleDown(amount) {
@@ -153,7 +153,7 @@ class PanZoomManager {
                     this.canvasScale = newScale;
                 }
             }
-            this.eventType = canvas_event_types_1.PAN_ZOOM_EVENT_TYPE.ZOOM;
+            this.eventType = canvas_enums_1.PAN_ZOOM_EVENT_TYPE.ZOOM;
             this.fireEvent();
         }
     }
@@ -161,7 +161,7 @@ class PanZoomManager {
         this.panOffset = new vector_1.Vector2D(0, 0);
         this.totalPanning = new vector_1.Vector2D(0, 0);
         this.canvasScale = 1;
-        this.eventType = canvas_event_types_1.PAN_ZOOM_EVENT_TYPE.RESET;
+        this.eventType = canvas_enums_1.PAN_ZOOM_EVENT_TYPE.RESET;
         this.fireEvent();
     }
 }

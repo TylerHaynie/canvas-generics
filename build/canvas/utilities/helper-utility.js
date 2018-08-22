@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const line_1 = require("canvas/shapes/line/line");
 const line_segment_1 = require("canvas/shapes/line/line-segment");
-const canvas_event_types_1 = require("canvas/events/canvas-event-types");
+const canvas_enums_1 = require("canvas/events/canvas-enums");
 const circle_1 = require("canvas/shapes/circle");
 const line_style_1 = require("canvas/models/line-style");
 const shadow_1 = require("canvas/models/shadow");
@@ -76,10 +76,10 @@ class HelperUtility {
     }
     drawMouse(position, state) {
         switch (state) {
-            case canvas_event_types_1.MOUSE_STATE.DEFAULT:
+            case canvas_enums_1.MOUSE_STATE.DEFAULT:
                 this.redDotMouse(position);
                 break;
-            case canvas_event_types_1.MOUSE_STATE.GRAB:
+            case canvas_enums_1.MOUSE_STATE.GRAB:
                 this.holdMeMouse(position);
                 break;
             default:

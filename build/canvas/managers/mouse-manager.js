@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const event_data_1 = require("canvas/events/event-data");
 const vector_1 = require("canvas/objects/vector");
-const canvas_event_types_1 = require("canvas/events/canvas-event-types");
+const canvas_enums_1 = require("canvas/events/canvas-enums");
 const canvas_event_1 = require("canvas/events/canvas-event");
 class MouseManager {
     constructor(context) {
@@ -40,19 +40,19 @@ class MouseManager {
     registerEvents() {
         const cv = this._context.canvas;
         cv.onmousemove = (e) => {
-            this.eventType = canvas_event_types_1.MOUSE_EVENT_TYPE.MOVE;
+            this.eventType = canvas_enums_1.MOUSE_EVENT_TYPE.MOVE;
             this.updateMousePosition(e.offsetX, e.offsetY);
         };
         cv.onmousedown = (e) => {
-            this.eventType = canvas_event_types_1.MOUSE_EVENT_TYPE.DOWN;
+            this.eventType = canvas_enums_1.MOUSE_EVENT_TYPE.DOWN;
             this.doMouseDown(e.offsetX, e.offsetY);
         };
         cv.onmouseup = (e) => {
-            this.eventType = canvas_event_types_1.MOUSE_EVENT_TYPE.UP;
+            this.eventType = canvas_enums_1.MOUSE_EVENT_TYPE.UP;
             this.mouseUp();
         };
         cv.onmousewheel = (e) => {
-            this.eventType = canvas_event_types_1.MOUSE_EVENT_TYPE.WHEEL;
+            this.eventType = canvas_enums_1.MOUSE_EVENT_TYPE.WHEEL;
             if (e.deltaY > 0) {
                 this.mouseScrollDown();
             }
@@ -61,11 +61,11 @@ class MouseManager {
             }
         };
         cv.onmouseout = (e) => {
-            this.eventType = canvas_event_types_1.MOUSE_EVENT_TYPE.OUT;
+            this.eventType = canvas_enums_1.MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
         cv.onmouseleave = (e) => {
-            this.eventType = canvas_event_types_1.MOUSE_EVENT_TYPE.OUT;
+            this.eventType = canvas_enums_1.MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
     }

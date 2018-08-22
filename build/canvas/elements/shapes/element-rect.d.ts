@@ -6,7 +6,7 @@ export declare class ElementRect extends ElementBase {
     endGap: number;
     size: Size;
     constructor(context: CanvasRenderingContext2D, position: Vector2D);
-    private setupBaseElement(context, position);
-    private elementMoved(e);
+    private setupBaseElement;
+    private elementMoved;
     buildMenus(): void;
 }

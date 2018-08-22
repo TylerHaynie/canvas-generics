@@ -14,16 +14,16 @@ export declare class ResizeProperty {
     private bottomMidRect;
     constructor(context: CanvasRenderingContext2D, position: Vector2D, size: Size);
     draw(): void;
-    private buildMenu();
+    private buildMenu;
     mouseMove(e: any): void;
     mouseDown(e: any): void;
-    private buildRect(context, position, size, color);
-    private topCenterRect(context, bounds, cornerSize, color);
-    private bottomCenterRect(context, bounds, cornerSize, color);
-    private leftCenterRect(context, bounds, cornerSize, color);
-    private rightCenterRect(context, bounds, cornerSize, color);
-    private topLeftBottomRightCornerHover(e, element);
-    private topRightBottomLeftCornerHover(e, element);
-    private horizontalHovered(e, element);
-    private verticalHovered(e, element);
+    private buildRect;
+    private topCenterRect;
+    private bottomCenterRect;
+    private leftCenterRect;
+    private rightCenterRect;
+    private topLeftBottomRightCornerHover;
+    private topRightBottomLeftCornerHover;
+    private horizontalHovered;
+    private verticalHovered;
 }

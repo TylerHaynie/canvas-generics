@@ -1,5 +1,5 @@
 import { MouseManager } from 'canvas/managers/mouse-manager';
-import { PAN_ZOOM_EVENT_TYPE } from 'canvas/events/canvas-event-types';
+import { PAN_ZOOM_EVENT_TYPE } from 'canvas/events/canvas-enums';
 import { PanZoomData } from 'canvas/events/event-data';
 export declare class PanZoomManager {
     scalingAllowed: boolean;
@@ -35,13 +35,13 @@ export declare class PanZoomManager {
     constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager);
     zoomIn(): void;
     zoomOut(): void;
-    private registerEvents();
-    private fireEvent();
-    private mouseDown(mousePosition);
-    private mouseMove(mousePosition);
-    private mouseStop();
-    private pan(mousePosition);
-    private scaleUp(amount);
-    private scaleDown(amount);
-    private resetView();
+    private registerEvents;
+    private fireEvent;
+    private mouseDown;
+    private mouseMove;
+    private mouseStop;
+    private pan;
+    private scaleUp;
+    private scaleDown;
+    private resetView;
 }

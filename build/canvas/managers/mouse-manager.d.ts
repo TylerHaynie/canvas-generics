@@ -1,5 +1,5 @@
 import { PanZoomData, MouseData } from 'canvas/events/event-data';
-import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-enums';
 export declare class MouseManager {
     readonly mouseOnCanvas: boolean;
     private _context;
@@ -16,12 +16,12 @@ export declare class MouseManager {
     on(on: MOUSE_EVENT_TYPE, callback: (e: MouseData) => void): void;
     constructor(context: CanvasRenderingContext2D);
     contextupdated(data: PanZoomData): void;
-    private fireEvent();
-    private registerEvents();
-    private doMouseDown(x, y);
-    private updateMousePosition(x, y);
-    private mouseUp();
-    private mouseLeave();
-    private mouseScrollUp();
-    private mouseScrollDown();
+    private fireEvent;
+    private registerEvents;
+    private doMouseDown;
+    private updateMousePosition;
+    private mouseUp;
+    private mouseLeave;
+    private mouseScrollUp;
+    private mouseScrollDown;
 }

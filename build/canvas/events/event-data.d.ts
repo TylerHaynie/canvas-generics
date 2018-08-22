@@ -1,5 +1,5 @@
 import { Vector2D } from 'canvas/objects/vector';
-import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from 'canvas/events/canvas-event-types';
+import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from 'canvas/events/canvas-enums';
 export declare class MouseData {
     uiMouseState: MOUSE_STATE;
     eventType: MOUSE_EVENT_TYPE;

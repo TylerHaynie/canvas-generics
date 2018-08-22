@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const canvas_event_types_1 = require("canvas/events/canvas-event-types");
+const canvas_enums_1 = require("canvas/events/canvas-enums");
 class UIManager {
     constructor(context, mouseManager) {
         this.uiElements = [];
@@ -18,22 +18,22 @@ class UIManager {
     get mainBuffer() { return this._mainBuffer; }
     get debugBuffer() { return this._debugBuffer; }
     registerEvents() {
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.MOVE, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.MOVE, (e) => {
             if (this._uiEnabled) {
                 this.pointerMoved(e);
             }
         });
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.DOWN, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.DOWN, (e) => {
             if (this._uiEnabled) {
                 this.checkPointerDown(e);
             }
         });
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.UP, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.UP, (e) => {
             if (this._uiEnabled) {
                 this.checkPointerUp(e);
             }
         });
-        this.mouseManager.on(canvas_event_types_1.MOUSE_EVENT_TYPE.OUT, (e) => {
+        this.mouseManager.on(canvas_enums_1.MOUSE_EVENT_TYPE.OUT, (e) => {
             this.uiElements.forEach(element => {
                 element.elementMouseOut(e);
             });

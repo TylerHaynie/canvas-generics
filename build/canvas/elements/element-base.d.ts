@@ -1,5 +1,5 @@
 import { Vector2D } from 'canvas/objects/vector';
-import { UI_EVENT_TYPE } from 'canvas/events/canvas-event-types';
+import { UI_EVENT_TYPE } from 'canvas/events/canvas-enums';
 import { Color } from 'canvas/models/color';
 import { LineStyle } from 'canvas/models/line-style';
 import { Shadow } from 'canvas/models/shadow';
@@ -42,7 +42,7 @@ export declare class ElementBase {
     private canvasEvent;
     on(on: UI_EVENT_TYPE, callback: (e: MouseData) => void): void;
     constructor(context: CanvasRenderingContext2D);
-    private fireEvent(e);
+    private fireEvent;
     elementMouseDown(e: MouseData): void;
     elementMouseUp(e: MouseData): void;
     elementMouseHover(e: MouseData): void;
@@ -51,8 +51,8 @@ export declare class ElementBase {
     setPosition(position: Vector2D): void;
     getposition(): Vector2D;
     draw(): void;
-    private styleElement();
-    private applyColors();
-    private startDrag(e);
-    private dragElement(e);
+    private styleElement;
+    private applyColors;
+    private startDrag;
+    private dragElement;
 }
