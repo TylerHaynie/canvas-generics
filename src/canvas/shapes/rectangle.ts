@@ -37,7 +37,7 @@ export class Rectangle extends ShapeBase {
     private _endGap: number = 0;
     public get endGap(): number { return this._endGap; }
     public set endGap(v: number) {
-        let limit = new Vector2D(this.size.width / 2, this.size.height / 2);
+        let limit = new Vector2D(Math.fround(this.size.width / 2), Math.fround(this.size.height / 2));
 
         if (v > limit.x || v > limit.y) {
             this._endGap = Math.min(limit.x, limit.y);
@@ -54,8 +54,36 @@ export class Rectangle extends ShapeBase {
 
     public get center(): Vector2D {
         return new Vector2D(
-            Math.fround(this.position.x + this._size.width / 2),
-            Math.fround(this.position.y + this._size.height / 2)
+            this.position.x + Math.fround(this._size.width / 2),
+            this.position.y + Math.fround(this._size.height / 2)
+        );
+    }
+
+    public get topMiddle(){
+        return new Vector2D(
+            this.center.x,
+            this.topLeft.y
+        );
+    }
+
+    public get bottomMiddle(){
+        return new Vector2D(
+            this.center.x,
+            this.bottomLeft.y
+        );
+    }
+
+    public get leftMiddle(){
+        return new Vector2D(
+            this.topLeft.x,
+            this.center.y
+        );
+    }
+
+    public get rightMiddle(){
+        return new Vector2D(
+            this.topRight.x,
+            this.center.y
         );
     }
 
@@ -64,15 +92,15 @@ export class Rectangle extends ShapeBase {
     }
 
     public get topRight(): Vector2D {
-        return new Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y));
+        return new Vector2D(this.position.x + this._size.width, this.position.y);
     }
 
     public get bottomRight(): Vector2D {
-        return new Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height));
+        return new Vector2D(this.position.x + this._size.width, this.position.y + this._size.height);
     }
 
     public get bottomLeft(): Vector2D {
-        return new Vector2D(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height));
+        return new Vector2D(this.position.x, this.position.y + this._size.height);
     }
 
     public get topLine() {
