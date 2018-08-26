@@ -1,7 +1,7 @@
 import { LineSegment } from 'canvas/shapes/line/line-segment';
 import { LineStyle } from 'canvas/models/line-style';
 import { Shadow } from 'canvas/models/shadow';
-import { DrawBase } from 'canvas/shapes/drawBase';
+import { DrawBase } from 'canvas/shapes/draw-base';
 
 export class Line extends DrawBase {
     private segments: LineSegment[] = [];

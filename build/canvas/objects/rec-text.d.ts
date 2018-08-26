@@ -1,13 +1,13 @@
-import { TextOptions } from 'canvas/shapes/text-object';
+import { Rectangle } from 'canvas/shapes/rectangle';
+import { TextObject, TextOptions } from 'canvas/shapes/text-object';
 import { Vector2D } from 'canvas/objects/vector';
-import { DrawBase } from 'canvas/shapes/drawBase';
 import { LineStyle } from 'canvas/models/line-style';
 import { Size } from 'canvas/models/size';
 import { Color } from 'canvas/models/color';
 export declare class RecTextElement {
     name: string;
-    textObject: DrawBase;
-    RectangleObject: DrawBase;
+    textObject: TextObject;
+    RectangleObject: Rectangle;
 }
 export declare class RecTextOptions {
     textColor: Color;

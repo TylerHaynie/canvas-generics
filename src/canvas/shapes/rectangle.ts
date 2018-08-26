@@ -24,7 +24,10 @@ export class Rectangle extends ShapeBase {
     public set size(v: Size) { this._size = v; }
     public get size(): Size { return this._size; }
 
-    public set roundedCorners(v: boolean) { this._roundedCorners = v; }
+    public set roundedCorners(v: boolean) {
+        this._roundedCorners = v;
+        this.isDirty = true;
+    }
 
     public get endGap(): number { return this._endGap; }
     public set endGap(v: number) {
@@ -39,6 +42,8 @@ export class Rectangle extends ShapeBase {
         else {
             this._endGap = v;
         }
+
+        this.isDirty = true;
     }
 
     public get center(): Vector2D {

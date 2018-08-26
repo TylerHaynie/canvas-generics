@@ -2,11 +2,16 @@ import { Vector2D } from 'canvas/objects/vector';
 import { ShapeBase } from 'canvas/shapes/shape-base';
 
 export class Circle extends ShapeBase {
-    radius: number;
+    private _radius: number;
+    public get radius(): number { return this._radius; }
+    public set radius(v: number) {
+        this._radius = v;
+        this.isDirty = true;
+    }
 
     constructor(context: CanvasRenderingContext2D, position: Vector2D) {
         super(context, position, () => { this.drawCircle(); });
-        this.radius = 10;
+        this._radius = 10;
     }
 
     private drawCircle() {
@@ -15,7 +20,7 @@ export class Circle extends ShapeBase {
         this.context.globalAlpha = 0;
 
         // create the circle
-        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.fround(2 * Math.PI));
+        this.context.arc(this.position.x, this.position.y, this._radius, 0, Math.fround(2 * Math.PI));
 
         // does it have a shadow
         if (this.shadow !== undefined) {
@@ -50,7 +55,7 @@ export class Circle extends ShapeBase {
         let withinBounds: boolean = false;
 
         let circle1 = { radius: 1, x: point.x, y: point.y };
-        let circle2 = { radius: this.radius, x: this.position.x, y: this.position.y };
+        let circle2 = { radius: this._radius, x: this.position.x, y: this.position.y };
 
         let dx = circle1.x - circle2.x;
         let dy = circle1.y - circle2.y;

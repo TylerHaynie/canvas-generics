@@ -1,18 +1,12 @@
 import { Rectangle } from 'canvas/shapes/rectangle';
-import { TextObject, TextOptions } from 'canvas/shapes/text-object';
 import { Vector2D } from 'canvas/objects/vector';
-import { DrawBase } from 'canvas/shapes/drawBase';
 import { LineStyle } from 'canvas/models/line-style';
 import { Shadow } from 'canvas/models/shadow';
 import { Size } from 'canvas/models/size';
 import { Color } from 'canvas/models/color';
-
-
-export class RecTextElement {
-    name: string;
-    textObject: DrawBase;
-    RectangleObject: DrawBase;
-}
+import { TextObject } from 'canvas/shapes/text-object';
+import { TextOptions } from 'canvas/shapes/text/models';
+import { ShapeBase } from 'canvas/shapes/shape-base';
 
 export class RecTextOptions {
     textColor: Color = new Color('#eee');
@@ -34,34 +28,66 @@ export class RecTextOptions {
     }
 }
 
-export class RecText {
+export class RecText extends ShapeBase {
 
-    private context: CanvasRenderingContext2D;
+    id: string;
 
-    constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
+    _text: TextOptions | string;
+    public set text(v: TextOptions | string) { this._text = v; this.isDirty = true; }
+
+    _size: Size;
+    public set size(v: Size) { this._size = v; this.isDirty = true; }
+
+    _options: RecTextOptions;
+    public set options(v: RecTextOptions) { this._options = v; this.isDirty = true; }
+
+    public set position(position: Vector2D) {
     }
 
-    create(pos: Vector2D, size: Size, text: TextOptions | string, recTextOptions?: RecTextOptions): RecTextElement {
-        if (!recTextOptions) { recTextOptions = new RecTextOptions(); }
-        if (typeof text === 'string') { text = new TextOptions(text); }
+    private isDirty: boolean = true;
 
-        let element: RecTextElement = new RecTextElement();
+    public get rectangle() { return this._rectangle; }
+    private _rectangle: Rectangle;
 
-        let t = this.createText(pos, text, recTextOptions);
-        let rec = this.createRectangle(pos, size, recTextOptions);
+    public get textObject() { return this._textObject; }
+    private _textObject: TextObject;
+
+    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, id?: string, options?: RecTextOptions) {
+        super(context, pos, () => this.draw());
+        this._size = size;
+        this._text = text;
+        this.id = id;
+        this._options = options;
+
+        this.create();
+    }
+
+    draw() {
+        if (this.isDirty) {
+            this.create();
+            this.isDirty = false;
+        }
+
+
+
+    }
+
+    private create() {
+        if (!this._options) { this._options = new RecTextOptions(); }
+        if (typeof this._text === 'string') { this._text = new TextOptions(this._text); }
+
+        let t = this.createText(this.position, this._text, this._options);
+        let rec = this.createRectangle(this.position, this._size, this._options);
 
         // set text width including rectangle padding
-        t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - recTextOptions.paddingLeft - recTextOptions.paddingRight : undefined;
+        t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - this._options.paddingLeft - this._options.paddingRight : undefined;
 
         // reposition text so it is in the correct position
-        t.position = new Vector2D(rec.topLeft.x + recTextOptions.paddingLeft, rec.center.y);
+        t.position = new Vector2D(rec.topLeft.x + this._options.paddingLeft, rec.center.y);
 
-        element.name = t.textOptions.text;
-        element.RectangleObject = rec;
-        element.textObject = t;
-
-        return element;
+        if (!this.id) { this.id = t.textOptions.text; }
+        this._rectangle = rec;
+        this._textObject = t;
     }
 
     private createText(pos: Vector2D, options: TextOptions, recTextOptions: RecTextOptions) {

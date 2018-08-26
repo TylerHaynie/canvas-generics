@@ -55,3 +55,85 @@ export enum DIRECTION {
     EAST = 'east',
     WEST = 'west'
 }
+
+export enum ALIGNMENT {
+    'START' = 'start',
+    'END' = 'end',
+    'LEFT' = 'left',
+    'RIGHT' = 'right',
+    'CENTER' = 'center'
+}
+
+export enum BASELINE {
+    'TOP' = 'top',
+    'HANGING' = 'hanging',
+    'MIDDLE' = 'middle',
+    'ALPHABETIC' = 'alphabetic',
+    'IDEOGRAPHIC' = 'ideographic',
+    'BOTTOM' = 'bottom'
+}
+
+export enum DIRECTION {
+    'LTR' = 'ltr',
+    'RTL' = 'rtl',
+    'INHERIT' = 'inherit'
+}
+
+export enum FONT_STYLE {
+    'NORMAL' = 'normal',
+    'ITALIC' = 'italic',
+    'OBLIQUE' = 'oblique'
+}
+
+export enum FONT_VARIANT {
+    'NORMAL' = 'normal',
+    'SMALL_CAPS' = 'small-caps',
+    'INITIAL' = 'initial',
+    'INHERIT' = 'inherit'
+}
+
+export enum FONT_WEIGHT {
+    'NORMAL' = 'normal',
+    'BOLD' = 'bold',
+    'BOLDER' = 'bolder',
+    'LIGHTER' = 'lighter',
+    'INITIAL' = 'initial',
+    'INHERIT' = 'inherit',
+    '*100' = '100',
+    '*200' = '200',
+    '*300' = '300',
+    '*400' = '400',
+    '*500' = '500',
+    '*600' = '600',
+    '*700' = '700',
+    '*800' = '800',
+    '*900' = '900',
+}
+
+export enum FONT_SIZE {
+    'MEDIUM' = 'medium',
+    'XX_SMALL' = 'xx-small',
+    'X_SMALL' = 'x-small',
+    'SMALL' = 'small',
+    'LARGE' = 'large',
+    'X_LARGE' = 'x-large',
+    'XX_LARGE' = 'xx-large',
+    'SMALLER' = 'smaller',
+    'LARGER' = 'larger',
+    'LENGTH' = 'length',
+    'PERCENT' = '%',
+    'INITIAL' = 'initial',
+    'INHERIT' = 'inherit',
+}
+
+export enum LENGTH_UNIT {
+    'EM' = 'em',
+    'EX' = 'ex',
+    'PERCENT' = '%',
+    'PX' = 'px',
+    'CM' = 'cm',
+    'MM' = 'mm',
+    'IN' = 'in',
+    'PT' = 'pt',
+    'PC' = 'pc',
+}
