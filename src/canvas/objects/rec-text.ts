@@ -4,9 +4,9 @@ import { LineStyle } from 'canvas/models/line-style';
 import { Shadow } from 'canvas/models/shadow';
 import { Size } from 'canvas/models/size';
 import { Color } from 'canvas/models/color';
-import { TextObject } from 'canvas/shapes/text-object';
+import { TextObject } from 'canvas/shapes/text/text-object';
 import { TextOptions } from 'canvas/shapes/text/models';
-import { ShapeBase } from 'canvas/shapes/shape-base';
+import { DrawBase } from 'canvas/shapes/draw-base';
 
 export class RecTextOptions {
     textColor: Color = new Color('#eee');
@@ -28,9 +28,10 @@ export class RecTextOptions {
     }
 }
 
-export class RecText extends ShapeBase {
+export class RecText extends DrawBase {
 
-    id: string;
+    public get id(): string { return this._id; }
+    _id: string;
 
     _text: TextOptions | string;
     public set text(v: TextOptions | string) { this._text = v; this.isDirty = true; }
@@ -41,38 +42,30 @@ export class RecText extends ShapeBase {
     _options: RecTextOptions;
     public set options(v: RecTextOptions) { this._options = v; this.isDirty = true; }
 
-    public set position(position: Vector2D) {
-    }
-
-    private isDirty: boolean = true;
-
     public get rectangle() { return this._rectangle; }
     private _rectangle: Rectangle;
 
     public get textObject() { return this._textObject; }
     private _textObject: TextObject;
 
-    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, id?: string, options?: RecTextOptions) {
+    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, uid?: string, options?: RecTextOptions) {
         super(context, pos, () => this.draw());
         this._size = size;
         this._text = text;
-        this.id = id;
+        this._id = uid;
         this._options = options;
-
-        this.create();
     }
 
     draw() {
-        if (this.isDirty) {
-            this.create();
-            this.isDirty = false;
-        }
+        // draw is called only when base properties are dirty
+        // so we update the rectangle and text before drawing the object
+        this.update();
 
-
-
+        this._rectangle.draw();
+        this._textObject.draw();
     }
 
-    private create() {
+    private update() {
         if (!this._options) { this._options = new RecTextOptions(); }
         if (typeof this._text === 'string') { this._text = new TextOptions(this._text); }
 
@@ -85,13 +78,13 @@ export class RecText extends ShapeBase {
         // reposition text so it is in the correct position
         t.position = new Vector2D(rec.topLeft.x + this._options.paddingLeft, rec.center.y);
 
-        if (!this.id) { this.id = t.textOptions.text; }
+        if (!this.id) { this._id = t.textOptions.text; }
         this._rectangle = rec;
         this._textObject = t;
     }
 
     private createText(pos: Vector2D, options: TextOptions, recTextOptions: RecTextOptions) {
-        let t = new TextObject(this.context, pos, options);
+        let t = new TextObject(this._context, pos, options);
         t.color = recTextOptions.textColor;
 
         // adding a little shadow
@@ -116,13 +109,13 @@ export class RecText extends ShapeBase {
     private createRectangle(pos: Vector2D, size: Size, options: RecTextOptions) {
 
         // create the rectangle (this could auto size to text width if we want)
-        let rec = new Rectangle(this.context, pos);
+        let rec = new Rectangle(this._context, pos);
 
         rec.size = new Size(size.width + options.paddingLeft + options.paddingRight, size.height);
         rec.outline = options ? options.recStyle.outline : new LineStyle();
 
         // create the graident
-        let g = this.context.createLinearGradient(rec.center.x, rec.topLeft.y, rec.center.x, rec.bottomRight.y);
+        let g = this._context.createLinearGradient(rec.center.x, rec.topLeft.y, rec.center.x, rec.bottomRight.y);
 
         // background
         g.addColorStop(0, options.recStyle.startColor);

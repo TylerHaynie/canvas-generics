@@ -4,11 +4,16 @@ export class LineSegment {
 
     public get points(): Vector2D[] { return this._points; }
     private _points: Vector2D[] = [];
-    fillSegment: boolean;
 
-    constructor(startPoint?: Vector2D, fillSegment?: boolean) {
+    private _fillSegment: boolean = false;
+    public get fillSegment(): boolean { return this._fillSegment; }
+    public set fillSegment(v: boolean) {
+        this._fillSegment = v;
+        // isDirty = true;
+    }
+
+    constructor(startPoint?: Vector2D) {
         if (startPoint) { this._points.push(startPoint); }
-        this.fillSegment = fillSegment || false;
     }
 
     addPoint(point: Vector2D) {

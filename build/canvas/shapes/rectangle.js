@@ -18,12 +18,18 @@ class Rectangle extends shape_base_1.ShapeBase {
     constructor(context, position) {
         super(context, position, () => { this.drawRectangle(); });
         this._size = new size_1.Size(50, 50);
-        this._endGap = 0;
         this._roundedCorners = false;
+        this._endGap = 0;
     }
-    set size(v) { this._size = v; }
     get size() { return this._size; }
-    set roundedCorners(v) { this._roundedCorners = v; }
+    set size(v) {
+        this._size = v;
+        this.isDirty = true;
+    }
+    set roundedCorners(v) {
+        this._roundedCorners = v;
+        this.isDirty = true;
+    }
     get endGap() { return this._endGap; }
     set endGap(v) {
         let limit = new vector_1.Vector2D(this.size.width / 2, this.size.height / 2);
@@ -36,6 +42,7 @@ class Rectangle extends shape_base_1.ShapeBase {
         else {
             this._endGap = v;
         }
+        this.isDirty = true;
     }
     get center() {
         return new vector_1.Vector2D(Math.fround(this.position.x + this._size.width / 2), Math.fround(this.position.y + this._size.height / 2));
@@ -97,7 +104,7 @@ class Rectangle extends shape_base_1.ShapeBase {
         return new Corner(cp, ep);
     }
     drawRectangle() {
-        this.context.save();
+        this._context.save();
         if (this._endGap > 0) {
             this.drawComplexRectangle();
         }
@@ -105,39 +112,39 @@ class Rectangle extends shape_base_1.ShapeBase {
             this.drawBasicRectangle();
         }
         if (this.shadow !== undefined) {
-            this.context.shadowBlur = this.shadow.blur;
-            this.context.shadowColor = this.shadow.shade;
-            this.context.shadowOffsetX = this.shadow.offsetX;
-            this.context.shadowOffsetY = this.shadow.offsetY;
+            this._context.shadowBlur = this.shadow.blur;
+            this._context.shadowColor = this.shadow.shade;
+            this._context.shadowOffsetX = this.shadow.offsetX;
+            this._context.shadowOffsetY = this.shadow.offsetY;
         }
         if (this.color !== undefined) {
-            this.context.globalAlpha = this.color.alpha;
-            this.context.fillStyle = this.color.shade;
-            this.context.fill();
+            this._context.globalAlpha = this.color.alpha;
+            this._context.fillStyle = this.color.shade;
+            this._context.fill();
         }
         if (this.outline !== undefined) {
-            this.context.shadowColor = '';
-            this.context.shadowBlur = 0;
-            this.context.shadowOffsetX = 0;
-            this.context.shadowOffsetY = 0;
-            this.context.lineWidth = this.outline.width;
-            this.context.globalAlpha = this.outline.alpha;
-            this.context.strokeStyle = this.outline.shade;
-            this.context.stroke();
+            this._context.shadowColor = '';
+            this._context.shadowBlur = 0;
+            this._context.shadowOffsetX = 0;
+            this._context.shadowOffsetY = 0;
+            this._context.lineWidth = this.outline.width;
+            this._context.globalAlpha = this.outline.alpha;
+            this._context.strokeStyle = this.outline.shade;
+            this._context.stroke();
         }
-        this.context.restore();
+        this._context.restore();
     }
     drawBasicRectangle() {
-        this.context.beginPath();
-        this.context.moveTo(this.position.x, this.position.y);
-        this.context.lineTo(this.position.x + this._size.width, this.position.y);
-        this.context.lineTo(this.position.x + this._size.width, this.position.y + this._size.height);
-        this.context.lineTo(this.position.x, this.position.y + this._size.height);
-        this.context.lineTo(this.position.x, this.position.y);
-        this.context.closePath();
+        this._context.beginPath();
+        this._context.moveTo(this.position.x, this.position.y);
+        this._context.lineTo(this.position.x + this._size.width, this.position.y);
+        this._context.lineTo(this.position.x + this._size.width, this.position.y + this._size.height);
+        this._context.lineTo(this.position.x, this.position.y + this._size.height);
+        this._context.lineTo(this.position.x, this.position.y);
+        this._context.closePath();
     }
     drawComplexRectangle() {
-        this.context.beginPath();
+        this._context.beginPath();
         let topLine = this.topLine;
         let rightLine = this.rightLine;
         let bottomLine = this.bottomLine;
@@ -146,43 +153,43 @@ class Rectangle extends shape_base_1.ShapeBase {
         let brCorner = this.bottomRightCorner;
         let blCorner = this.bottomLeftCorner;
         let tlCorner = this.topLeftCorner;
-        this.context.moveTo(topLine.p1.x, topLine.p1.y);
-        this.context.lineTo(topLine.p2.x, topLine.p2.y);
+        this._context.moveTo(topLine.p1.x, topLine.p1.y);
+        this._context.lineTo(topLine.p2.x, topLine.p2.y);
         if (this._roundedCorners) {
-            this.context.quadraticCurveTo(trCorner.controlPoint.x, trCorner.controlPoint.y, trCorner.endingPoint.x, trCorner.endingPoint.y);
+            this._context.quadraticCurveTo(trCorner.controlPoint.x, trCorner.controlPoint.y, trCorner.endingPoint.x, trCorner.endingPoint.y);
         }
         else {
-            this.context.lineTo(trCorner.controlPoint.x - this._endGap, trCorner.controlPoint.y);
-            this.context.lineTo(trCorner.endingPoint.x, trCorner.endingPoint.y);
+            this._context.lineTo(trCorner.controlPoint.x - this._endGap, trCorner.controlPoint.y);
+            this._context.lineTo(trCorner.endingPoint.x, trCorner.endingPoint.y);
         }
-        this.context.lineTo(rightLine.p1.x, rightLine.p1.y);
-        this.context.lineTo(rightLine.p2.x, rightLine.p2.y);
+        this._context.lineTo(rightLine.p1.x, rightLine.p1.y);
+        this._context.lineTo(rightLine.p2.x, rightLine.p2.y);
         if (this._roundedCorners) {
-            this.context.quadraticCurveTo(brCorner.controlPoint.x, brCorner.controlPoint.y, brCorner.endingPoint.x, brCorner.endingPoint.y);
+            this._context.quadraticCurveTo(brCorner.controlPoint.x, brCorner.controlPoint.y, brCorner.endingPoint.x, brCorner.endingPoint.y);
         }
         else {
-            this.context.lineTo(brCorner.controlPoint.x - this._endGap, brCorner.controlPoint.y);
-            this.context.lineTo(brCorner.endingPoint.x, brCorner.endingPoint.y);
+            this._context.lineTo(brCorner.controlPoint.x - this._endGap, brCorner.controlPoint.y);
+            this._context.lineTo(brCorner.endingPoint.x, brCorner.endingPoint.y);
         }
-        this.context.lineTo(bottomLine.p1.x, bottomLine.p1.y);
-        this.context.lineTo(bottomLine.p2.x, bottomLine.p2.y);
+        this._context.lineTo(bottomLine.p1.x, bottomLine.p1.y);
+        this._context.lineTo(bottomLine.p2.x, bottomLine.p2.y);
         if (this._roundedCorners) {
-            this.context.quadraticCurveTo(blCorner.controlPoint.x, blCorner.controlPoint.y, blCorner.endingPoint.x, blCorner.endingPoint.y);
+            this._context.quadraticCurveTo(blCorner.controlPoint.x, blCorner.controlPoint.y, blCorner.endingPoint.x, blCorner.endingPoint.y);
         }
         else {
-            this.context.lineTo(blCorner.controlPoint.x + this._endGap, blCorner.controlPoint.y);
-            this.context.lineTo(blCorner.endingPoint.x, blCorner.endingPoint.y);
+            this._context.lineTo(blCorner.controlPoint.x + this._endGap, blCorner.controlPoint.y);
+            this._context.lineTo(blCorner.endingPoint.x, blCorner.endingPoint.y);
         }
-        this.context.lineTo(leftLine.p1.x, leftLine.p1.y);
-        this.context.lineTo(leftLine.p2.x, leftLine.p2.y);
+        this._context.lineTo(leftLine.p1.x, leftLine.p1.y);
+        this._context.lineTo(leftLine.p2.x, leftLine.p2.y);
         if (this._roundedCorners) {
-            this.context.quadraticCurveTo(tlCorner.controlPoint.x, tlCorner.controlPoint.y, tlCorner.endingPoint.x, tlCorner.endingPoint.y);
+            this._context.quadraticCurveTo(tlCorner.controlPoint.x, tlCorner.controlPoint.y, tlCorner.endingPoint.x, tlCorner.endingPoint.y);
         }
         else {
-            this.context.lineTo(tlCorner.controlPoint.x + this._endGap, tlCorner.controlPoint.y);
-            this.context.lineTo(tlCorner.endingPoint.x, tlCorner.endingPoint.y);
+            this._context.lineTo(tlCorner.controlPoint.x + this._endGap, tlCorner.controlPoint.y);
+            this._context.lineTo(tlCorner.endingPoint.x, tlCorner.endingPoint.y);
         }
-        this.context.closePath();
+        this._context.closePath();
     }
     pointWithinBounds(v) {
         let topLeft = this.topLeft;
@@ -196,7 +203,7 @@ class Rectangle extends shape_base_1.ShapeBase {
     }
     lineIntersects(other) {
         let segments = [];
-        let screenBounds = this.context.canvas.getBoundingClientRect();
+        let screenBounds = this._context.canvas.getBoundingClientRect();
         let screenTop = {
             p1: new vector_1.Vector2D(screenBounds.left, screenBounds.top),
             p2: new vector_1.Vector2D(screenBounds.right, screenBounds.top)

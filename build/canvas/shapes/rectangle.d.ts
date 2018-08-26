@@ -9,8 +9,11 @@ export declare class Corner {
     constructor(_controlPoint: Vector2D, _endingPoint: Vector2D);
 }
 export declare class Rectangle extends ShapeBase {
+    private _size;
     size: Size;
+    private _roundedCorners;
     roundedCorners: boolean;
+    private _endGap;
     endGap: number;
     readonly center: Vector2D;
     readonly topLeft: Vector2D;
@@ -37,9 +40,6 @@ export declare class Rectangle extends ShapeBase {
         p2: Vector2D;
     };
     readonly topLeftCorner: Corner;
-    private _size;
-    private _endGap;
-    private _roundedCorners;
     constructor(context: CanvasRenderingContext2D, position: Vector2D);
     private drawRectangle;
     private drawBasicRectangle;

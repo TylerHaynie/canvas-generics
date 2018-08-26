@@ -97,7 +97,7 @@ export class CanvasWrapper {
         this._keyboardManager = new KeyboardManager(this._context);
 
         // UI and main drawing
-        this._uiManager = new UIManager(this._context, this._mouseManager);
+        this._uiManager = new UIManager(this._mouseManager);
 
         // pan-zoom
         this._panZoomManager = new PanZoomManager(this._context, this._mouseManager);

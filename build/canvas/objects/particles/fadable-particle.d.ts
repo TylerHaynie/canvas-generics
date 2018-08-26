@@ -1,4 +1,4 @@
-import { ParticleBase } from 'canvas/objects/particle/particle-base';
+import { ParticleBase } from 'canvas/objects/particles/particle-base';
 import { Rectangle } from 'canvas/shapes/rectangle';
 import { Velocity } from 'canvas/models/velocity';
 export declare class FadableParticle extends ParticleBase {

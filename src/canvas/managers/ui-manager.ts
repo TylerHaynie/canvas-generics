@@ -10,22 +10,20 @@ export class UIManager {
     public set debugEnabled(v: boolean) { this._debugEnabled = v; }
 
     //#region Private Properites
-
-    private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
 
     // elements
     private uiElements: ElementBase[] = [];
 
     private _uiEnabled: boolean = true;
-    private _uiBuffer: [{ callback: () => void }];
+    private _uiBuffer: [{ drawCallBack: () => void }];
     public get uiBuffer() { return this._uiBuffer; }
 
-    private _mainBuffer: [{ callback: () => void }];
+    private _mainBuffer: [{ drawCallBack: () => void }];
     public get mainBuffer() { return this._mainBuffer; }
 
     private _debugEnabled: boolean = false;
-    private _debugBuffer: [{ callback: () => void }];
+    private _debugBuffer: [{ drawCallBack: () => void }];
     public get debugBuffer() { return this._debugBuffer; }
 
     //#endregion
@@ -35,8 +33,7 @@ export class UIManager {
 
     // TODO: need to fire off UI events and refactor a bit after that.
 
-    constructor(context: CanvasRenderingContext2D, mouseManager: MouseManager) {
-        this.context = context;
+    constructor(mouseManager: MouseManager) {
         this.mouseManager = mouseManager;
 
         this.registerEvents();
@@ -105,19 +102,19 @@ export class UIManager {
 
     //#region Public Buffer Functions
 
-    addToMainBuffer(drawCallback: () => void) {
+    addToMainBuffer(cb: () => void) {
         if (!this._mainBuffer) {
-            this._mainBuffer = [{ callback: drawCallback }];
+            this._mainBuffer = [{ drawCallBack: cb }];
         }
         else {
-            this._mainBuffer.push({ callback: drawCallback });
+            this._mainBuffer.push({ drawCallBack: cb });
         }
     }
 
     drawMainBuffer() {
         if (this._mainBuffer) {
             this._mainBuffer.forEach(buffer => {
-                buffer.callback();
+                buffer.drawCallBack();
             });
         }
     }
@@ -126,19 +123,19 @@ export class UIManager {
         this._mainBuffer = <any>[];
     }
 
-    addToUiBuffer(drawCallback: () => void) {
+    addToUiBuffer(cb: () => void) {
         if (!this._uiBuffer) {
-            this._uiBuffer = [{ callback: drawCallback }];
+            this._uiBuffer = [{ drawCallBack: cb }];
         }
         else {
-            this._uiBuffer.push({ callback: drawCallback });
+            this._uiBuffer.push({ drawCallBack: cb });
         }
     }
 
     drawUiBuffer() {
         if (this._uiBuffer) {
             this._uiBuffer.forEach(buffer => {
-                buffer.callback();
+                buffer.drawCallBack();
             });
         }
     }
@@ -147,19 +144,19 @@ export class UIManager {
         this._uiBuffer = <any>[];
     }
 
-    addToDeubgBuffer(drawCallback: () => void) {
+    addToDeubgBuffer(cb: () => void) {
         if (!this._debugBuffer) {
-            this._debugBuffer = [{ callback: drawCallback }];
+            this._debugBuffer = [{ drawCallBack: cb }];
         }
         else {
-            this._debugBuffer.push({ callback: drawCallback });
+            this._debugBuffer.push({ drawCallBack: cb });
         }
     }
 
     drawDebugBuffer() {
         if (this._debugBuffer) {
             this._debugBuffer.forEach(buffer => {
-                buffer.callback();
+                buffer.drawCallBack();
             });
         }
     }

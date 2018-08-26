@@ -2,38 +2,43 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const shape_base_1 = require("canvas/shapes/shape-base");
 class Circle extends shape_base_1.ShapeBase {
+    get radius() { return this._radius; }
+    set radius(v) {
+        this._radius = v;
+        this.isDirty = true;
+    }
     constructor(context, position) {
         super(context, position, () => { this.drawCircle(); });
-        this.radius = 10;
+        this._radius = 10;
     }
     drawCircle() {
-        this.context.save();
-        this.context.beginPath();
-        this.context.globalAlpha = 0;
-        this.context.arc(this.position.x, this.position.y, this.radius, 0, Math.fround(2 * Math.PI));
+        this._context.save();
+        this._context.beginPath();
+        this._context.globalAlpha = 0;
+        this._context.arc(this.position.x, this.position.y, this._radius, 0, Math.fround(2 * Math.PI));
         if (this.shadow !== undefined) {
-            this.context.shadowBlur = this.shadow.blur;
-            this.context.shadowColor = this.shadow.shade;
-            this.context.shadowOffsetX = this.shadow.offsetX;
-            this.context.shadowOffsetY = this.shadow.offsetY;
+            this._context.shadowBlur = this.shadow.blur;
+            this._context.shadowColor = this.shadow.shade;
+            this._context.shadowOffsetX = this.shadow.offsetX;
+            this._context.shadowOffsetY = this.shadow.offsetY;
         }
         if (this.color !== undefined) {
-            this.context.globalAlpha = this.color.alpha;
-            this.context.fillStyle = this.color.shade;
-            this.context.fill();
+            this._context.globalAlpha = this.color.alpha;
+            this._context.fillStyle = this.color.shade;
+            this._context.fill();
         }
         if (this.outline !== undefined) {
-            this.context.lineWidth = this.outline.width;
-            this.context.globalAlpha = this.outline.alpha;
-            this.context.strokeStyle = this.outline.shade;
-            this.context.stroke();
+            this._context.lineWidth = this.outline.width;
+            this._context.globalAlpha = this.outline.alpha;
+            this._context.strokeStyle = this.outline.shade;
+            this._context.stroke();
         }
-        this.context.restore();
+        this._context.restore();
     }
     pointWithinBounds(point) {
         let withinBounds = false;
         let circle1 = { radius: 1, x: point.x, y: point.y };
-        let circle2 = { radius: this.radius, x: this.position.x, y: this.position.y };
+        let circle2 = { radius: this._radius, x: this.position.x, y: this.position.y };
         let dx = circle1.x - circle2.x;
         let dy = circle1.y - circle2.y;
         let distance = Math.sqrt(dx * dx + dy * dy);

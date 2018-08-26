@@ -52,7 +52,7 @@ class CanvasWrapper {
         this._WindowManager = new window_manager_1.WindowManager(this._context);
         this._mouseManager = new mouse_manager_1.MouseManager(this._context);
         this._keyboardManager = new keyboard_manager_1.KeyboardManager(this._context);
-        this._uiManager = new ui_manager_1.UIManager(this._context, this._mouseManager);
+        this._uiManager = new ui_manager_1.UIManager(this._mouseManager);
         this._panZoomManager = new pan_zoom_manager_1.PanZoomManager(this._context, this._mouseManager);
     }
     setupUtilities() {

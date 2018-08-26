@@ -15,40 +15,40 @@ export class Circle extends ShapeBase {
     }
 
     private drawCircle() {
-        this.context.save();
-        this.context.beginPath();
-        this.context.globalAlpha = 0;
+        this._context.save();
+        this._context.beginPath();
+        this._context.globalAlpha = 0;
 
         // create the circle
-        this.context.arc(this.position.x, this.position.y, this._radius, 0, Math.fround(2 * Math.PI));
+        this._context.arc(this.position.x, this.position.y, this._radius, 0, Math.fround(2 * Math.PI));
 
         // does it have a shadow
         if (this.shadow !== undefined) {
-            this.context.shadowBlur = this.shadow.blur;
-            this.context.shadowColor = this.shadow.shade;
-            this.context.shadowOffsetX = this.shadow.offsetX;
-            this.context.shadowOffsetY = this.shadow.offsetY;
+            this._context.shadowBlur = this.shadow.blur;
+            this._context.shadowColor = this.shadow.shade;
+            this._context.shadowOffsetX = this.shadow.offsetX;
+            this._context.shadowOffsetY = this.shadow.offsetY;
         }
 
         // draw solid circle
         if (this.color !== undefined) {
-            this.context.globalAlpha = this.color.alpha;
-            this.context.fillStyle = this.color.shade;
+            this._context.globalAlpha = this.color.alpha;
+            this._context.fillStyle = this.color.shade;
 
-            this.context.fill();
+            this._context.fill();
         }
 
         // does it have an outline
         if (this.outline !== undefined) {
-            this.context.lineWidth = this.outline.width;
-            this.context.globalAlpha = this.outline.alpha;
-            this.context.strokeStyle = this.outline.shade;
+            this._context.lineWidth = this.outline.width;
+            this._context.globalAlpha = this.outline.alpha;
+            this._context.strokeStyle = this.outline.shade;
 
             // outline the circle
-            this.context.stroke();
+            this._context.stroke();
         }
 
-        this.context.restore();
+        this._context.restore();
     }
 
     pointWithinBounds(point: Vector2D) {
