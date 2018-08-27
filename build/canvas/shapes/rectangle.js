@@ -32,7 +32,7 @@ class Rectangle extends shape_base_1.ShapeBase {
     }
     get endGap() { return this._endGap; }
     set endGap(v) {
-        let limit = new vector_1.Vector2D(this.size.width / 2, this.size.height / 2);
+        let limit = new vector_1.Vector2D(Math.fround(this.size.width / 2), Math.fround(this.size.height / 2));
         if (v > limit.x || v > limit.y) {
             this._endGap = Math.min(limit.x, limit.y);
         }
@@ -45,19 +45,31 @@ class Rectangle extends shape_base_1.ShapeBase {
         this.isDirty = true;
     }
     get center() {
-        return new vector_1.Vector2D(Math.fround(this.position.x + this._size.width / 2), Math.fround(this.position.y + this._size.height / 2));
+        return new vector_1.Vector2D(this.position.x + Math.fround(this._size.width / 2), this.position.y + Math.fround(this._size.height / 2));
+    }
+    get topMiddle() {
+        return new vector_1.Vector2D(this.center.x, this.topLeft.y);
+    }
+    get bottomMiddle() {
+        return new vector_1.Vector2D(this.center.x, this.bottomLeft.y);
+    }
+    get leftMiddle() {
+        return new vector_1.Vector2D(this.topLeft.x, this.center.y);
+    }
+    get rightMiddle() {
+        return new vector_1.Vector2D(this.topRight.x, this.center.y);
     }
     get topLeft() {
         return this.position;
     }
     get topRight() {
-        return new vector_1.Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y));
+        return new vector_1.Vector2D(this.position.x + this._size.width, this.position.y);
     }
     get bottomRight() {
-        return new vector_1.Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height));
+        return new vector_1.Vector2D(this.position.x + this._size.width, this.position.y + this._size.height);
     }
     get bottomLeft() {
-        return new vector_1.Vector2D(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height));
+        return new vector_1.Vector2D(this.position.x, this.position.y + this._size.height);
     }
     get topLine() {
         return {

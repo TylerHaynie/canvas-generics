@@ -29,10 +29,6 @@ export class RecTextOptions {
 }
 
 export class RecText extends DrawBase {
-
-    public get id(): string { return this._id; }
-    _id: string;
-
     _text: TextOptions | string;
     public set text(v: TextOptions | string) { this._text = v; this.isDirty = true; }
 
@@ -48,11 +44,10 @@ export class RecText extends DrawBase {
     public get textObject() { return this._textObject; }
     private _textObject: TextObject;
 
-    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, uid?: string, options?: RecTextOptions) {
+    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, options?: RecTextOptions) {
         super(context, pos, () => this.draw());
         this._size = size;
         this._text = text;
-        this._id = uid;
         this._options = options;
     }
 
@@ -78,7 +73,6 @@ export class RecText extends DrawBase {
         // reposition text so it is in the correct position
         t.position = new Vector2D(rec.topLeft.x + this._options.paddingLeft, rec.center.y);
 
-        if (!this.id) { this._id = t.textOptions.text; }
         this._rectangle = rec;
         this._textObject = t;
     }

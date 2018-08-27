@@ -22,8 +22,6 @@ export declare class RecTextOptions {
     changeStyle(startColor: string, endColor: string, alpha?: number, outline?: LineStyle): void;
 }
 export declare class RecText extends DrawBase {
-    readonly id: string;
-    _id: string;
     _text: TextOptions | string;
     text: TextOptions | string;
     _size: Size;
@@ -34,7 +32,7 @@ export declare class RecText extends DrawBase {
     private _rectangle;
     readonly textObject: TextObject;
     private _textObject;
-    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, uid?: string, options?: RecTextOptions);
+    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, options?: RecTextOptions);
     draw(): void;
     private update;
     private createText;

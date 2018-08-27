@@ -31,17 +31,15 @@ class RecTextOptions {
 }
 exports.RecTextOptions = RecTextOptions;
 class RecText extends draw_base_1.DrawBase {
-    get id() { return this._id; }
     set text(v) { this._text = v; this.isDirty = true; }
     set size(v) { this._size = v; this.isDirty = true; }
     set options(v) { this._options = v; this.isDirty = true; }
     get rectangle() { return this._rectangle; }
     get textObject() { return this._textObject; }
-    constructor(context, pos, size, text, uid, options) {
+    constructor(context, pos, size, text, options) {
         super(context, pos, () => this.draw());
         this._size = size;
         this._text = text;
-        this._id = uid;
         this._options = options;
     }
     draw() {
@@ -60,9 +58,6 @@ class RecText extends draw_base_1.DrawBase {
         let rec = this.createRectangle(this.position, this._size, this._options);
         t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - this._options.paddingLeft - this._options.paddingRight : undefined;
         t.position = new vector_1.Vector2D(rec.topLeft.x + this._options.paddingLeft, rec.center.y);
-        if (!this.id) {
-            this._id = t.textOptions.text;
-        }
         this._rectangle = rec;
         this._textObject = t;
     }

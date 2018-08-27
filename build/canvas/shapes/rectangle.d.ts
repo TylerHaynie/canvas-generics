@@ -16,6 +16,10 @@ export declare class Rectangle extends ShapeBase {
     private _endGap;
     endGap: number;
     readonly center: Vector2D;
+    readonly topMiddle: Vector2D;
+    readonly bottomMiddle: Vector2D;
+    readonly leftMiddle: Vector2D;
+    readonly rightMiddle: Vector2D;
     readonly topLeft: Vector2D;
     readonly topRight: Vector2D;
     readonly bottomRight: Vector2D;
