@@ -1,1 +1,0 @@
-{"version":3,"file":"color.js","sourceRoot":"./src/","sources":["canvas/models/color.ts"],"names":[],"mappings":";;AACA,MAAa,KAAK;IAId,YAAY,KAA+C,EAAE,KAAc;QACvE,IAAI,CAAC,KAAK,GAAG,KAAK,IAAI,MAAM,CAAC;QAC7B,IAAI,CAAC,KAAK,GAAG,KAAK,IAAI,CAAC,CAAC;IAC5B,CAAC;CACJ;AARD,sBAQC"}
