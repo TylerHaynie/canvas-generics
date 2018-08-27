@@ -15,10 +15,7 @@ class DrawBase {
         this.isDirty = true;
     }
     draw() {
-        if (this.isDirty) {
-            this._drawCallback();
-            this.isDirty = false;
-        }
+        this._drawCallback();
     }
 }
 exports.DrawBase = DrawBase;

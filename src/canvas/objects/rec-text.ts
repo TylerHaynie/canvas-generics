@@ -67,7 +67,7 @@ export class RecText extends DrawBase {
         let t = this.createText(this.position, this._text, this._options);
 
         if (this._options.autoWidth) {
-            this.size = new Size(t.textWidth, this._size.height);
+            this._size = new Size(t.textWidth, this._size.height);
         }
         let rec = this.createRectangle(this.position, this._size, this._options);
 

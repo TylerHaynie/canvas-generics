@@ -52,7 +52,7 @@ class RecText extends draw_base_1.DrawBase {
     update() {
         let t = this.createText(this.position, this._text, this._options);
         if (this._options.autoWidth) {
-            this.size = new size_1.Size(t.textWidth, this._size.height);
+            this._size = new size_1.Size(t.textWidth, this._size.height);
         }
         let rec = this.createRectangle(this.position, this._size, this._options);
         t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - this._options.paddingLeft - this._options.paddingRight : undefined;
