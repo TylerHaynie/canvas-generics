@@ -99,7 +99,7 @@ export class Line extends DrawBase {
             this._context.stroke();
 
             // restore context
-            this._context.setTransform(1, 0, 0, 1, 0, 0);
+            // this._context.setTransform(1, 0, 0, 1, 0, 0);
             this._context.restore();
         }
         else {

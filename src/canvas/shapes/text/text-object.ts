@@ -15,7 +15,7 @@ export class TextObject extends ShapeBase {
         // RESEARCH
         this._context.save();
         this._context.font = this._textOptions.fontProperties.asString;
-        let width = this._context.measureText(this._textOptions.text).width * 2.2;
+        let width = this._context.measureText(this._textOptions.text).width;
         this._context.restore();
 
         return width;

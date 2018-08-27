@@ -68,7 +68,6 @@ class Line extends draw_base_1.DrawBase {
                 this._context.closePath();
             }
             this._context.stroke();
-            this._context.setTransform(1, 0, 0, 1, 0, 0);
             this._context.restore();
         }
         else {

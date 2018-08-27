@@ -14,9 +14,10 @@ export class RecTextOptions {
         { startColor: '#888', endColor: '#252525', alpha: 1, outline: new LineStyle('#000', 2) };
 
     paddingLeft: number = 8;
-    paddingRight: number = 0;
+    paddingRight: number = 8;
     upperCaseFirstLetter: boolean = false;
     splitOnUpperCaseLetter: boolean = false;
+    autoWidth: boolean = true;
 
     constructor() { }
 
@@ -29,8 +30,8 @@ export class RecTextOptions {
 }
 
 export class RecText extends DrawBase {
-    _text: TextOptions | string;
-    public set text(v: TextOptions | string) { this._text = v; this.isDirty = true; }
+    _text: TextOptions;
+    public set text(v: TextOptions) { this._text = v; this.isDirty = true; }
 
     _size: Size;
     public set size(v: Size) { this._size = v; this.isDirty = true; }
@@ -47,8 +48,10 @@ export class RecText extends DrawBase {
     constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, options?: RecTextOptions) {
         super(context, pos, () => this.draw());
         this._size = size;
-        this._text = text;
-        this._options = options;
+        this._text = typeof text === 'string' ? new TextOptions(<string>text) : text;
+        this._options = options || new RecTextOptions();
+
+        this.update();
     }
 
     draw() {
@@ -61,10 +64,11 @@ export class RecText extends DrawBase {
     }
 
     private update() {
-        if (!this._options) { this._options = new RecTextOptions(); }
-        if (typeof this._text === 'string') { this._text = new TextOptions(this._text); }
-
         let t = this.createText(this.position, this._text, this._options);
+
+        if (this._options.autoWidth) {
+            this.size = new Size(t.textWidth, this._size.height);
+        }
         let rec = this.createRectangle(this.position, this._size, this._options);
 
         // set text width including rectangle padding

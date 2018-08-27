@@ -1,4 +1,4 @@
-import { Vector2D } from "canvas/objects/vector";
+import { Vector2D } from 'canvas/objects/vector';
 
 export class DrawBase {
     protected _context: CanvasRenderingContext2D;
@@ -23,10 +23,6 @@ export class DrawBase {
     }
 
     public draw() {
-        if (this.isDirty) {
-            this._drawCallback();
-
-            this.isDirty = false;
-        }
+        this._drawCallback();
     }
 }

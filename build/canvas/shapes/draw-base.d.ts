@@ -1,4 +1,4 @@
-import { Vector2D } from "canvas/objects/vector";
+import { Vector2D } from 'canvas/objects/vector';
 export declare class DrawBase {
     protected _context: CanvasRenderingContext2D;
     private _position;

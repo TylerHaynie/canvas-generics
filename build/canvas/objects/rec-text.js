@@ -14,9 +14,10 @@ class RecTextOptions {
         this.textColor = new color_1.Color('#eee');
         this.recStyle = { startColor: '#888', endColor: '#252525', alpha: 1, outline: new line_style_1.LineStyle('#000', 2) };
         this.paddingLeft = 8;
-        this.paddingRight = 0;
+        this.paddingRight = 8;
         this.upperCaseFirstLetter = false;
         this.splitOnUpperCaseLetter = false;
+        this.autoWidth = true;
     }
     changeStyle(startColor, endColor, alpha, outline) {
         this.recStyle.startColor = startColor;
@@ -39,8 +40,9 @@ class RecText extends draw_base_1.DrawBase {
     constructor(context, pos, size, text, options) {
         super(context, pos, () => this.draw());
         this._size = size;
-        this._text = text;
-        this._options = options;
+        this._text = typeof text === 'string' ? new models_1.TextOptions(text) : text;
+        this._options = options || new RecTextOptions();
+        this.update();
     }
     draw() {
         this.update();
@@ -48,13 +50,10 @@ class RecText extends draw_base_1.DrawBase {
         this._textObject.draw();
     }
     update() {
-        if (!this._options) {
-            this._options = new RecTextOptions();
-        }
-        if (typeof this._text === 'string') {
-            this._text = new models_1.TextOptions(this._text);
-        }
         let t = this.createText(this.position, this._text, this._options);
+        if (this._options.autoWidth) {
+            this.size = new size_1.Size(t.textWidth, this._size.height);
+        }
         let rec = this.createRectangle(this.position, this._size, this._options);
         t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - this._options.paddingLeft - this._options.paddingRight : undefined;
         t.position = new vector_1.Vector2D(rec.topLeft.x + this._options.paddingLeft, rec.center.y);

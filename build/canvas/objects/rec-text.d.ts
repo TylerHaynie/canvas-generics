@@ -18,12 +18,13 @@ export declare class RecTextOptions {
     paddingRight: number;
     upperCaseFirstLetter: boolean;
     splitOnUpperCaseLetter: boolean;
+    autoWidth: boolean;
     constructor();
     changeStyle(startColor: string, endColor: string, alpha?: number, outline?: LineStyle): void;
 }
 export declare class RecText extends DrawBase {
-    _text: TextOptions | string;
-    text: TextOptions | string;
+    _text: TextOptions;
+    text: TextOptions;
     _size: Size;
     size: Size;
     _options: RecTextOptions;
