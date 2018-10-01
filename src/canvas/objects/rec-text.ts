@@ -30,20 +30,23 @@ export class RecTextOptions {
 }
 
 export class RecText extends DrawBase {
-    _text: TextOptions;
+    private _text: TextOptions;
+    public get text(): TextOptions { return this._text; }
     public set text(v: TextOptions) { this._text = v; this.isDirty = true; }
 
-    _size: Size;
+    private _size: Size;
+    public get size(): Size { return this._size; }
     public set size(v: Size) { this._size = v; this.isDirty = true; }
 
-    _options: RecTextOptions;
+    private _options: RecTextOptions;
+    public get options(): RecTextOptions { return this._options; }
     public set options(v: RecTextOptions) { this._options = v; this.isDirty = true; }
 
-    public get rectangle() { return this._rectangle; }
     private _rectangle: Rectangle;
+    public get rectangle() { return this._rectangle; }
 
-    public get textObject() { return this._textObject; }
     private _textObject: TextObject;
+    public get textObject() { return this._textObject; }
 
     constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, options?: RecTextOptions) {
         super(context, pos, () => this.draw());
