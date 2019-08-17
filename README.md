@@ -1,7 +1,5 @@
 ## About this Project
-I wanted to make an interactive website this is what I came up with. 
-
-I'll add more details below once I start finalizing base library code.
+I wanted to play around with the canvas API.
 
 ### Setting up the project
 I use `@angular/cli` because it allows anyone to build and execute the application in 4 steps or less.
