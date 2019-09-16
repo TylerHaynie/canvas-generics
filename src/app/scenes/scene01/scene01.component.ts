@@ -7,13 +7,13 @@ import { Rectangle } from '@canvas/shapes/rectangle';
 import { Size } from '@canvas/models/size';
 import { Color } from '@canvas/models/color';
 import { Bounds } from '@canvas/objects/bounds';
-import { ParticleBase } from '@canvas/objects/particle/particle-base';
+import { ParticleBase } from '@canvas/particles/particle-base';
 import { Velocity } from '@canvas/models/velocity';
 import { QuadTree, Boundary, QuadData } from '@quadtree/quad-tree';
 import { GradientUtility } from '@canvas/utilities/gradient-utility';
 import { RandomUtility } from '@canvas/utilities/random-utility';
 import { ColorUtility } from '@canvas/utilities/color-utility';
-import { FadableParticle } from '@canvas/objects/particle/fadable-particle';
+import { FadableParticle } from '@canvas/particles/fadable-particle';
 
 @Component({
   selector: 'app-scene01',
@@ -283,7 +283,7 @@ export class scene01Component implements OnInit {
         particlesInRange.forEach(p => {
           let fp = <FadableParticle>(p.data);
           fp.maximumAlpha = 1;
-          fp.changeColor(new Color(this.particleHighlightColor));
+          fp.setColor(new Color(this.particleHighlightColor));
         });
       }
     }
