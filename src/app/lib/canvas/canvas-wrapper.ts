@@ -163,11 +163,9 @@ export class CanvasWrapper {
         this._context.canvas.tabIndex = 1000; // canvas needs a tabindex so we can listen for keyboard events
         this._context.canvas.style.outline = 'none'; // removing the focus outline
 
-        // for better image quality
-        this._context.mozImageSmoothingEnabled = false;  // firefox
+        // for "better" image quality
         this._context.imageSmoothingEnabled = false; // everything else
     }
-
 
 
     private draw() {

@@ -75,7 +75,7 @@ export class MouseManager {
             this.mouseUp();
         };
 
-        cv.onmousewheel = (e: WheelEvent) => {
+        cv.onwheel = (e: WheelEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.WHEEL;
             if (e.deltaY > 0) {
                 this.mouseScrollDown();

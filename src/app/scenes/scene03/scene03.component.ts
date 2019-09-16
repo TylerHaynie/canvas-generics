@@ -16,7 +16,7 @@ import { ElementCircle } from '@canvas/elements/shapes/element-circle';
   styleUrls: ['./scene03.component.css']
 })
 export class Scene03Component implements OnInit {
-  @ViewChild('c') canvasRef: ElementRef;
+  @ViewChild('c', { static: true }) canvasRef: ElementRef;
   private cw: CanvasWrapper;
 
   // moving

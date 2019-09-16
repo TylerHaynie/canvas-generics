@@ -21,7 +21,7 @@ import { FadableParticle } from '@canvas/objects/particle/fadable-particle';
   styleUrls: ['./scene01.component.css']
 })
 export class scene01Component implements OnInit {
-  @ViewChild('c') canvasRef: ElementRef;
+  @ViewChild('c', { static: true }) canvasRef: ElementRef;
   //#region Variables
 
   private cw: CanvasWrapper;

@@ -25,7 +25,7 @@
       "@canvas/objects/*": ["app/lib/canvas/objects/*"],
       "@canvas/shapes/*": ["app/lib/canvas/shapes/*"],
       "@canvas/utilities/*": ["app/lib/canvas/utilities/*"],
-      "@canvas/elements/*": ["app/lib/canvas/elements/*"],
+      "@canvas/elements/*": ["app/lib/canvas/elements/*"]
     }
   }
 }

@@ -25,7 +25,7 @@ interface Ray {
   styleUrls: ['./scene02.component.css']
 })
 export class Scene02Component implements OnInit {
-  @ViewChild('c') canvasRef: ElementRef;
+  @ViewChild('c', { static: true }) canvasRef: ElementRef;
   private cw: CanvasWrapper;
 
   private squares: Rectangle[] = [];
