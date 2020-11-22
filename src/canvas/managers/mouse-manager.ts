@@ -1,6 +1,6 @@
 import { PanZoomData, MouseData } from 'canvas/events/event-data';
 import { Vector2D } from 'canvas/objects/vector';
-import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-enums';
+import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-event-types';
 import { CanvasEvent } from 'canvas/events/canvas-event';
 
 export class MouseManager {
@@ -62,12 +62,12 @@ export class MouseManager {
         // mouse events
         cv.onmousemove = (e: MouseEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.MOVE;
-            this.updateMousePosition(e.offsetX, e.offsetY);
+            this.updateMousePosition(e.clientX, e.clientY);
         };
 
         cv.onmousedown = (e: MouseEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.DOWN;
-            this.doMouseDown(e.offsetX, e.offsetY);
+            this.doMouseDown(e.clientX, e.clientY);
         };
 
         cv.onmouseup = (e: MouseEvent) => {
@@ -75,7 +75,7 @@ export class MouseManager {
             this.mouseUp();
         };
 
-        cv.onmousewheel = (e: WheelEvent) => {
+        cv.onwheel = (e: WheelEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.WHEEL;
             if (e.deltaY > 0) {
                 this.mouseScrollDown();

@@ -1,6 +1,10 @@
 import { Vector2D } from 'canvas/objects/vector';
 import { Size } from 'canvas/models/size';
+import { Color } from 'canvas/models/color';
+import { LineStyle } from 'canvas/models/line-style';
+import { Shadow } from 'canvas/models/shadow';
 import { ShapeBase } from 'canvas/shapes/shape-base';
+import { ViewChildDecorator } from '@angular/core';
 
 export class Corner {
     private _controlPoint: Vector2D;
@@ -21,23 +25,14 @@ export class Rectangle extends ShapeBase {
 
     //#region Public Properties
 
-    private _size: Size = new Size(50, 50);
+    public set size(v: Size) { this._size = v; }
     public get size(): Size { return this._size; }
-    public set size(v: Size) {
-        this._size = v;
-        this.isDirty = true;
-    }
 
-    private _roundedCorners: boolean = false;
-    public set roundedCorners(v: boolean) {
-        this._roundedCorners = v;
-        this.isDirty = true;
-    }
+    public set roundedCorners(v: boolean) { this._roundedCorners = v; }
 
-    private _endGap: number = 0;
     public get endGap(): number { return this._endGap; }
     public set endGap(v: number) {
-        let limit = new Vector2D(Math.fround(this.size.width / 2), Math.fround(this.size.height / 2));
+        let limit = new Vector2D(this.size.width / 2, this.size.height / 2);
 
         if (v > limit.x || v > limit.y) {
             this._endGap = Math.min(limit.x, limit.y);
@@ -49,41 +44,12 @@ export class Rectangle extends ShapeBase {
             this._endGap = v;
         }
 
-        this.isDirty = true;
     }
 
     public get center(): Vector2D {
         return new Vector2D(
-            this.position.x + Math.fround(this._size.width / 2),
-            this.position.y + Math.fround(this._size.height / 2)
-        );
-    }
-
-    public get topMiddle(){
-        return new Vector2D(
-            this.center.x,
-            this.topLeft.y
-        );
-    }
-
-    public get bottomMiddle(){
-        return new Vector2D(
-            this.center.x,
-            this.bottomLeft.y
-        );
-    }
-
-    public get leftMiddle(){
-        return new Vector2D(
-            this.topLeft.x,
-            this.center.y
-        );
-    }
-
-    public get rightMiddle(){
-        return new Vector2D(
-            this.topRight.x,
-            this.center.y
+            Math.fround(this.position.x - this._size.width / 2),
+            Math.fround(this.position.y - this._size.height / 2)
         );
     }
 
@@ -92,15 +58,15 @@ export class Rectangle extends ShapeBase {
     }
 
     public get topRight(): Vector2D {
-        return new Vector2D(this.position.x + this._size.width, this.position.y);
+        return new Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y));
     }
 
     public get bottomRight(): Vector2D {
-        return new Vector2D(this.position.x + this._size.width, this.position.y + this._size.height);
+        return new Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height));
     }
 
     public get bottomLeft(): Vector2D {
-        return new Vector2D(this.position.x, this.position.y + this._size.height);
+        return new Vector2D(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height));
     }
 
     public get topLine() {
@@ -159,12 +125,19 @@ export class Rectangle extends ShapeBase {
 
     //#endregion
 
+    private _size: Size = new Size(50, 50);
+    private _endGap: number = 0;
+    private _roundedCorners: boolean = false;
+    private context: CanvasRenderingContext2D;
+
     constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        super(context, position, () => { this.drawRectangle(); });
+        super(context, position);
+        this.context = context;
     }
 
-    private drawRectangle() {
-        this._context.save();
+    draw() {
+
+        this.context.save();
 
         // craeate rectangle path
         if (this._endGap > 0) {
@@ -176,60 +149,60 @@ export class Rectangle extends ShapeBase {
 
         // does it have a shadow
         if (this.shadow !== undefined) {
-            this._context.shadowBlur = this.shadow.blur;
-            this._context.shadowColor = this.shadow.shade;
-            this._context.shadowOffsetX = this.shadow.offsetX;
-            this._context.shadowOffsetY = this.shadow.offsetY;
+            this.context.shadowBlur = this.shadow.shadowBlur;
+            this.context.shadowColor = this.shadow.shadowColor;
+            this.context.shadowOffsetX = this.shadow.offsetX;
+            this.context.shadowOffsetY = this.shadow.offsetY;
         }
 
         // fill it
         if (this.color !== undefined) {
-            this._context.globalAlpha = this.color.alpha;
-            this._context.fillStyle = this.color.shade;
-            this._context.fill();
+            this.context.globalAlpha = this.color.alpha;
+            this.context.fillStyle = this.color.shade;
+            this.context.fill();
         }
 
         // draw the outline
         if (this.outline !== undefined) {
 
-            // reset shadow for line ( otherwise, the shadow would show on top of the rectangle)
-            this._context.shadowColor = '';
-            this._context.shadowBlur = 0;
-            this._context.shadowOffsetX = 0;
-            this._context.shadowOffsetY = 0;
+            // reset shadow for line
+            this.context.shadowColor = '';
+            this.context.shadowBlur = 0;
+            this.context.shadowOffsetX = 0;
+            this.context.shadowOffsetY = 0;
 
-            this._context.lineWidth = this.outline.width;
-            this._context.globalAlpha = this.outline.alpha;
-            this._context.strokeStyle = this.outline.shade;
-            this._context.stroke();
+            this.context.lineWidth = this.outline.width;
+            this.context.globalAlpha = this.outline.alpha;
+            this.context.strokeStyle = this.outline.shade;
+            this.context.stroke();
         }
 
-        this._context.restore();
+        this.context.restore();
     }
 
     private drawBasicRectangle() {
-        this._context.beginPath();
+        this.context.beginPath();
 
         // start
-        this._context.moveTo(this.position.x, this.position.y);
+        this.context.moveTo(this.position.x, this.position.y);
 
         // top
-        this._context.lineTo(this.position.x + this._size.width, this.position.y);
+        this.context.lineTo(this.position.x + this._size.width, this.position.y);
 
         // right
-        this._context.lineTo(this.position.x + this._size.width, this.position.y + this._size.height);
+        this.context.lineTo(this.position.x + this._size.width, this.position.y + this._size.height);
 
         // bottom
-        this._context.lineTo(this.position.x, this.position.y + this._size.height);
+        this.context.lineTo(this.position.x, this.position.y + this._size.height);
 
         // left
-        this._context.lineTo(this.position.x, this.position.y);
+        this.context.lineTo(this.position.x, this.position.y);
 
-        this._context.closePath();
+        this.context.closePath();
     }
 
     private drawComplexRectangle() {
-        this._context.beginPath();
+        this.context.beginPath();
 
         // top line start
         let topLine = this.topLine;
@@ -243,58 +216,58 @@ export class Rectangle extends ShapeBase {
         let tlCorner = this.topLeftCorner;
 
         // top line
-        this._context.moveTo(topLine.p1.x, topLine.p1.y);
-        this._context.lineTo(topLine.p2.x, topLine.p2.y);
+        this.context.moveTo(topLine.p1.x, topLine.p1.y);
+        this.context.lineTo(topLine.p2.x, topLine.p2.y);
 
         // top right corner
         if (this._roundedCorners) {
-            this._context.quadraticCurveTo(trCorner.controlPoint.x, trCorner.controlPoint.y, trCorner.endingPoint.x, trCorner.endingPoint.y);
+            this.context.quadraticCurveTo(trCorner.controlPoint.x, trCorner.controlPoint.y, trCorner.endingPoint.x, trCorner.endingPoint.y);
         }
         else {
-            this._context.lineTo(trCorner.controlPoint.x - this._endGap, trCorner.controlPoint.y);
-            this._context.lineTo(trCorner.endingPoint.x, trCorner.endingPoint.y);
+            this.context.lineTo(trCorner.controlPoint.x - this._endGap, trCorner.controlPoint.y);
+            this.context.lineTo(trCorner.endingPoint.x, trCorner.endingPoint.y);
         }
 
         // right line
-        this._context.lineTo(rightLine.p1.x, rightLine.p1.y);
-        this._context.lineTo(rightLine.p2.x, rightLine.p2.y);
+        this.context.lineTo(rightLine.p1.x, rightLine.p1.y);
+        this.context.lineTo(rightLine.p2.x, rightLine.p2.y);
 
         // bottom right corner
         if (this._roundedCorners) {
-            this._context.quadraticCurveTo(brCorner.controlPoint.x, brCorner.controlPoint.y, brCorner.endingPoint.x, brCorner.endingPoint.y);
+            this.context.quadraticCurveTo(brCorner.controlPoint.x, brCorner.controlPoint.y, brCorner.endingPoint.x, brCorner.endingPoint.y);
         }
         else {
-            this._context.lineTo(brCorner.controlPoint.x - this._endGap, brCorner.controlPoint.y);
-            this._context.lineTo(brCorner.endingPoint.x, brCorner.endingPoint.y);
+            this.context.lineTo(brCorner.controlPoint.x - this._endGap, brCorner.controlPoint.y);
+            this.context.lineTo(brCorner.endingPoint.x, brCorner.endingPoint.y);
         }
 
         // bottom line
-        this._context.lineTo(bottomLine.p1.x, bottomLine.p1.y);
-        this._context.lineTo(bottomLine.p2.x, bottomLine.p2.y);
+        this.context.lineTo(bottomLine.p1.x, bottomLine.p1.y);
+        this.context.lineTo(bottomLine.p2.x, bottomLine.p2.y);
 
         // bottom left corner
         if (this._roundedCorners) {
-            this._context.quadraticCurveTo(blCorner.controlPoint.x, blCorner.controlPoint.y, blCorner.endingPoint.x, blCorner.endingPoint.y);
+            this.context.quadraticCurveTo(blCorner.controlPoint.x, blCorner.controlPoint.y, blCorner.endingPoint.x, blCorner.endingPoint.y);
         }
         else {
-            this._context.lineTo(blCorner.controlPoint.x + this._endGap, blCorner.controlPoint.y);
-            this._context.lineTo(blCorner.endingPoint.x, blCorner.endingPoint.y);
+            this.context.lineTo(blCorner.controlPoint.x + this._endGap, blCorner.controlPoint.y);
+            this.context.lineTo(blCorner.endingPoint.x, blCorner.endingPoint.y);
         }
 
         // left line
-        this._context.lineTo(leftLine.p1.x, leftLine.p1.y);
-        this._context.lineTo(leftLine.p2.x, leftLine.p2.y);
+        this.context.lineTo(leftLine.p1.x, leftLine.p1.y);
+        this.context.lineTo(leftLine.p2.x, leftLine.p2.y);
 
         // top left corner
         if (this._roundedCorners) {
-            this._context.quadraticCurveTo(tlCorner.controlPoint.x, tlCorner.controlPoint.y, tlCorner.endingPoint.x, tlCorner.endingPoint.y);
+            this.context.quadraticCurveTo(tlCorner.controlPoint.x, tlCorner.controlPoint.y, tlCorner.endingPoint.x, tlCorner.endingPoint.y);
         }
         else {
-            this._context.lineTo(tlCorner.controlPoint.x + this._endGap, tlCorner.controlPoint.y);
-            this._context.lineTo(tlCorner.endingPoint.x, tlCorner.endingPoint.y);
+            this.context.lineTo(tlCorner.controlPoint.x + this._endGap, tlCorner.controlPoint.y);
+            this.context.lineTo(tlCorner.endingPoint.x, tlCorner.endingPoint.y);
         }
 
-        this._context.closePath();
+        this.context.closePath();
     }
 
     pointWithinBounds(v: Vector2D): boolean {
@@ -312,34 +285,6 @@ export class Rectangle extends ShapeBase {
 
     lineIntersects(other: { p1: Vector2D, p2: Vector2D }) {
         let segments = [];
-        let screenBounds = this._context.canvas.getBoundingClientRect();
-
-        // screen lines
-        let screenTop = {
-            p1: new Vector2D(screenBounds.left, screenBounds.top),
-            p2: new Vector2D(screenBounds.right, screenBounds.top)
-        };
-
-        let screenRight = {
-            p1: new Vector2D(screenBounds.right, screenBounds.top),
-            p2: new Vector2D(screenBounds.right, screenBounds.bottom)
-        };
-
-        let screenBottom = {
-            p1: new Vector2D(screenBounds.right, screenBounds.bottom),
-            p2: new Vector2D(screenBounds.left, screenBounds.bottom)
-        };
-
-        let screenLeft = {
-            p1: new Vector2D(screenBounds.left, screenBounds.bottom),
-            p2: new Vector2D(screenBounds.left, screenBounds.top)
-        };
-
-        segments.push(screenTop);
-        segments.push(screenRight);
-        segments.push(screenBottom);
-        segments.push(screenLeft);
-
         segments.push(this.topLine);
         segments.push(this.rightLine);
         segments.push(this.bottomLine);
@@ -359,17 +304,17 @@ export class Rectangle extends ShapeBase {
     }
 
     getIntersection(ray: { p1: Vector2D, p2: Vector2D }, segment: { p1: Vector2D, p2: Vector2D }) {
-        // top used research
+        // sources
         // https://www.youtube.com/watch?v=c065KoXooSw
-        // https://ncase.me/sight-and-light/ - ended up using their equation. I tried a few of my own, but this worked best :(
+        // https://ncase.me/sight-and-light/
 
-        // RAY in parametric: Point + Direction*T1
+        // RAY: Point + Direction * T1
         let r_px = ray.p1.x;
         let r_py = ray.p1.y;
         let r_dx = ray.p2.x - ray.p1.x;
         let r_dy = ray.p2.y - ray.p1.y;
 
-        // SEGMENT in parametric: Point + Direction*T2
+        // SEGMENT: Point + Direction * T2
         let s_px = segment.p1.x;
         let s_py = segment.p1.y;
         let s_dx = segment.p2.x - segment.p1.x;
@@ -382,15 +327,15 @@ export class Rectangle extends ShapeBase {
             return null;
         }
 
-        // SOLVE FOR T1 & T2
+        // Find T1 & T2
         let T2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx);
         let T1 = (s_px + s_dx * T2 - r_px) / r_dx;
 
-        // Must be within parametic whatevers for RAY/SEGMENT
-        if (T1 < 0) { return null; }
-        if (T2 < 0 || T2 > 1) { return null; }
 
-        // Return the POINT OF INTERSECTION
+        if (T1 < 0) { return null; }            // no intersection
+        if (T2 < 0 || T2 > 1) { return null; }  // no intersection
+
+        // return point-of-intersection
         return {
             intersection: new Vector2D(
                 r_px + r_dx * T1,
@@ -400,36 +345,4 @@ export class Rectangle extends ShapeBase {
         };
 
     }
-
-    // Returns 1 if the lines intersect, otherwise 0. In addition, if the lines
-    // intersect the intersection point may be stored in the floats i_x and i_y.
-    // private checkLineIntersection(line1: { p1: Vector, p2: Vector }, line2: { p1: Vector, p2: Vector }) {
-
-
-    //     let s1x = line1.p2.x - line1.p1.x;
-    //     let s1y = line1.p2.y - line1.p1.y;
-    //     let s2x = line2.p2.x - line2.p1.x;
-    //     let s2y = line2.p2.y - line2.p1.y;
-
-    //     let s = (-s1y *
-    //         (line1.p1.x - line2.p1.x) + s1x *
-    //         (line1.p1.y - line2.p1.y)) /
-    //         (-s2x * s1y + s1x * s2y);
-
-    //     let t = (s2x *
-    //         (line1.p1.y - line2.p1.y) - s2y *
-    //         (line1.p1.x - line2.p1.x)) /
-    //         (-s2x * s1y + s1x * s2y);
-
-    //     if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-    //         // Collision detected
-    //         let ix = line1.p1.x + (t * s1x);
-    //         let iy = line1.p1.y + (t * s1y);
-
-    //         return { intersection: new Vector2D(ix, iy), t: t, s: s };
-    //     }
-
-    //     return; // No collision
-    // }
-
 }

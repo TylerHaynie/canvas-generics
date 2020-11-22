@@ -28,7 +28,7 @@ export class ParticleBase {
         return this.shape.position;
     }
 
-    changeColor(color: Color) {
+    setColor(color: Color) {
         this.shape.color = color;
     }
 
