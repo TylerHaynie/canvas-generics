@@ -8,11 +8,13 @@ import { Size } from '@canvas/models/size';
 export class QuadVector {
     x: number;
     y: number;
-    data: any;
+    z: number;
+    data: any; // todo: this needs to be an index pointer
 
-    constructor(x: number, y: number, data: any = undefined) {
+    constructor(x: number = 0, y: number = 0, z: number = 0, data: any = undefined) {
         this.x = x;
         this.y = y;
+        this.z = z;
         this.data = data;
     }
 }
@@ -20,31 +22,50 @@ export class QuadVector {
 export class Boundary {
     x: number;
     y: number;
-    w: number;
-    h: number;
+    z: number;
+    width: number;
+    height: number;
+    depth: number;
 
-    constructor(x: number, y: number, w: number, h: number) {
+    constructor(x: number, y: number, z: number, w: number, h: number, d: number) {
         this.x = x;
         this.y = y;
-        this.w = w;
-        this.h = h;
+        this.width = w;
+        this.height = h;
+        this.depth = d;
     }
 
-    containsVector(p: QuadVector) {
-        if (p.x > this.x && p.x < this.x + this.w) {
-            if (p.y > this.y && p.y < this.y + this.h) {
-                return true;
-            }
-        }
+    containsVector(p: QuadVector): QuadVector {
+        let pxIsGreater: Boolean = p.x >= this.x;
+        let pxIsLess: boolean = p.x <= this.x + this.width;
 
-        return false;
+        let pyIsGreater: boolean = p.y > this.y;
+        let pyIsLess: boolean = p.y < this.y + this.height;
+
+        let pzIsGreater: boolean = p.z > this.z;
+        let pzIsLess: boolean = p.z < this.z + this.depth;
+
+        let xSearch: number = pxIsLess ? 1 : pxIsGreater ? -1 : 0;
+        let ySearch: number = pyIsLess ? 1 : pyIsGreater ? -1 : 0;
+        let zSearch: number = pzIsLess ? 1 : pzIsGreater ? -1 : 0;
+
+        return new QuadVector(xSearch, ySearch, zSearch);
     }
 
     intersects(other: Boundary) {
-        if (other.x - other.w > this.x + this.w ||
-            other.x + other.w < this.x - this.w ||
-            other.y - other.h > this.y + this.h ||
-            other.y + other.h > this.y - this.h
+        // let oxIsGreater: Boolean = other.x - other.width > this.x + this.width;
+        // let oxIsLess: boolean = other.x + other.width < this.x - this.width;
+
+        // let oyIsGreater: boolean = other.y - other.height > this.y + this.height;
+        // let oyIsLess: boolean = other.y + other.height > this.y - this.height;
+
+        // let ozIsGreater: boolean = ;
+        // let ozIsLess: boolean = ;
+
+        if (other.x - other.width > this.x + this.width ||
+            other.x + other.width < this.x - this.width ||
+            other.y - other.height > this.y + this.height ||
+            other.y + other.height > this.y - this.height
         ) {
             return true;
         }
@@ -55,16 +76,9 @@ export class Boundary {
 }
 
 export class QuadTree {
-    // Axis-aligned bounding box (boundaries of this quad tree)
     boundary: Boundary;
-
-    // how many elements can be stored in this quad tree
     capicity: number;
-
-    // This quad's vectors
     vectors: QuadVector[] = [];
-
-    // division flag
     isDivided: boolean = false;
 
     // sub divisions
@@ -79,20 +93,24 @@ export class QuadTree {
     }
 
     insert(p: QuadVector) {
-        // Ignore objects that do not belong in this quad tree
-        if (!this.boundary.containsVector(p)) {
-            // vector does not belong here
-            return false;
-        }
+        let searchResult = this.boundary.containsVector(p);
 
-        // If there is space in this quad tree, add the vector here
-        if (this.vectors.length < this.capicity) {
-            this.vectors.push(p);
-            return true;
+        if (this.isDivided) {
+            if (searchResult.x > 0) {
+                if (searchResult.y > 0) { this.topRight.insert(p); }
+                else { this.bottomRight.insert(p); }
+            }
+            else if (searchResult.x < 0) {
+                if (searchResult.y > 0) { this.topLeft.insert(p); }
+                else { this.bottomLeft.insert(p); }
+            }
+            else {
+                if (this.vectors.length < this.capicity) {
+                    this.vectors.push(p);
+                }
+            }
         }
-
-        // Otherwise, subdivide and then add the vector to whichever quad it will fit in
-        if (!this.isDivided) {
+        else {
             this.subdivide();
 
             // move the vectors to their new quads
@@ -101,36 +119,30 @@ export class QuadTree {
                 this.vectors.splice(x, 1);
             }
         }
-
-        if (this.topLeft.insert(p)) { return true; }
-        if (this.topRight.insert(p)) { return true; }
-        if (this.bottomLeft.insert(p)) { return true; }
-        if (this.bottomRight.insert(p)) { return true; }
-
-        // something went wrong
-        return false;
     }
 
     private subdivide() {
         let x = this.boundary.x;
         let y = this.boundary.y;
-        let w = this.boundary.w;
-        let h = this.boundary.h;
+        let z = this.boundary.z;
+        let w = this.boundary.width;
+        let h = this.boundary.height;
+        let d = this.boundary.depth;
 
-        // topLeft
-        let tlBounds = new Boundary(x, y, w / 2, h / 2);
+        // topLeft  (-1, 1, 0)
+        let tlBounds = new Boundary(x, y, z + d / 2, w / 2, h / 2, d / 2);
         this.topLeft = new QuadTree(tlBounds, this.capicity);
 
-        // topRight
-        let trBounds = new Boundary(x + w / 2, y, w / 2, h / 2);
+        // topRight (1, 1, 0)
+        let trBounds = new Boundary(x + w / 2, y, z + d / 2, w / 2, h / 2, d / 2);
         this.topRight = new QuadTree(trBounds, this.capicity);
 
-        // bottomLeft
-        let blBounds = new Boundary(x, y + h / 2, w / 2, h / 2);
+        // bottomLeft (-1, -1, 0)
+        let blBounds = new Boundary(x, y + h / 2, z + d / 2, w / 2, h / 2, d / 2);
         this.bottomLeft = new QuadTree(blBounds, this.capicity);
 
-        // bottomRight
-        let brBounds = new Boundary(x + w / 2, y + h / 2, w / 2, h / 2);
+        // bottomRight (1, -1, 0)
+        let brBounds = new Boundary(x + w / 2, y + h / 2, z + d / 2, w / 2, h / 2, d / 2);
         this.bottomRight = new QuadTree(brBounds, this.capicity);
 
         this.isDivided = true;
@@ -141,9 +153,7 @@ export class QuadTree {
         let vectorsInRange: QuadVector[] = [];
 
         // leave if the boundary does not intersect this quad
-        if (!this.boundary.intersects(b)) {
-            return vectorsInRange; // empty list
-        }
+        if (!this.boundary.intersects(b)) { return vectorsInRange; }
 
         // Check objects on this quad
         for (let x = 0; x < this.vectors.length; x++) {
@@ -158,6 +168,7 @@ export class QuadTree {
         }
 
         // add vectors from children
+        // TODO: simplify and speed up
         for (let p of this.topLeft.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
@@ -166,11 +177,11 @@ export class QuadTree {
             vectorsInRange.push(p);
         }
 
-        for (let p of this.bottomLeft.searchBoundary(b)) {
+        for (let p of this.bottomRight.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
 
-        for (let p of this.bottomRight.searchBoundary(b)) {
+        for (let p of this.bottomLeft.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
 
@@ -178,8 +189,8 @@ export class QuadTree {
     }
 
     reset(w: number, h: number) {
-        this.boundary.w = w;
-        this.boundary.h = h;
+        this.boundary.width = w;
+        this.boundary.height = h;
 
         this.topLeft = undefined;
         this.topRight = undefined;
@@ -194,7 +205,7 @@ export class QuadTree {
 
         let p = new Vector2D(this.boundary.x, this.boundary.y);
         let rect = new Rectangle(context, p);
-        rect.size = new Size(this.boundary.w, this.boundary.h);
+        rect.size = new Size(this.boundary.width, this.boundary.height);
         rect.outline = new LineStyle(lineWidth);
         rect.outline.shade = color;
         rect.outline.alpha = alpha;
