@@ -3,8 +3,6 @@ import { Vector2D } from 'canvas/objects/vector';
 import { Rectangle } from 'canvas/shapes/rectangle';
 import { Size } from 'canvas/models/size';
 
-/// built by referencing https://en.wikipedia.org/wiki/Quadtree
-
 export class QuadVector {
     x: number;
     y: number;
