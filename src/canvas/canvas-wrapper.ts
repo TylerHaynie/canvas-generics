@@ -9,7 +9,7 @@ import { MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, MOUSE_STATE } from 'canvas/event
 import { UIManager } from 'canvas/managers/ui-manager';
 
 export class CanvasWrapper {
-    private delta: number;
+    public delta: number;
     private lastRender: number;
     private fps: number;
 
