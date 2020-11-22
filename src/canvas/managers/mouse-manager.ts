@@ -1,16 +1,11 @@
 import { PanZoomData, MouseData } from 'canvas/events/event-data';
 import { Vector2D } from 'canvas/objects/vector';
-import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-enums';
+import { MOUSE_EVENT_TYPE } from 'canvas/events/canvas-event-types';
 import { CanvasEvent } from 'canvas/events/canvas-event';
 
 export class MouseManager {
 
     public get mouseOnCanvas(): boolean { return this._mouseOnCanvas; }
-    public get position(): Vector2D { return this.mousePosition; }
-    public get positionTranslated(): Vector2D { return this.translatedPosition; }
-    public get moving(): boolean { return this.isMoving; }
-    public get leftButtonState(): 'up' | 'down' { return this.leftMousePosition; }
-
 
     //#region private variables
     private _context: CanvasRenderingContext2D;
@@ -22,9 +17,8 @@ export class MouseManager {
     private translatedPosition: Vector2D;
     private _mouseOnCanvas: boolean = false;
     private scrollingDirection: string = 'none';
-    private leftMousePosition: 'up' | 'down' = 'up';
+    private leftMousePosition: string = 'up';
     private isMoving: boolean = false;
-
 
     //#endregion
 
@@ -68,12 +62,12 @@ export class MouseManager {
         // mouse events
         cv.onmousemove = (e: MouseEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.MOVE;
-            this.updateMousePosition(e.offsetX, e.offsetY);
+            this.updateMousePosition(e.clientX, e.clientY);
         };
 
         cv.onmousedown = (e: MouseEvent) => {
             this.eventType = MOUSE_EVENT_TYPE.DOWN;
-            this.doMouseDown(e.offsetX, e.offsetY);
+            this.doMouseDown(e.clientX, e.clientY);
         };
 
         cv.onmouseup = (e: MouseEvent) => {

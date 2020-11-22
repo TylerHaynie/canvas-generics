@@ -1,20 +1,19 @@
-import { Rectangle } from 'canvas/shapes/rectangle';
-import { Vector2D } from 'canvas/objects/vector';
-import { Size } from 'canvas/models/size';
-import { LineStyle } from 'canvas/models/line-style';
-import { Color } from 'canvas/models/color';
+import { LineStyle } from '@canvas/models/line-style';
+import { Vector2D } from '@canvas/objects/vector';
+import { Rectangle } from '@canvas/shapes/rectangle';
+import { Size } from '@canvas/models/size';
 
 /// built by referencing https://en.wikipedia.org/wiki/Quadtree
 
-export class QuadData {
-    vector: Vector2D;
-    size: Size;
+export class QuadVector {
+    x: number;
+    y: number;
     data: any;
 
-    constructor(x: number, y: number, data: any = undefined, size: Size = undefined) {
-        this.vector = new Vector2D(x, y);
+    constructor(x: number, y: number, data: any = undefined) {
+        this.x = x;
+        this.y = y;
         this.data = data;
-        this.size = size ? size : new Size(1, 1);
     }
 }
 
@@ -31,18 +30,9 @@ export class Boundary {
         this.h = h;
     }
 
-    containsQuadData(dataPoint: QuadData) {
-        // let b = new Boundary(dataPoint.vector.x, dataPoint.vector.y, dataPoint.size.width, dataPoint.size.height);
-
-
-        // return this.intersects(b);
-
-        if (dataPoint.vector.x > this.x &&
-            dataPoint.vector.x < this.x + this.w) {
-
-            if (dataPoint.vector.y > this.y &&
-                dataPoint.vector.y < this.y + this.h) {
-
+    containsVector(p: QuadVector) {
+        if (p.x > this.x && p.x < this.x + this.w) {
+            if (p.y > this.y && p.y < this.y + this.h) {
                 return true;
             }
         }
@@ -71,8 +61,8 @@ export class QuadTree {
     // how many elements can be stored in this quad tree
     capicity: number;
 
-    // This quad's data
-    dataPoints: QuadData[] = [];
+    // This quad's vectors
+    vectors: QuadVector[] = [];
 
     // division flag
     isDivided: boolean = false;
@@ -88,16 +78,16 @@ export class QuadTree {
         this.capicity = c;
     }
 
-    insert(p: QuadData) {
+    insert(p: QuadVector) {
         // Ignore objects that do not belong in this quad tree
-        if (!this.boundary.containsQuadData(p)) {
+        if (!this.boundary.containsVector(p)) {
             // vector does not belong here
             return false;
         }
 
         // If there is space in this quad tree, add the vector here
-        if (this.dataPoints.length < this.capicity) {
-            this.dataPoints.push(p);
+        if (this.vectors.length < this.capicity) {
+            this.vectors.push(p);
             return true;
         }
 
@@ -105,10 +95,10 @@ export class QuadTree {
         if (!this.isDivided) {
             this.subdivide();
 
-            // move the dataPoints to their new quads
-            for (let x = this.dataPoints.length; x > 0; x--) {
-                this.insert(this.dataPoints[x - 1]);
-                this.dataPoints.splice(x, 1);
+            // move the vectors to their new quads
+            for (let x = this.vectors.length; x > 0; x--) {
+                this.insert(this.vectors[x - 1]);
+                this.vectors.splice(x, 1);
             }
         }
 
@@ -146,45 +136,45 @@ export class QuadTree {
         this.isDivided = true;
     }
 
-    searchBoundary(b: Boundary): QuadData[] {
+    searchBoundary(b: Boundary): QuadVector[] {
         // Prepare an array of results
-        let dataInRange: QuadData[] = [];
+        let vectorsInRange: QuadVector[] = [];
 
         // leave if the boundary does not intersect this quad
         if (!this.boundary.intersects(b)) {
-            return dataInRange; // empty list
+            return vectorsInRange; // empty list
         }
 
         // Check objects on this quad
-        for (let x = 0; x < this.dataPoints.length; x++) {
-            if (b.containsQuadData(this.dataPoints[x])) {
-                dataInRange.push(this.dataPoints[x]);
+        for (let x = 0; x < this.vectors.length; x++) {
+            if (b.containsVector(this.vectors[x])) {
+                vectorsInRange.push(this.vectors[x]);
             }
         }
 
         // stop here if we haven't subdived
         if (!this.isDivided) {
-            return dataInRange;
+            return vectorsInRange;
         }
 
         // add vectors from children
         for (let p of this.topLeft.searchBoundary(b)) {
-            dataInRange.push(p);
+            vectorsInRange.push(p);
         }
 
         for (let p of this.topRight.searchBoundary(b)) {
-            dataInRange.push(p);
+            vectorsInRange.push(p);
         }
 
         for (let p of this.bottomLeft.searchBoundary(b)) {
-            dataInRange.push(p);
+            vectorsInRange.push(p);
         }
 
         for (let p of this.bottomRight.searchBoundary(b)) {
-            dataInRange.push(p);
+            vectorsInRange.push(p);
         }
 
-        return dataInRange;
+        return vectorsInRange;
     }
 
     reset(w: number, h: number) {
@@ -196,25 +186,26 @@ export class QuadTree {
         this.bottomLeft = undefined;
         this.bottomRight = undefined;
 
-        this.dataPoints = [];
+        this.vectors = [];
         this.isDivided = false;
     }
 
-    debugQuad(context: CanvasRenderingContext2D, color: Color, lineWidth: number = .25) {
+    debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
 
         let p = new Vector2D(this.boundary.x, this.boundary.y);
         let rect = new Rectangle(context, p);
         rect.size = new Size(this.boundary.w, this.boundary.h);
-        rect.outline = new LineStyle(color.shade, lineWidth);
-        rect.outline.alpha = color.alpha;
+        rect.outline = new LineStyle(lineWidth);
+        rect.outline.shade = color;
+        rect.outline.alpha = alpha;
 
         rect.draw();
 
         if (this.isDivided) {
-            this.topLeft.debugQuad(context, color, lineWidth);
-            this.topRight.debugQuad(context, color, lineWidth);
-            this.bottomLeft.debugQuad(context, color, lineWidth);
-            this.bottomRight.debugQuad(context, color, lineWidth);
+            this.topLeft.debugQuad(context, color, alpha, lineWidth);
+            this.topRight.debugQuad(context, color, alpha, lineWidth);
+            this.bottomLeft.debugQuad(context, color, alpha, lineWidth);
+            this.bottomRight.debugQuad(context, color, alpha, lineWidth);
         }
     }
 }
