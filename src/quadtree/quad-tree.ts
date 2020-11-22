@@ -1,7 +1,7 @@
-import { LineStyle } from '@canvas/models/line-style';
-import { Vector2D } from '@canvas/objects/vector';
-import { Rectangle } from '@canvas/shapes/rectangle';
-import { Size } from '@canvas/models/size';
+import { LineStyle } from 'canvas/models/line-style';
+import { Vector2D } from 'canvas/objects/vector';
+import { Rectangle } from 'canvas/shapes/rectangle';
+import { Size } from 'canvas/models/size';
 
 /// built by referencing https://en.wikipedia.org/wiki/Quadtree
 

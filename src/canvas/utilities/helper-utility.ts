@@ -1,13 +1,13 @@
-import { Line } from '@canvas/shapes/line/line';
-import { LineSegment } from '@canvas/shapes/line/line-segment';
-import { MOUSE_STATE } from '@canvas/events/canvas-event-types';
-import { Rectangle } from '@canvas/shapes/rectangle';
-import { Size } from '@canvas/models/size';
-import { Color } from '@canvas/models/color';
-import { Circle } from '@canvas/shapes/circle';
-import { LineStyle } from '@canvas/models/line-style';
-import { Shadow } from '@canvas/models/shadow';
-import { Vector2D } from '@canvas/objects/vector';
+import { Line } from 'canvas/shapes/line/line';
+import { LineSegment } from 'canvas/shapes/line/line-segment';
+import { MOUSE_STATE } from 'canvas/events/canvas-event-types';
+import { Rectangle } from 'canvas/shapes/rectangle';
+import { Size } from 'canvas/models/size';
+import { Color } from 'canvas/models/color';
+import { Circle } from 'canvas/shapes/circle';
+import { LineStyle } from 'canvas/models/line-style';
+import { Shadow } from 'canvas/models/shadow';
+import { Vector2D } from 'canvas/objects/vector';
 
 export class HelperUtility {
     private context: CanvasRenderingContext2D;

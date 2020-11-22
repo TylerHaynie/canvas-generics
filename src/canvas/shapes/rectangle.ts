@@ -1,9 +1,9 @@
-import { Vector2D } from '@canvas/objects/vector';
-import { Size } from '@canvas/models/size';
-import { Color } from '@canvas/models/color';
-import { LineStyle } from '@canvas/models/line-style';
-import { Shadow } from '@canvas/models/shadow';
-import { ShapeBase } from '@canvas/shapes/shape-base';
+import { Vector2D } from 'canvas/objects/vector';
+import { Size } from 'canvas/models/size';
+import { Color } from 'canvas/models/color';
+import { LineStyle } from 'canvas/models/line-style';
+import { Shadow } from 'canvas/models/shadow';
+import { ShapeBase } from 'canvas/shapes/shape-base';
 import { ViewChildDecorator } from '@angular/core';
 
 export class Corner {

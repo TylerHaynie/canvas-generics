@@ -1,7 +1,7 @@
-import { Vector2D } from '@canvas/objects/vector';
-import { Color } from '@canvas/models/color';
-import { LineStyle } from '@canvas/models/line-style';
-import { Shadow } from '@canvas/models/shadow';
+import { Vector2D } from 'canvas/objects/vector';
+import { Color } from 'canvas/models/color';
+import { LineStyle } from 'canvas/models/line-style';
+import { Shadow } from 'canvas/models/shadow';
 
 export class ShapeBase {
     private _context: CanvasRenderingContext2D;
