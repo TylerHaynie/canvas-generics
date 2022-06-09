@@ -58,7 +58,6 @@ export class ParticleBase {
         let posX = this.shape.position.x + this.velocity.vx;
         let posY = this.shape.position.y + this.velocity.vy;
 
-
         let w = (<Rectangle>this.shape).size ? (<Rectangle>this.shape).size.width : (<Circle>this.shape).radius * 2;
         let h = (<Rectangle>this.shape).size ? (<Rectangle>this.shape).size.height : (<Circle>this.shape).radius * 2;
 

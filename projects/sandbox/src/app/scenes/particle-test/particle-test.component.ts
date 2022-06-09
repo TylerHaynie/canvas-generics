@@ -43,7 +43,7 @@ export class ParticleTestComponent implements AfterViewInit {
   private foregroundEnd2: number = 1.000; // where the bottom gradient ends
 
   // particles
-  private maxParticles: number = 1200; // play with the amount
+  private maxParticles: number = 3000; // play with the amount
   private colorArray: string[] = ['#3E4F6A', '#74FFE8', '#5FBEBC'];
   private particleSpeedModifier: number = .5;
   private particleCornerRadius: number = 1.5; // check code below for optimization when using this on a large scale
@@ -81,6 +81,7 @@ export class ParticleTestComponent implements AfterViewInit {
     // set up quad trees
     let boundary: Boundary = new Boundary(0, 0, 0, this.cw.width, this.cw.height, 0);
     this.particleQuad = new QuadTree(boundary, 1);
+
     this._foregroundGradient = this.createGradient();
 
     // start the draw loop
@@ -91,8 +92,8 @@ export class ParticleTestComponent implements AfterViewInit {
     this.cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
       this.mouseOnCanvas = true;
       this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
+      console.log('Mouse X: ' + this.mousePosition.x + ' Mouse Y: ' + this.mousePosition.y);
     });
-
 
     this.cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
       this.mouseOnCanvas = false;
@@ -119,7 +120,7 @@ export class ParticleTestComponent implements AfterViewInit {
 
     // debug
     if (this.debugParticles) {
-      // this.particleQuad.debugQuad(this.cw.drawingContext, new Color('#777'));
+      this.particleQuad.debugQuad(this.cw.drawingContext);
     }
 
     this.cw.restoreContext();
@@ -183,24 +184,24 @@ export class ParticleTestComponent implements AfterViewInit {
     let particleBounds = new Bounds(bp, bs);
 
     for (let x = particles.length - 1; x > 0; x--) {
-      let fp = particles[x];
+      let particle = particles[x];
 
-      if (fp.isAlive) {
+      if (particle.isAlive) {
         // move particle
-        fp.move(particleBounds);
+        particle.move(particleBounds);
 
         // update particle
-        fp.tick();
+        particle.tick();
 
         if (trackingTree) {
           // insert particle
-          let pPosition = fp.getPosition();
-          let qd = new QuadVector(pPosition.x, pPosition.y, 0, fp);
+          let pPosition = particle.getPosition();
+          let qd = new QuadVector(pPosition.x, pPosition.y, 0, particle);
           trackingTree.insert(qd);
         }
 
         // draw particle
-        fp.draw();
+        particle.draw();
       }
       else {
         // remove it

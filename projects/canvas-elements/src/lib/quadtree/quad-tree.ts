@@ -1,3 +1,8 @@
+import { LineStyle } from "../canvas/models/line-style";
+import { Size } from "../canvas/models/size";
+import { Vector2D } from "../canvas/objects/vector";
+import { Rectangle } from "../canvas/shapes/rectangle";
+
 export class QuadVector {
     x: number;
     y: number;
@@ -28,21 +33,18 @@ export class Boundary {
         this.depth = d;
     }
 
-    containsVector(p: QuadVector): QuadVector {
-        let pxIsGreater: Boolean = p.x >= this.x;
-        let pxIsLess: boolean = p.x <= this.x + this.width;
+    containsVector(p: QuadVector): boolean {
+        if (p.x > this.x &&
+            p.x < this.x + this.width) {
 
-        let pyIsGreater: boolean = p.y > this.y;
-        let pyIsLess: boolean = p.y < this.y + this.height;
+            if (p.y > this.y &&
+                p.y < this.y + this.height) {
 
-        let pzIsGreater: boolean = p.z > this.z;
-        let pzIsLess: boolean = p.z < this.z + this.depth;
+                return true;
+            }
+        }
 
-        let xSearch: number = pxIsLess ? 1 : pxIsGreater ? -1 : 0;
-        let ySearch: number = pyIsLess ? 1 : pyIsGreater ? -1 : 0;
-        let zSearch: number = pzIsLess ? 1 : pzIsGreater ? -1 : 0;
-
-        return new QuadVector(xSearch, ySearch, zSearch);
+        return false;
     }
 
     intersects(other: Boundary) {
@@ -86,32 +88,67 @@ export class QuadTree {
     }
 
     insert(p: QuadVector) {
-        let searchResult = this.boundary.containsVector(p);
-
-        if (this.isDivided) {
-            if (searchResult.x > 0) {
-                if (searchResult.y > 0) { this.topRight.insert(p); }
-                else { this.bottomRight.insert(p); }
-            }
-            else if (searchResult.x < 0) {
-                if (searchResult.y > 0) { this.topLeft.insert(p); }
-                else { this.bottomLeft.insert(p); }
-            }
-            else {
-                if (this.vectors.length < this.capicity) {
-                    this.vectors.push(p);
-                }
-            }
+        // Ignore objects that do not belong in this quad tree
+        if (!this.boundary.containsVector(p)) {
+            // vector does not belong here
+            return false;
         }
-        else {
+
+        // If there is space in this quad tree, add the vector here
+        if (this.vectors.length < this.capicity) {
+            this.vectors.push(p);
+            return true;
+        }
+
+        // Otherwise, subdivide and then add the vector to whichever quad it will fit in
+        if (!this.isDivided) {
             this.subdivide();
 
-            // move the vectors to their new quads
+            // move the dataPoints to their new quads
             for (let x = this.vectors.length; x > 0; x--) {
                 this.insert(this.vectors[x - 1]);
                 this.vectors.splice(x, 1);
             }
         }
+
+        if (this.topLeft.insert(p)) { return true; }
+        if (this.topRight.insert(p)) { return true; }
+        if (this.bottomLeft.insert(p)) { return true; }
+        if (this.bottomRight.insert(p)) { return true; }
+
+        // something went wrong
+        return false;
+
+        // let searchResult = this.boundary.containsVector(p);
+
+        // if (this.isDivided) {
+        //     if (searchResult.x > 0) {
+        //         if (searchResult.y > 0) {
+        //             this.topRight.insert(p);
+        //         }
+        //         else {
+        //             this.bottomRight.insert(p);
+        //         }
+        //     }
+        //     else if (searchResult.x < 0) {
+        //         if (searchResult.y > 0) { this.topLeft.insert(p); }
+        //         else { this.bottomLeft.insert(p); }
+        //     }
+        //     else {
+        //         if (this.vectors.length < this.capicity) {
+        //             this.vectors.push(p);
+        //         }
+        //     }
+        // }
+        // else {
+        //     this.subdivide();
+
+        //     // move the vectors to their new quads
+        //     for (let x = this.vectors.length; x > 0; x--) {
+        //         this.insert(this.vectors[x - 1]);
+        //         this.vectors.splice(x, 1);
+        //     }
+        // }
     }
 
     private subdivide() {
@@ -161,7 +198,6 @@ export class QuadTree {
         }
 
         // add vectors from children
-        // TODO: simplify and speed up
         for (let p of this.topLeft.searchBoundary(b)) {
             vectorsInRange.push(p);
         }
@@ -194,22 +230,21 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    // debugQuad(context: CanvasRenderingContext2D, color: string, alpha: number = 1, lineWidth: number = .25) {
+    debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .25) {
+        let p = new Vector2D(this.boundary.x, this.boundary.y);
+        let rect = new Rectangle(context, p);
+        rect.size = new Size(this.boundary.width, this.boundary.height);
+        rect.outline = new LineStyle(color, lineWidth);
+        rect.outline.shade = color;
+        rect.outline.alpha = alpha;
+        rect.color.alpha = 0;
+        rect.draw();
 
-    //     let p = new Vector2D(this.boundary.x, this.boundary.y);
-    //     let rect = new Rectangle(context, p);
-    //     rect.size = new Size(this.boundary.width, this.boundary.height);
-    //     rect.outline = new LineStyle(lineWidth);
-    //     rect.outline.shade = color;
-    //     rect.outline.alpha = alpha;
-
-    //     rect.draw();
-
-    //     if (this.isDivided) {
-    //         this.topLeft.debugQuad(context, color, alpha, lineWidth);
-    //         this.topRight.debugQuad(context, color, alpha, lineWidth);
-    //         this.bottomLeft.debugQuad(context, color, alpha, lineWidth);
-    //         this.bottomRight.debugQuad(context, color, alpha, lineWidth);
-    //     }
-    // }
+        if (this.isDivided) {
+            this.topLeft.debugQuad(context, color, alpha, lineWidth);
+            this.topRight.debugQuad(context, color, alpha, lineWidth);
+            this.bottomLeft.debugQuad(context, color, alpha, lineWidth);
+            this.bottomRight.debugQuad(context, color, alpha, lineWidth);
+        }
+    }
 }
