@@ -49,7 +49,7 @@ export class ParticleTestComponent implements AfterViewInit {
   private particleCornerRadius: number = 1.5; // check code below for optimization when using this on a large scale
   private particleMaxRadius: number = 4.25;
   private particleMinRadius: number = 0.15;
-  private maxParticleLifespan: number = 325;
+  private maxParticleLifespan: number = 425;
   private minParticleLifespan: number = 175;
   private particleFadeTime: number = 100;
 
@@ -227,7 +227,7 @@ export class ParticleTestComponent implements AfterViewInit {
       let rad = this._random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
 
       // if they are too small we can skip the corners. corner calculations are expensive
-      if (rad > 3 && rad > 3) {
+      if (rad > 3) {
         rect.endGap = this.particleCornerRadius;
       }
 

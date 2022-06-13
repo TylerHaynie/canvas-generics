@@ -94,7 +94,6 @@ export class MouseManager {
             this.eventType = MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
-
     }
 
     private doMouseDown(x: number, y: number) {

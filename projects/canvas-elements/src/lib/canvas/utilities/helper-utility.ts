@@ -112,8 +112,10 @@ export class HelperUtility {
         co.radius = 20;
         co.outline = new LineStyle();
         co.outline.width = 1;
-        co.outline.shade = '#fff';
+        co.outline.shade = '#555';
         co.outline.alpha = .80;
+        co.color.alpha = .40;
+        co.color.shade = '#333'
 
         // center point
         let cp = new Circle(this.context, position);

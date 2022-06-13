@@ -230,7 +230,7 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .25) {
+    debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .20) {
         let p = new Vector2D(this.boundary.x, this.boundary.y);
         let rect = new Rectangle(context, p);
         rect.size = new Size(this.boundary.width, this.boundary.height);
