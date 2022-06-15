@@ -130,8 +130,8 @@ export class ParticleTestComponent implements AfterViewInit {
     let bounds = this.cw.bounds;
     let p = new Vector2D(bounds.left, bounds.top);
     let b = new Rectangle(this.cw.drawingContext, p);
-    b.size = new Size(bounds.width, bounds.height);
-    b.color = new Color(this.backgroundColor);
+    b.size.setSize(bounds.width, bounds.height);
+    b.color.setShade(this.backgroundColor);
 
     b.draw();
   }
@@ -141,8 +141,8 @@ export class ParticleTestComponent implements AfterViewInit {
 
     let p = new Vector2D(bounds.left, bounds.top);
     let f = new Rectangle(this.cw.drawingContext, p);
-    f.size = new Size(bounds.width, bounds.height);
-    f.color = new Color(this._foregroundGradient);
+    f.size.setSize(bounds.width, bounds.height);
+    f.color.setShade(this._foregroundGradient);
 
     f.draw();
   }
@@ -231,8 +231,8 @@ export class ParticleTestComponent implements AfterViewInit {
         rect.endGap = this.particleCornerRadius;
       }
 
-      rect.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
-      rect.color = new Color(this._color.randomColorFromArray(this.colorArray));
+      rect.size.setSize(Math.fround(rad * 2), rad * Math.fround(2));
+      rect.color.setShade(this._color.randomColorFromArray(this.colorArray));
 
       let v = new Velocity(
         this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(.20, .80),

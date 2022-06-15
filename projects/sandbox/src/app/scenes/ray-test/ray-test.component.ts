@@ -61,7 +61,7 @@ export class RayTestComponent implements AfterViewInit {
     let p = new Vector2D(this.cw.width / 2, this.cw.height / 2);
     this.focalPoint = new Circle(this.cw.drawingContext, p);
     this.focalPoint.radius = 4;
-    this.focalPoint.color = new Color('lime');
+    this.focalPoint.color.setShade('lime');
   }
 
   draw() {
@@ -74,9 +74,8 @@ export class RayTestComponent implements AfterViewInit {
     for (let x = 0; x < 50; x++) {
       let p = this._random.randomVectorInBounds(this.cw.width, this.cw.height);
       let r = new Rectangle(this.cw.drawingContext, p);
-      r.size = new Size(50, 50);
-      r.color = new Color();
-      r.color.shade = '#888';
+      r.size.setSize(50, 50);
+      r.color.setShade('#888');
 
       this.squares.push(r);
     }
@@ -105,49 +104,49 @@ export class RayTestComponent implements AfterViewInit {
 
     // define line
     let line = new Line(this.cw.drawingContext);
-    line.style.shade = 'rgba(0, 255, 0, 1)';
+    line.style.setShade('rgba(0, 255, 0, 1)');
     line.style.width = .25;
 
     let found: boolean = false;
     let seg = new LineSegment(this.focalPoint.position);
 
-
-    let range = this.mousePosition.distance(this.focalPoint.position);
+    let range = this.mousePosition.distanceTo(this.focalPoint.position);
     let p = new Vector2D(this.focalPoint.position.x - range, this.focalPoint.position.y - range);
 
     // draw light range
     let lr = new Rectangle(this.cw.drawingContext, p);
-    lr.size = new Size(range * 2, range * 2);
+    lr.size.setSize(range * 2, range * 2);
     lr.color = undefined;
     let ls = new LineStyle();
     ls.width = .25;
-    ls.shade = 'yellow';
+    ls.setShade('yellow');
     lr.outline = ls;
 
     lr.draw();
 
     // search quad tree along line.
-    // simplify results until you have teh closest
+    // simplify results until you have the closest
 
     let b = new Boundary(this.focalPoint.position.x - range, this.focalPoint.position.y - range, 0, range * 2, range * 2, 0);
     let results = this.qtSquares.searchBoundary(b);
 
     // draw light range
     let debugREct = new Rectangle(this.cw.drawingContext, new Vector2D(b.x, b.y));
-    debugREct.size = new Size(b.width, b.height);
+    debugREct.size.setSize(b.width, b.height);
     debugREct.color = undefined;
     let dls = new LineStyle();
     dls.width = .25;
-    dls.shade = 'red';
+    dls.setShade('red');
     debugREct.outline = dls;
     debugREct.draw();
 
     results.forEach(square => {
       let r = <Rectangle>square.data;
-      r.color = new Color('pink');
+      r.color.setShade('pink');
     });
 
-    // checking every square
+    // TODO: add squares to quadtree and search only where needed.
+    // if ray intersects quad boundry, add that area to a search array then loop it all at once
     this.squares.forEach(square => {
       let intersection = square.lineIntersects({ p1: this.focalPoint.position, p2: this.mousePosition });
       if (intersection) {
@@ -157,7 +156,7 @@ export class RayTestComponent implements AfterViewInit {
 
         let ip = new Circle(this.cw.drawingContext, intersection);
         ip.radius = 4;
-        ip.color = new Color('red');
+        ip.color.setShade('red');
 
         ip.draw();
       }

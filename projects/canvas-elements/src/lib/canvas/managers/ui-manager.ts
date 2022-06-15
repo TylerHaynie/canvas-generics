@@ -178,7 +178,7 @@ export class UIManager {
 
             element.elementMouseMove(e);
 
-            if (element.baseElement.pointWithinBounds(e.mousePosition)) {
+            if (element.shape.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseHover(e);
             }
             else {
@@ -189,7 +189,7 @@ export class UIManager {
 
     private checkPointerDown(e: MouseData) {
         this.uiElements.forEach(element => {
-            if (element.baseElement.pointWithinBounds(e.mousePosition)) {
+            if (element.shape.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseDown(e);
 
                 element.childElements.forEach(element => {
@@ -201,7 +201,7 @@ export class UIManager {
 
     private checkPointerUp(e: MouseData) {
         this.uiElements.forEach(element => {
-            if (element.baseElement.pointWithinBounds(e.mousePosition)) {
+            if (element.shape.pointWithinBounds(e.mousePosition)) {
                 element.elementMouseUp(e);
 
                 element.childElements.forEach(element => {

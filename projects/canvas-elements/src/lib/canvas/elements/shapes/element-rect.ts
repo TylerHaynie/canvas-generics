@@ -11,10 +11,10 @@ import { ResizeProperty } from '../element-properties/resize-property';
 export class ElementRect extends ElementBase {
     private allowResize: boolean = true;
 
-    public set endGap(v: number) { (<Rectangle>this.baseElement).endGap = v; }
-    public get size(): Size { return (<Rectangle>this.baseElement).size; }
+    public set endGap(v: number) { (<Rectangle>this.shape).endGap = v; }
+    public get size(): Size { return (<Rectangle>this.shape).size; }
     public set size(v: Size) {
-        (<Rectangle>this.baseElement).size = v;
+        (<Rectangle>this.shape).size = v;
         this.buildMenus();
     }
 
@@ -28,7 +28,7 @@ export class ElementRect extends ElementBase {
 
     private setupBaseElement(context: CanvasRenderingContext2D, position: Vector2D) {
         let r = new Rectangle(context, position);
-        this.baseElement = r;
+        this.shape = r;
     }
 
     private elementMoved(e: MouseData) {

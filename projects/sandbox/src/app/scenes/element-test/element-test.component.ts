@@ -44,7 +44,7 @@ export class ElementTestComponent implements AfterViewInit {
   private createTestRect() {
     // create rectangle
     let rect = new ElementRect(this.cw.drawingContext, new Vector2D(600, 300));
-    rect.size = new Size(200, 100);
+    rect.size.setSize(200, 100);
     rect.endGap = 8;
     rect.isDraggable = true;
 

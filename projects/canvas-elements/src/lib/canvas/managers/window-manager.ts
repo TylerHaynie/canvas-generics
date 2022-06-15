@@ -11,8 +11,6 @@ export class WindowManager {
     }
 
     private registerEvents() {
-        const cv = this.context.canvas;
-
         window.onresize = () => {
             this.fitCanvasToContainer();
         };

@@ -1,6 +1,6 @@
 import { MOUSE_EVENT_TYPE } from '../events/canvas-enums';
 import { CanvasEvent } from '../events/canvas-event';
-import { PanZoomData, MouseData } from '../events/event-data';
+import { MouseData } from '../events/event-data';
 import { Vector2D } from '../objects/vector';
 
 export class MouseManager {
@@ -9,24 +9,22 @@ export class MouseManager {
 
     //#region private variables
     private _context: CanvasRenderingContext2D;
-    private contextModified: boolean = false;
-    private contextData: PanZoomData;
 
     // mouse
-    private mousePosition: Vector2D;
-    private translatedPosition: Vector2D;
+    private _mousePosition: Vector2D;
+    private _translatedPosition: Vector2D;
     private _mouseOnCanvas: boolean = false;
-    private scrollingDirection: string = 'none';
-    private leftMousePosition: string = 'up';
-    private isMoving: boolean = false;
+    private _scrollingDirection: string = 'none';
+    private _leftMousePosition: string = 'up';
+    private _isMoving: boolean = false;
 
     //#endregion
 
     // event
-    private eventType: MOUSE_EVENT_TYPE;
-    private mouseEvent = new CanvasEvent<MouseData>();
+    private _currentEvent: MOUSE_EVENT_TYPE;
+    private _mouseEvents = new CanvasEvent<MouseData>();
     on(on: MOUSE_EVENT_TYPE, callback: (e: MouseData) => void) {
-        this.mouseEvent.subscribe(on, callback);
+        this._mouseEvents.subscribe(on, callback);
     }
 
     constructor(context: CanvasRenderingContext2D) {
@@ -34,49 +32,39 @@ export class MouseManager {
         this.registerEvents();
     }
 
-    contextupdated(data: PanZoomData) {
-        if (this._mouseOnCanvas) {
-            let mx = (this.mousePosition.x - data.pan.x) / data.scale;
-            let my = (this.mousePosition.y - data.pan.y) / data.scale;
+    // contextupdated(data: PanZoomData) {
+    //     if (this._mouseOnCanvas) {
+    //         let mx = (this.mousePosition.x - data.pan.x) / data.scale;
+    //         let my = (this.mousePosition.y - data.pan.y) / data.scale;
 
-            this.translatedPosition = new Vector2D(mx, my);
-        }
-    }
+    //         this.translatedPosition = new Vector2D(mx, my);
+    //     }
+    // }
 
-    private fireEvent() {
-        let e = new MouseData();
-        e.eventType = this.eventType;
-        e.translatedPosition = this.translatedPosition;
-        e.mousePosition = this.mousePosition;
-        e.mouseOnCanvas = this._mouseOnCanvas;
-        e.scrollDirection = this.scrollingDirection;
-        e.leftMouseState = this.leftMousePosition;
-        e.mouseMoving = this.isMoving;
-
-        this.mouseEvent.fireEvent(e.eventType, e);
-    }
+    // TODO: update location based on camera position
+    // ... updateOrigin(camPosX, camPosY) or something like that
 
     private registerEvents() {
         const cv = this._context.canvas;
 
         // mouse events
         cv.onmousemove = (e: MouseEvent) => {
-            this.eventType = MOUSE_EVENT_TYPE.MOVE;
+            this._currentEvent = MOUSE_EVENT_TYPE.MOVE;
             this.updateMousePosition(e.clientX, e.clientY);
         };
 
         cv.onmousedown = (e: MouseEvent) => {
-            this.eventType = MOUSE_EVENT_TYPE.DOWN;
+            this._currentEvent = MOUSE_EVENT_TYPE.DOWN;
             this.doMouseDown(e.clientX, e.clientY);
         };
 
         cv.onmouseup = (e: MouseEvent) => {
-            this.eventType = MOUSE_EVENT_TYPE.UP;
+            this._currentEvent = MOUSE_EVENT_TYPE.UP;
             this.mouseUp();
         };
 
         cv.onwheel = (e: WheelEvent) => {
-            this.eventType = MOUSE_EVENT_TYPE.WHEEL;
+            this._currentEvent = MOUSE_EVENT_TYPE.WHEEL;
             if (e.deltaY > 0) {
                 this.mouseScrollDown();
             }
@@ -86,54 +74,69 @@ export class MouseManager {
         };
 
         cv.onmouseout = (e: MouseEvent) => {
-            this.eventType = MOUSE_EVENT_TYPE.OUT;
+            this._currentEvent = MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
 
         cv.onmouseleave = (e: MouseEvent) => {
-            this.eventType = MOUSE_EVENT_TYPE.OUT;
+            this._currentEvent = MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
     }
 
+    private fireEvent() {
+        let e = new MouseData();
+        e.eventType = this._currentEvent;
+        e.translatedPosition = this._translatedPosition;
+        e.mousePosition = this._mousePosition;
+        e.mouseOnCanvas = this._mouseOnCanvas;
+        e.scrollDirection = this._scrollingDirection;
+        e.leftMouseState = this._leftMousePosition;
+        e.mouseMoving = this._isMoving;
+
+        this._mouseEvents.fireEvent(e.eventType, e);
+    }
+
+
+
     private doMouseDown(x: number, y: number) {
         this._mouseOnCanvas = true;
-        this.leftMousePosition = 'down';
-        this.mousePosition = new Vector2D(x, y);
+        this._leftMousePosition = 'down';
+        this._mousePosition = new Vector2D(x, y);
 
         this.fireEvent();
     }
 
     private updateMousePosition(x: number, y: number) {
-        this.isMoving = true;
-        this.mousePosition = new Vector2D(x, y);
+        this._isMoving = true;
+        this._mousePosition = new Vector2D(x, y);
         this._mouseOnCanvas = true;
 
         this.fireEvent();
     }
 
     private mouseUp() {
-        this.leftMousePosition = 'up';
+        this._leftMousePosition = 'up';
         this.fireEvent();
     }
 
     private mouseLeave() {
         this._mouseOnCanvas = false;
-        this.mousePosition = undefined;
+        this._mousePosition = undefined;
 
         this.fireEvent();
     }
 
     private mouseScrollUp() {
         this._mouseOnCanvas = true;
-        this.scrollingDirection = 'up';
+        this._scrollingDirection = 'up';
 
         this.fireEvent();
     }
 
     private mouseScrollDown() {
         this._mouseOnCanvas = true;
-        this.scrollingDirection = 'down';
+        this._scrollingDirection = 'down';
 
         this.fireEvent();
     }

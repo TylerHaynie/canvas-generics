@@ -21,7 +21,7 @@ export class ParticleBase {
     }
 
     setPosition(p: Vector2D) {
-        this.shape.position = p;
+        this.shape.setPosition(p.x, p.y);
     }
 
     getPosition() {
@@ -78,7 +78,7 @@ export class ParticleBase {
         }
 
         // update vector with speed
-        this.shape.position = new Vector2D(
+        this.shape.setPosition(
             this.shape.position.x + this.velocity.vx,
             this.shape.position.y + this.velocity.vy
         );
@@ -87,7 +87,7 @@ export class ParticleBase {
     wiggle() {
         let nx = this.shape.position.x + this.randomUtil.randomWithNegative();
         let ny = this.shape.position.y + this.randomUtil.randomWithNegative();
-        this.shape.position = new Vector2D(nx, ny);
+        this.shape.setPosition(nx, ny);
     }
 
     draw() {

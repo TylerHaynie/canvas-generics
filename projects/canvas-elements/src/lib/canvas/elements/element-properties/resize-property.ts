@@ -56,7 +56,7 @@ export class ResizeProperty {
         let cornerColor = new Color('lime');
         let straightColor = new Color('yellow');
         let hoverColor = new Color('pink');
-        hoverColor.alpha = 1;
+        hoverColor.setAlpha(1);
 
         // top left corner
         this.topLeftCorner = this.buildRect(this.context, b.topLeft, cornerSize, cornerColor);
@@ -118,7 +118,7 @@ export class ResizeProperty {
 
     mouseMove(e) {
         // check top left
-        if (this.topLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.topLeftCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.topLeftCorner.elementMouseHover(e);
         }
         else {
@@ -126,7 +126,7 @@ export class ResizeProperty {
         }
 
         // check top middle
-        if (this.topMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.topMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.topMidRect.elementMouseHover(e);
         }
         else {
@@ -134,7 +134,7 @@ export class ResizeProperty {
         }
 
         // check top right
-        if (this.topRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.topRightCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.topRightCorner.elementMouseHover(e);
         }
         else {
@@ -142,7 +142,7 @@ export class ResizeProperty {
         }
 
         // check right middle
-        if (this.rightMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.rightMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.rightMidRect.elementMouseHover(e);
         }
         else {
@@ -150,7 +150,7 @@ export class ResizeProperty {
         }
 
         // check bottom right
-        if (this.bottomRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.bottomRightCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.bottomRightCorner.elementMouseHover(e);
         }
         else {
@@ -158,7 +158,7 @@ export class ResizeProperty {
         }
 
         // check bottom middle
-        if (this.bottomMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.bottomMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.bottomMidRect.elementMouseHover(e);
         }
         else {
@@ -166,7 +166,7 @@ export class ResizeProperty {
         }
 
         // check bottom left
-        if (this.bottomLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.bottomLeftCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.bottomLeftCorner.elementMouseHover(e);
         }
         else {
@@ -174,7 +174,7 @@ export class ResizeProperty {
         }
 
         // check left middle
-        if (this.leftMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.leftMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.leftMidRect.elementMouseHover(e);
         }
         else {
@@ -183,44 +183,45 @@ export class ResizeProperty {
     }
 
     mouseDown(e) {
+        // TODO: I don't like this. needs to at least use elseif
 
         // check top left
-        if (this.topLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.topLeftCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.topLeftCorner.elementMouseDown(e);
         }
 
         // check top middle
-        if (this.topMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.topMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.topMidRect.elementMouseDown(e);
         }
 
         // check top right
-        if (this.topRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.topRightCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.topRightCorner.elementMouseDown(e);
         }
 
         // check right middle
-        if (this.rightMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.rightMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.rightMidRect.elementMouseDown(e);
         }
 
         // check bottom right
-        if (this.bottomRightCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.bottomRightCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.bottomRightCorner.elementMouseDown(e);
         }
 
         // check bottom middle
-        if (this.bottomMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.bottomMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.bottomMidRect.elementMouseDown(e);
         }
 
         // check bottom left
-        if (this.bottomLeftCorner.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.bottomLeftCorner.shape.pointWithinBounds(e.mousePosition)) {
             this.bottomLeftCorner.elementMouseDown(e);
         }
 
         // check left middle
-        if (this.leftMidRect.baseElement.pointWithinBounds(e.mousePosition)) {
+        if (this.leftMidRect.shape.pointWithinBounds(e.mousePosition)) {
             this.leftMidRect.elementMouseDown(e);
         }
     }
@@ -229,10 +230,10 @@ export class ResizeProperty {
         let rect = new Rectangle(context, position);
         rect.color = color;
         rect.size = size;
-        rect.color.alpha = .35;
+        rect.color.setAlpha(.35);
 
         let eb = new ElementBase(context);
-        eb.baseElement = rect;
+        eb.shape = rect;
 
         return eb;
     }

@@ -10,8 +10,18 @@ import { Vector2D } from './vector';
 
 export class RecTextOptions {
     textColor: Color = new Color('#eee');
-    recStyle: { startColor: string, endColor: string, alpha: number, outline: LineStyle } =
-        { startColor: '#888', endColor: '#252525', alpha: 1, outline: new LineStyle('#000', 2) };
+    recStyle: {
+        startColor: string,
+        endColor: string,
+        alpha: number,
+        outline: LineStyle
+    } =
+        {
+            startColor: '#888',
+            endColor: '#252525',
+            alpha: 1,
+            outline: new LineStyle('#000', 2)
+        };
 
     paddingLeft: number = 8;
     paddingRight: number = 8;
@@ -70,7 +80,7 @@ export class RecText extends DrawBase {
         let t = this.createText(this.position, this._text, this._options);
 
         if (this._options.autoWidth) {
-            this._size = new Size(t.textWidth, this._size.height);
+            this._size.setSize(t.textWidth, this._size.height);
         }
         let rec = this.createRectangle(this.position, this._size, this._options);
 
@@ -78,7 +88,7 @@ export class RecText extends DrawBase {
         t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - this._options.paddingLeft - this._options.paddingRight : undefined;
 
         // reposition text so it is in the correct position
-        t.position = new Vector2D(rec.topLeft.x + this._options.paddingLeft, rec.center.y);
+        t.setPosition(rec.topLeft.x + this._options.paddingLeft, rec.center.y);
 
         this._rectangle = rec;
         this._textObject = t;
@@ -112,7 +122,7 @@ export class RecText extends DrawBase {
         // create the rectangle (this could auto size to text width if we want)
         let rec = new Rectangle(this._context, pos);
 
-        rec.size = new Size(size.width + options.paddingLeft + options.paddingRight, size.height);
+        rec.size.setSize(size.width + options.paddingLeft + options.paddingRight, size.height);
         rec.outline = options ? options.recStyle.outline : new LineStyle();
 
         // create the graident
@@ -122,8 +132,8 @@ export class RecText extends DrawBase {
         g.addColorStop(0, options.recStyle.startColor);
         g.addColorStop(1, options.recStyle.endColor);
 
-        rec.color.shade = g;
-        rec.color.alpha = options.recStyle.alpha;
+        rec.color.setShade(g);
+        rec.color.setAlpha(options.recStyle.alpha);
 
         return rec;
     }

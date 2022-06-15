@@ -12,8 +12,9 @@ export class ShapeBase {
 
     private _position: Vector2D;
     public get position(): Vector2D { return this._position; }
-    public set position(position: Vector2D) {
-        this._position = new Vector2D(Math.fround(position.x), Math.fround(position.y));
+    public setPosition(x: number, y: number) {
+        // this._position = new Vector2D(Math.fround(position.x), Math.fround(position.y));
+        this._position.set(Math.fround(x), Math.fround(y));
     }
 
     private _color: Color;

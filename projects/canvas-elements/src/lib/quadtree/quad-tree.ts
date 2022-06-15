@@ -233,11 +233,11 @@ export class QuadTree {
     debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .20) {
         let p = new Vector2D(this.boundary.x, this.boundary.y);
         let rect = new Rectangle(context, p);
-        rect.size = new Size(this.boundary.width, this.boundary.height);
+        rect.size.setSize(this.boundary.width, this.boundary.height);
         rect.outline = new LineStyle(color, lineWidth);
-        rect.outline.shade = color;
-        rect.outline.alpha = alpha;
-        rect.color.alpha = 0;
+        rect.outline.setShade(color);
+        rect.outline.setAlpha(alpha);
+        rect.color.setAlpha(0);
         rect.draw();
 
         if (this.isDivided) {

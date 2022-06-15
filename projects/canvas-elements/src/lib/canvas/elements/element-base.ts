@@ -11,10 +11,10 @@ import { ResizeProperty } from './element-properties/resize-property';
 
 export class ElementBase {
 
-    private _baseElement: Rectangle | Circle;
-    public get baseElement(): Rectangle | Circle { return this._baseElement; }
-    public set baseElement(v: Rectangle | Circle) {
-        this._baseElement = v;
+    private _shape: Rectangle | Circle;
+    public get shape(): Rectangle | Circle { return this._shape; }
+    public set shape(v: Rectangle | Circle) {
+        this._shape = v;
         this.defaultColor = v.color;
         this.defaultOutline = v.outline;
         this.defaultShadow = v.shadow;
@@ -168,19 +168,20 @@ export class ElementBase {
         this.fireEvent(e);
     }
 
-    setPosition(position: Vector2D) {
-        this.baseElement.position = position;
+    setPosition(x: number, y: number) {
+        this.shape.setPosition(x, y);
     }
 
     getposition() {
-        return this.baseElement.position;
+        return this.shape.position;
     }
 
     draw() {
         this.styleElement();
-        this._baseElement.draw();
+        this._shape.draw();
 
         // now draw children
+        // TODO: need to index children to draw in correct order
         this.childElements.forEach(childElement => {
             childElement.draw();
         });
@@ -191,7 +192,6 @@ export class ElementBase {
                 this.resizeMenu.draw();
             }
         }
-
     }
 
     private styleElement() {
@@ -215,9 +215,9 @@ export class ElementBase {
                 if (this.hoverShadow) { this.activeShadow = this.hoverShadow; }
         }
 
-        this._baseElement.color = this.activeColor;
-        this._baseElement.outline = this.activeOutline;
-        this._baseElement.shadow = this.activeShadow;
+        this._shape.color = this.activeColor;
+        this._shape.outline = this.activeOutline;
+        this._shape.shadow = this.activeShadow;
     }
 
     private startDrag(e: MouseData) {
@@ -233,7 +233,7 @@ export class ElementBase {
 
     private dragElement(e: MouseData) {
         e.uiMouseState = MOUSE_STATE.GRAB;
-        let p = new Vector2D(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
-        this.setPosition(p);
+        // let p = new Vector2D(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
+        this.setPosition(e.mousePosition.x - this.dragOffset.x, e.mousePosition.y - this.dragOffset.y);
     }
 }

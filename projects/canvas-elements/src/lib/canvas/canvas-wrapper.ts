@@ -8,9 +8,10 @@ import { WindowManager } from './managers/window-manager';
 import { HelperUtility } from './utilities/helper-utility';
 
 export class CanvasWrapper {
-    public delta: number;
-    private lastRender: number;
-    private fps: number;
+    public delta: number = 0;
+    private lastRender: number = 0;
+    private fps: number = 0;
+    private timeSinceFpsTick = 0.0;
 
     // public properties
     public get drawingContext(): CanvasRenderingContext2D { return this._context; }
@@ -167,7 +168,12 @@ export class CanvasWrapper {
     private draw() {
         if (this._uiManager.debugEnabled) {
             this.delta = performance.now() - this.lastRender;
-            this.fps = Math.floor(1000 / this.delta);
+            if(this.timeSinceFpsTick > 250){
+                this.fps = Math.floor(1000 / this.delta);
+                this.timeSinceFpsTick = 0;
+            }
+            else
+                this.timeSinceFpsTick = this.timeSinceFpsTick + this.delta;
         }
         // check for key input
         this.checkKeys();
@@ -180,7 +186,8 @@ export class CanvasWrapper {
             if (this._overlayAsBackground) { this.drawGrid(); }
 
             // apply any pan or zoon
-            this.applyPanAndZoom();
+            //this.applyPanAndZoom();
+            // TODO: Apply camera positon
 
             this._uiManager.drawMainBuffer();
 
@@ -216,14 +223,14 @@ export class CanvasWrapper {
         requestAnimationFrame(() => this.start());
     }
 
-    private applyPanAndZoom() {
-        if (this.PanZoomData) {
-            this._context.translate(this.PanZoomData.pan.x, this.PanZoomData.pan.y);
-            this._context.scale(this.PanZoomData.scale, this.PanZoomData.scale);
+    // private applyPanAndZoom() {
+    //     if (this.PanZoomData) {
+    //         this._context.translate(this.PanZoomData.pan.x, this.PanZoomData.pan.y);
+    //         this._context.scale(this.PanZoomData.scale, this.PanZoomData.scale);
 
-            this.mouseManager.contextupdated(this.PanZoomData);
-        }
-    }
+    //         this.mouseManager.contextupdated(this.PanZoomData);
+    //     }
+    // }
 
     private drawGrid() {
         // draw grid

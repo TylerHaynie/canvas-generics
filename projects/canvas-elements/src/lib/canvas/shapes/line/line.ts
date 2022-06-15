@@ -62,7 +62,7 @@ export class Line {
                 // does it have a shadow
                 if (this.shadow) {
                     // this.context.shadowBlur = this.shadow.shadowBlur;
-                    // this.context.shadowColor = this.shadow.shadowColor;
+                    this.context.shadowColor = this.shadow.shade;
                     this.context.shadowOffsetX = this.shadow.offsetX;
                     this.context.shadowOffsetY = this.shadow.offsetY;
                 }

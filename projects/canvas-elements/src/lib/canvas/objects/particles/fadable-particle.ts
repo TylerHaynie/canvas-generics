@@ -38,7 +38,7 @@ export class FadableParticle extends ParticleBase {
     }
 
     private setAlpha(a: number) {
-        this.shape.color.alpha = a;
+        this.shape.color.setAlpha(a);
     }
 
 }

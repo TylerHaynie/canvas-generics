@@ -14,36 +14,16 @@ export class Vector2D {
         this.vector = vec2.fromValues(x, y);
     }
 
-    public scale(scaleAmount: number): Vector2D {
-        let resultVector: vec2;
-        vec2.scale(resultVector, this.vector, scaleAmount);
-        return new Vector2D(resultVector[0], resultVector[1]);
+    public scaleBy(scaleAmount: number): void{
+        vec2.scale(this.vector, this.vector, scaleAmount);
     }
 
-    public subtract(other: Vector2D) {
-        let outResult = vec2.create();
-        vec2.sub(outResult, this.vector, other.vector);
-        return outResult;
-    }
-
-    public distance(other: Vector2D) {
+    public distanceTo(other: Vector2D): number {
         let outResult = vec2.dist(this.vector, other.vector);
         return outResult;
     }
 
-    /// moves by this amount
-    public move(x: number, y: number) {
-        this.vector[0] = <number>this.vector[0] + x;
-        this.vector[1] = <number>this.vector[1] + y;
-
-        return this;
+    public set(x: number, y: number): void {
+        vec2.set(this.vector, x, y);
     }
-
-    public positionOn(current: Vector2D) {
-        this.vector[0] = current.x;
-        this.vector[1] = current.y;
-
-        return this;
-    }
-
 }

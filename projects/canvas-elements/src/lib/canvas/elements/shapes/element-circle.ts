@@ -14,6 +14,6 @@ export class ElementCircle extends ElementBase {
         c.outline = this.defaultOutline;
         c.shadow = this.defaultShadow;
 
-        this.baseElement = c;
+        this.shape = c;
     }
 }
