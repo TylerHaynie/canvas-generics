@@ -21,7 +21,7 @@ export class ElementTestComponent implements AfterViewInit {
     this.cw.panZoomManager.panningAllowed = false;
     this.cw.panZoomManager.scalingAllowed = false;
     this.cw.trackMouse = false;
-    this.cw.overlayAsBackground = false;
+    this.cw.gridAsBackground = false;
     this.cw.uiManager.debugEnabled = true;
 
     this.createTestUI();
@@ -43,18 +43,18 @@ export class ElementTestComponent implements AfterViewInit {
 
   private createTestRect() {
     // create rectangle
-    let rect = new ElementRect(this.cw.drawingContext, new Vector2D(600, 300));
-    rect.size = new Size(200, 100);
+    let rect = new ElementRect(new Vector2D(600, 300));
+    rect.size.setSize(200, 100);
     rect.endGap = 8;
     rect.isDraggable = true;
 
     // add to buffer
-    this.cw.uiManager.addUIElement(rect);
+    this.cw.uiManager.addUIElement(this.cw.drawingContext, rect);
   }
 
   private circleButton() {
     // create a circle element for testing
-    let ce = new ElementCircle(this.cw.drawingContext, new Vector2D(525, 100));
+    let ce = new ElementCircle(new Vector2D(525, 100));
     ce.isDraggable = false;
     let ls = new LineStyle('#f442d7', 2);
     ce.defaultOutline = ls;
@@ -67,12 +67,12 @@ export class ElementTestComponent implements AfterViewInit {
       // do something with your circle button
     });
 
-    this.cw.uiManager.addUIElement(ce);
+    this.cw.uiManager.addUIElement(this.cw.drawingContext, ce);
   }
 
   private rectangleButton() {
     // create a rectangular element for testing
-    let re = new ElementRect(this.cw.drawingContext, new Vector2D(800, 250));
+    let re = new ElementRect(new Vector2D(800, 250));
     re.isDraggable = false;
     re.endGap = 8;
 
@@ -87,7 +87,7 @@ export class ElementTestComponent implements AfterViewInit {
 
     });
 
-    this.cw.uiManager.addUIElement(re);
+    this.cw.uiManager.addUIElement(this.cw.drawingContext, re);
   }
 
 }

@@ -230,15 +230,15 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .25) {
+    debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .20) {
         let p = new Vector2D(this.boundary.x, this.boundary.y);
-        let rect = new Rectangle(context, p);
-        rect.size = new Size(this.boundary.width, this.boundary.height);
+        let rect = new Rectangle(p);
+        rect.size.setSize(this.boundary.width, this.boundary.height);
         rect.outline = new LineStyle(color, lineWidth);
-        rect.outline.shade = color;
-        rect.outline.alpha = alpha;
-        rect.color.alpha = 0;
-        rect.draw();
+        rect.outline.setShade(color);
+        rect.outline.setAlpha(alpha);
+        rect.color.setAlpha(0);
+        rect.draw(context);
 
         if (this.isDivided) {
             this.topLeft.debugQuad(context, color, alpha, lineWidth);

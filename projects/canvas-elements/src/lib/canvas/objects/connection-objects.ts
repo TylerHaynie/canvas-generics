@@ -9,26 +9,22 @@ import { Vector2D } from './vector';
 
 export class ConnectionObjects {
 
-    private context: CanvasRenderingContext2D;
+    constructor() { }
 
-    constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
-    }
-
-    funnel(pos: Vector2D, direction: DIRECTION, gap: number, style: LineStyle) {
+    funnel(pos: Vector2D, direction: DIRECTION, gap: number, style: LineStyle): Line  {
         return this.createArrow(pos, direction, gap, style, true, true, true);
     }
 
-    filledArrow(pos: Vector2D, direction: DIRECTION, gap: number, style: LineStyle) {
+    filledArrow(pos: Vector2D, direction: DIRECTION, gap: number, style: LineStyle): Line  {
         return this.createArrow(pos, direction, gap, style, true, true);
     }
 
-    arrow(pos: Vector2D, direction: DIRECTION, gap: number, style: LineStyle, closePath?: boolean) {
+    arrow(pos: Vector2D, direction: DIRECTION, gap: number, style: LineStyle, closePath?: boolean): Line  {
         return this.createArrow(pos, direction, gap, style, false, closePath);
     }
 
-    square(pos: Vector2D, size: Size, color: Color) {
-        let r = new Rectangle(this.context, new Vector2D(Math.fround(pos.x - size.width / 2), Math.fround(pos.y - size.height / 2)));
+    square(pos: Vector2D, size: Size, color: Color) : Rectangle {
+        let r = new Rectangle(new Vector2D(Math.fround(pos.x - size.width / 2), Math.fround(pos.y - size.height / 2)));
         r.color = color;
         r.size = size;
 
@@ -36,9 +32,9 @@ export class ConnectionObjects {
     }
 
     private createArrow(pos: Vector2D, direction: DIRECTION, gap: number,
-        style: LineStyle, isFilled: boolean = false, autoClosePath: boolean = false, isFunnel: boolean = false) {
+        style: LineStyle, isFilled: boolean = false, autoClosePath: boolean = false, isFunnel: boolean = false): Line {
 
-        let line = new Line(this.context);
+        let line = new Line();
         line.style = style;
 
         switch (direction) {

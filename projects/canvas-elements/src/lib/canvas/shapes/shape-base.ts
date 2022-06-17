@@ -4,16 +4,10 @@ import { Shadow } from '../models/shadow';
 import { Vector2D } from '../objects/vector';
 
 export class ShapeBase {
-    private _context: CanvasRenderingContext2D;
-
-    public get context(): CanvasRenderingContext2D {
-        return this._context;
-    }
-
     private _position: Vector2D;
     public get position(): Vector2D { return this._position; }
-    public set position(position: Vector2D) {
-        this._position = new Vector2D(Math.fround(position.x), Math.fround(position.y));
+    public setPosition(x: number, y: number) {
+        this._position.set(Math.fround(x), Math.fround(y));
     }
 
     private _color: Color;
@@ -46,8 +40,7 @@ export class ShapeBase {
         this._shadow = v;
     }
 
-    constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        this._context = context;
+    constructor(position: Vector2D) {
         this._position = position;
         this._color = new Color();
     }

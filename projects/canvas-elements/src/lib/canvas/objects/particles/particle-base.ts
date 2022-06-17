@@ -1,4 +1,5 @@
 import { Color } from '../../models/color';
+import { IDrawable } from '../../models/interfaces/idrawable';
 import { Size } from '../../models/size';
 import { Velocity } from '../../models/velocity';
 import { Circle } from '../../shapes/circle';
@@ -7,7 +8,7 @@ import { RandomUtility } from '../../utilities/random-utility';
 import { Bounds } from '../bounds';
 import { Vector2D } from '../vector';
 
-export class ParticleBase {
+export class ParticleBase implements IDrawable {
     private velocity: Velocity;
     protected shape: Rectangle | Circle;
     protected alive: boolean = true;
@@ -21,7 +22,7 @@ export class ParticleBase {
     }
 
     setPosition(p: Vector2D) {
-        this.shape.position = p;
+        this.shape.setPosition(p.x, p.y);
     }
 
     getPosition() {
@@ -78,7 +79,7 @@ export class ParticleBase {
         }
 
         // update vector with speed
-        this.shape.position = new Vector2D(
+        this.shape.setPosition(
             this.shape.position.x + this.velocity.vx,
             this.shape.position.y + this.velocity.vy
         );
@@ -87,12 +88,12 @@ export class ParticleBase {
     wiggle() {
         let nx = this.shape.position.x + this.randomUtil.randomWithNegative();
         let ny = this.shape.position.y + this.randomUtil.randomWithNegative();
-        this.shape.position = new Vector2D(nx, ny);
+        this.shape.setPosition(nx, ny);
     }
 
-    draw() {
+    draw(context: CanvasRenderingContext2D) {
         if (this.alive && this.shape) {
-            this.shape.draw();
+            this.shape.draw(context);
         }
     }
 

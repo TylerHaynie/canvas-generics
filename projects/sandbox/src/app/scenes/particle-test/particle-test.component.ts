@@ -49,7 +49,7 @@ export class ParticleTestComponent implements AfterViewInit {
   private particleCornerRadius: number = 1.5; // check code below for optimization when using this on a large scale
   private particleMaxRadius: number = 4.25;
   private particleMinRadius: number = 0.15;
-  private maxParticleLifespan: number = 325;
+  private maxParticleLifespan: number = 425;
   private minParticleLifespan: number = 175;
   private particleFadeTime: number = 100;
 
@@ -76,7 +76,6 @@ export class ParticleTestComponent implements AfterViewInit {
     this.cw.uiManager.debugEnabled = true;
 
     this.registerEvents();
-
 
     // set up quad trees
     let boundary: Boundary = new Boundary(0, 0, 0, this.cw.width, this.cw.height, 0);
@@ -113,6 +112,7 @@ export class ParticleTestComponent implements AfterViewInit {
     this.checkParticleHover();
 
     // update and draw particles
+    this.updateParticles();
     this.drawParticles();
 
     // drawing the gradient on the top
@@ -129,22 +129,28 @@ export class ParticleTestComponent implements AfterViewInit {
   private drawBackground() {
     let bounds = this.cw.bounds;
     let p = new Vector2D(bounds.left, bounds.top);
-    let b = new Rectangle(this.cw.drawingContext, p);
-    b.size = new Size(bounds.width, bounds.height);
-    b.color = new Color(this.backgroundColor);
+    let b = new Rectangle(p);
+    b.size.setSize(bounds.width, bounds.height);
+    b.color.setShade(this.backgroundColor);
 
-    b.draw();
+    b.draw(this.cw.drawingContext);
   }
 
   private drawForeground() {
     let bounds = this.cw.bounds;
 
     let p = new Vector2D(bounds.left, bounds.top);
-    let f = new Rectangle(this.cw.drawingContext, p);
-    f.size = new Size(bounds.width, bounds.height);
-    f.color = new Color(this._foregroundGradient);
+    let f = new Rectangle(p);
+    f.size.setSize(bounds.width, bounds.height);
+    f.color.setShade(this._foregroundGradient);
 
-    f.draw();
+    f.draw(this.cw.drawingContext);
+  }
+
+  private drawParticles(){
+    this.floatingParticles.forEach(particle => {
+      particle.draw(this.cw.drawingContext);
+    });
   }
 
   private createGradient(): CanvasGradient {
@@ -164,16 +170,16 @@ export class ParticleTestComponent implements AfterViewInit {
     return grd;
   }
 
-  private drawParticles() {
+  private updateParticles() {
     // replace particles that have died off
     if (this.floatingParticles.length - 1 !== this.maxParticles) {
       this.generateMissingParticles();
     }
 
-    this.drawFloatingParticle(this.floatingParticles, this.particleQuad);
+    this.updateFloatingParticle(this.floatingParticles, this.particleQuad);
   }
 
-  private drawFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined) {
+  private updateFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined) {
     if (trackingTree) {
       // clear the quad
       trackingTree.reset(this.cw.width, this.cw.height);
@@ -183,7 +189,7 @@ export class ParticleTestComponent implements AfterViewInit {
     let bs = new Size(this.cw.width, this.cw.height);
     let particleBounds = new Bounds(bp, bs);
 
-    for (let x = particles.length - 1; x > 0; x--) {
+    for (let x = particles.length - 1; x >= 0; x--) {
       let particle = particles[x];
 
       if (particle.isAlive) {
@@ -199,9 +205,6 @@ export class ParticleTestComponent implements AfterViewInit {
           let qd = new QuadVector(pPosition.x, pPosition.y, 0, particle);
           trackingTree.insert(qd);
         }
-
-        // draw particle
-        particle.draw();
       }
       else {
         // remove it
@@ -223,16 +226,17 @@ export class ParticleTestComponent implements AfterViewInit {
         Math.fround(Math.random() * (this.cw.height - this.particleMaxRadius))
       );
 
-      let rect = new Rectangle(this.cw.drawingContext, pLocation);
+      let rect = new Rectangle(pLocation);
       let rad = this._random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
 
       // if they are too small we can skip the corners. corner calculations are expensive
-      if (rad > 3 && rad > 3) {
+      if (rad > 3) {
         rect.endGap = this.particleCornerRadius;
       }
 
-      rect.size = new Size(Math.fround(rad * 2), rad * Math.fround(2));
-      rect.color = new Color(this._color.randomColorFromArray(this.colorArray));
+      rect.size.setSize(Math.fround(rad * 2), rad * Math.fround(2));
+      rect.color.setShade(this._color.randomColorFromArray(this.colorArray));
+      // rect.color.setShade(this._color.randomColor());
 
       let v = new Velocity(
         this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(.20, .80),
@@ -254,7 +258,7 @@ export class ParticleTestComponent implements AfterViewInit {
 
   //#region Interaction
 
-  checkParticleHover() {
+  private checkParticleHover() {
     if (this.mouseOnCanvas) {
       // current mouse location
       let mx = this.mousePosition.x;

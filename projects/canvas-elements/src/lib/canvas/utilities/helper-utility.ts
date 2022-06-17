@@ -1,5 +1,4 @@
 import { MOUSE_STATE } from '../events/canvas-enums';
-import { Color } from '../models/color';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
 import { Vector2D } from '../objects/vector';
@@ -14,9 +13,9 @@ export class HelperUtility {
         this.context = context;
     }
 
-    drawGrid(color: string, spacing: number) {
-        let line = new Line(this.context);
-        line.style.shade = color;
+    getGrid(color: string, spacing: number): Line {
+        let gridLines = new Line();
+        gridLines.style.setShade(color);
 
         // TODO: I want to start the gird at center
 
@@ -25,7 +24,7 @@ export class HelperUtility {
         for (let x = 0 + 0.5; x < this.context.canvas.width; x += spacing) {
             let segment = new LineSegment(new Vector2D(x, 0));
             segment.addPoint(new Vector2D(x, this.context.canvas.height));
-            line.addSegment(segment);
+            gridLines.addSegment(segment);
         }
 
         // horizontal
@@ -33,15 +32,15 @@ export class HelperUtility {
         for (let y = 0 + 0.5; y < this.context.canvas.height; y += spacing) {
             let segment = new LineSegment(new Vector2D(0, y));
             segment.addPoint(new Vector2D(this.context.canvas.width, y));
-            line.addSegment(segment);
+            gridLines.addSegment(segment);
         }
 
-        line.draw();
+        return gridLines;
     }
 
-    trackMouse(v: Vector2D, color: string, drawArrows: boolean = false) {
-        let line = new Line(this.context);
-        line.style.shade = color;
+    trackMouse(v: Vector2D, color: string, drawArrows: boolean = false): Line {
+        let line = new Line();
+        line.style.setShade(color);
 
         // horizontal line (left)
         let h1 = new LineSegment(new Vector2D(0, v.y));
@@ -89,7 +88,7 @@ export class HelperUtility {
             line.addSegment(ta);
         }
 
-        line.draw();
+        return line;
     }
 
     drawMouse(position: Vector2D, state: MOUSE_STATE) {
@@ -108,27 +107,29 @@ export class HelperUtility {
 
     private redDotMouse(position: Vector2D) {
         // circle outline
-        let co = new Circle(this.context, position);
+        let co = new Circle(position);
         co.radius = 20;
         co.outline = new LineStyle();
         co.outline.width = 1;
-        co.outline.shade = '#fff';
-        co.outline.alpha = .80;
+        co.outline.setShade('#555');
+        co.outline.setAlpha(.80);
+        co.color.setAlpha(.40);
+        co.color.setShade('#333');
 
         // center point
-        let cp = new Circle(this.context, position);
-        cp.color = new Color();
-        cp.color.shade = '#e80000';
+        let cp = new Circle(position);
+        // cp.color = new Color();
+        cp.color.setShade('#e80000');
         cp.radius = 3;
 
-        cp.draw();
-        co.draw();
+        cp.draw(this.context);
+        co.draw(this.context);
     }
 
     private holdMeMouse(position: Vector2D) {
         let lineLength = 10;
-        let line = new Line(this.context);
-        line.style.shade = '#d14d02';
+        let line = new Line();
+        line.style.setShade('#d14d02');
         line.style.width = .65;
         line.shadow = new Shadow();
         // line.shadow.shadowColor = '#000';
@@ -160,7 +161,7 @@ export class HelperUtility {
         line.addSegment(bls);
 
         // draw line
-        line.draw();
+        line.draw(this.context);
 
         // arrows
         // let arrows = new Line(this.context);
@@ -175,49 +176,49 @@ export class HelperUtility {
         // arrows.draw();
 
         // center circle
-        let r1 = new Circle(this.context, new Vector2D(position.x, position.y));
-        r1.color.shade = '#121212';
+        let r1 = new Circle(new Vector2D(position.x, position.y));
+        r1.color.setShade('#121212');
         r1.outline = new LineStyle();
-        r1.outline.shade = 'red';
+        r1.outline.setShade('red');
         r1.outline.width = .5;
         r1.radius = 2;
-        r1.draw();
+        r1.draw(this.context,);
 
         // top right
-        let trc = new Circle(this.context, trp);
-        trc.color.shade = '#121212';
+        let trc = new Circle(trp);
+        trc.color.setShade('#121212');
         trc.outline = new LineStyle();
-        trc.outline.shade = 'red';
+        trc.outline.setShade('red');
         trc.outline.width = .5;
         trc.radius = 6;
-        trc.draw();
+        trc.draw(this.context,);
 
         // top left
-        let tlc = new Circle(this.context, tlp);
-        tlc.color.shade = '#121212';
+        let tlc = new Circle(tlp);
+        tlc.color.setShade('#121212');
         tlc.outline = new LineStyle();
-        tlc.outline.shade = 'red';
+        tlc.outline.setShade('red');
         tlc.outline.width = .5;
         tlc.radius = 3;
-        tlc.draw();
+        tlc.draw(this.context,);
 
         // bottom right
-        let brc = new Circle(this.context, brp);
-        brc.color.shade = '#121212';
+        let brc = new Circle(brp);
+        brc.color.setShade('#121212');
         brc.outline = new LineStyle();
-        brc.outline.shade = 'red';
+        brc.outline.setShade('red');
         brc.outline.width = .5;
         brc.radius = 4;
-        brc.draw();
+        brc.draw(this.context,);
 
         // bottom left
-        let blc = new Circle(this.context, blp);
-        blc.color.shade = '#121212';
+        let blc = new Circle(blp);
+        blc.color.setShade('#121212');
         blc.outline = new LineStyle();
-        blc.outline.shade = 'red';
+        blc.outline.setShade('red');
         blc.outline.width = .5;
         blc.radius = 4;
-        blc.draw();
+        blc.draw(this.context,);
     }
 
 }

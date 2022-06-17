@@ -23,7 +23,6 @@ export * from './lib/canvas/objects/vector';
 export * from './lib/canvas/objects/particles/particle-base';
 export * from './lib/canvas/objects/particles/fadable-particle';
 export * from './lib/canvas/shapes/circle';
-export * from './lib/canvas/shapes/draw-base';
 export * from './lib/canvas/shapes/rectangle';
 export * from './lib/canvas/shapes/shape-base';
 export * from './lib/canvas/shapes/line/line';

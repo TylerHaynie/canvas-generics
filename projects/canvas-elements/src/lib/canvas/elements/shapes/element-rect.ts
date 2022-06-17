@@ -11,24 +11,24 @@ import { ResizeProperty } from '../element-properties/resize-property';
 export class ElementRect extends ElementBase {
     private allowResize: boolean = true;
 
-    public set endGap(v: number) { (<Rectangle>this.baseElement).endGap = v; }
-    public get size(): Size { return (<Rectangle>this.baseElement).size; }
+    public set endGap(v: number) { (<Rectangle>this.shape).endGap = v; }
+    public get size(): Size { return (<Rectangle>this.shape).size; }
     public set size(v: Size) {
-        (<Rectangle>this.baseElement).size = v;
+        (<Rectangle>this.shape).size = v;
         this.buildMenus();
     }
 
-    constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        super(context);
-        this.setupBaseElement(context, position);
+    constructor(position: Vector2D) {
+        super();
+        this.setupBaseElement(position);
         this.on(UI_EVENT_TYPE.MOVE, (e: MouseData) => {
             this.elementMoved(e);
         });
     }
 
-    private setupBaseElement(context: CanvasRenderingContext2D, position: Vector2D) {
-        let r = new Rectangle(context, position);
-        this.baseElement = r;
+    private setupBaseElement(position: Vector2D) {
+        let r = new Rectangle(position);
+        this.shape = r;
     }
 
     private elementMoved(e: MouseData) {
@@ -39,7 +39,7 @@ export class ElementRect extends ElementBase {
 
     buildMenus() {
         if (this.allowResize) {
-            let resizeMenu = new ResizeProperty(this._context, this.getposition(), this.size);
+            let resizeMenu = new ResizeProperty(this.getposition(), this.size);
 
             // passing down event
             this.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {

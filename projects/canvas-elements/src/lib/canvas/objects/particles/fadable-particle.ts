@@ -26,7 +26,7 @@ export class FadableParticle extends ParticleBase {
                 a = step * (this.maximumLifeTime - this.currentLifeTime);
             }
 
-            this.setAlpha(a);
+            this.shape.color.setAlpha(a);
         }
 
         if (this.currentLifeTime > this.maximumLifeTime) {
@@ -36,9 +36,4 @@ export class FadableParticle extends ParticleBase {
         // add to lifetime
         this.currentLifeTime += 1;
     }
-
-    private setAlpha(a: number) {
-        this.shape.color.alpha = a;
-    }
-
 }

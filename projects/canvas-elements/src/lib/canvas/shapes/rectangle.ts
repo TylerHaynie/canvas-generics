@@ -1,3 +1,4 @@
+import { IDrawable } from '../models/interfaces/idrawable';
 import { Size } from '../models/size';
 import { Vector2D } from '../objects/vector';
 import { ShapeBase } from './shape-base';
@@ -17,7 +18,7 @@ export class Corner {
     }
 }
 
-export class Rectangle extends ShapeBase {
+export class Rectangle extends ShapeBase implements IDrawable {
 
     //#region Public Properties
 
@@ -39,7 +40,6 @@ export class Rectangle extends ShapeBase {
         else {
             this._endGap = v;
         }
-
     }
 
     public get center(): Vector2D {
@@ -125,77 +125,77 @@ export class Rectangle extends ShapeBase {
     private _endGap: number = 0;
     private _roundedCorners: boolean = false;
 
-    constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        super(context, position);
+    constructor(position: Vector2D) {
+        super(position);
     }
 
-    draw() {
-        super.context.save();
+    draw(context: CanvasRenderingContext2D) {
+        context.save();
 
         // craeate rectangle path
         if (this._endGap > 0) {
-            this.drawComplexRectangle();
+            this.drawComplexRectangle(context);
         }
         else {
-            this.drawBasicRectangle();
+            this.drawBasicRectangle(context);
         }
 
         // does it have a shadow
         if (this.shadow !== undefined) {
             // super.context.shadowBlur = this.shadow.shadowBlur;
             // super.context.shadowColor = this.shadow.shadowColor;
-            super.context.shadowOffsetX = this.shadow.offsetX;
-            super.context.shadowOffsetY = this.shadow.offsetY;
+            context.shadowOffsetX = this.shadow.offsetX;
+            context.shadowOffsetY = this.shadow.offsetY;
         }
 
         // fill it
         if (this.color !== undefined) {
-            super.context.globalAlpha = this.color.alpha;
-            super.context.fillStyle = this.color.shade;
-            super.context.fill();
+            context.globalAlpha = this.color.alpha;
+            context.fillStyle = this.color.shade;
+            context.fill();
         }
 
         // draw the outline
         if (this.outline !== undefined) {
 
             // reset shadow for line
-            super.context.shadowColor = '';
-            super.context.shadowBlur = 0;
-            super.context.shadowOffsetX = 0;
-            super.context.shadowOffsetY = 0;
+            context.shadowColor = '';
+            context.shadowBlur = 0;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
 
-            super.context.lineWidth = this.outline.width;
-            super.context.globalAlpha = this.outline.alpha;
-            super.context.strokeStyle = this.outline.shade;
-            super.context.stroke();
+            context.lineWidth = this.outline.width;
+            context.globalAlpha = this.outline.alpha;
+            context.strokeStyle = this.outline.shade;
+            context.stroke();
         }
 
-        super.context.restore();
+        context.restore();
     }
 
-    private drawBasicRectangle() {
-        super.context.beginPath();
+    private drawBasicRectangle(context: CanvasRenderingContext2D ) {
+        context.beginPath();
 
         // start
-        super.context.moveTo(this.position.x, this.position.y);
+        context.moveTo(this.position.x, this.position.y);
 
         // top
-        super.context.lineTo(this.position.x + this._size.width, this.position.y);
+        context.lineTo(this.position.x + this._size.width, this.position.y);
 
         // right
-        super.context.lineTo(this.position.x + this._size.width, this.position.y + this._size.height);
+        context.lineTo(this.position.x + this._size.width, this.position.y + this._size.height);
 
         // bottom
-        super.context.lineTo(this.position.x, this.position.y + this._size.height);
+        context.lineTo(this.position.x, this.position.y + this._size.height);
 
         // left
-        super.context.lineTo(this.position.x, this.position.y);
+        context.lineTo(this.position.x, this.position.y);
 
-        super.context.closePath();
+        context.closePath();
     }
 
-    private drawComplexRectangle() {
-        super.context.beginPath();
+    private drawComplexRectangle(context: CanvasRenderingContext2D ) {
+        context.beginPath();
 
         // top line start
         let topLine = this.topLine;
@@ -209,58 +209,58 @@ export class Rectangle extends ShapeBase {
         let tlCorner = this.topLeftCorner;
 
         // top line
-        super.context.moveTo(topLine.p1.x, topLine.p1.y);
-        super.context.lineTo(topLine.p2.x, topLine.p2.y);
+        context.moveTo(topLine.p1.x, topLine.p1.y);
+        context.lineTo(topLine.p2.x, topLine.p2.y);
 
         // top right corner
         if (this._roundedCorners) {
-            super.context.quadraticCurveTo(trCorner.controlPoint.x, trCorner.controlPoint.y, trCorner.endingPoint.x, trCorner.endingPoint.y);
+            context.quadraticCurveTo(trCorner.controlPoint.x, trCorner.controlPoint.y, trCorner.endingPoint.x, trCorner.endingPoint.y);
         }
         else {
-            super.context.lineTo(trCorner.controlPoint.x - this._endGap, trCorner.controlPoint.y);
-            super.context.lineTo(trCorner.endingPoint.x, trCorner.endingPoint.y);
+            context.lineTo(trCorner.controlPoint.x - this._endGap, trCorner.controlPoint.y);
+            context.lineTo(trCorner.endingPoint.x, trCorner.endingPoint.y);
         }
 
         // right line
-        super.context.lineTo(rightLine.p1.x, rightLine.p1.y);
-        super.context.lineTo(rightLine.p2.x, rightLine.p2.y);
+        context.lineTo(rightLine.p1.x, rightLine.p1.y);
+        context.lineTo(rightLine.p2.x, rightLine.p2.y);
 
         // bottom right corner
         if (this._roundedCorners) {
-            super.context.quadraticCurveTo(brCorner.controlPoint.x, brCorner.controlPoint.y, brCorner.endingPoint.x, brCorner.endingPoint.y);
+            context.quadraticCurveTo(brCorner.controlPoint.x, brCorner.controlPoint.y, brCorner.endingPoint.x, brCorner.endingPoint.y);
         }
         else {
-            super.context.lineTo(brCorner.controlPoint.x - this._endGap, brCorner.controlPoint.y);
-            super.context.lineTo(brCorner.endingPoint.x, brCorner.endingPoint.y);
+            context.lineTo(brCorner.controlPoint.x - this._endGap, brCorner.controlPoint.y);
+            context.lineTo(brCorner.endingPoint.x, brCorner.endingPoint.y);
         }
 
         // bottom line
-        super.context.lineTo(bottomLine.p1.x, bottomLine.p1.y);
-        super.context.lineTo(bottomLine.p2.x, bottomLine.p2.y);
+        context.lineTo(bottomLine.p1.x, bottomLine.p1.y);
+        context.lineTo(bottomLine.p2.x, bottomLine.p2.y);
 
         // bottom left corner
         if (this._roundedCorners) {
-            super.context.quadraticCurveTo(blCorner.controlPoint.x, blCorner.controlPoint.y, blCorner.endingPoint.x, blCorner.endingPoint.y);
+            context.quadraticCurveTo(blCorner.controlPoint.x, blCorner.controlPoint.y, blCorner.endingPoint.x, blCorner.endingPoint.y);
         }
         else {
-            super.context.lineTo(blCorner.controlPoint.x + this._endGap, blCorner.controlPoint.y);
-            super.context.lineTo(blCorner.endingPoint.x, blCorner.endingPoint.y);
+            context.lineTo(blCorner.controlPoint.x + this._endGap, blCorner.controlPoint.y);
+            context.lineTo(blCorner.endingPoint.x, blCorner.endingPoint.y);
         }
 
         // left line
-        super.context.lineTo(leftLine.p1.x, leftLine.p1.y);
-        super.context.lineTo(leftLine.p2.x, leftLine.p2.y);
+        context.lineTo(leftLine.p1.x, leftLine.p1.y);
+        context.lineTo(leftLine.p2.x, leftLine.p2.y);
 
         // top left corner
         if (this._roundedCorners) {
-            super.context.quadraticCurveTo(tlCorner.controlPoint.x, tlCorner.controlPoint.y, tlCorner.endingPoint.x, tlCorner.endingPoint.y);
+            context.quadraticCurveTo(tlCorner.controlPoint.x, tlCorner.controlPoint.y, tlCorner.endingPoint.x, tlCorner.endingPoint.y);
         }
         else {
-            super.context.lineTo(tlCorner.controlPoint.x + this._endGap, tlCorner.controlPoint.y);
-            super.context.lineTo(tlCorner.endingPoint.x, tlCorner.endingPoint.y);
+            context.lineTo(tlCorner.controlPoint.x + this._endGap, tlCorner.controlPoint.y);
+            context.lineTo(tlCorner.endingPoint.x, tlCorner.endingPoint.y);
         }
 
-        super.context.closePath();
+        context.closePath();
     }
 
     pointWithinBounds(v: Vector2D): boolean {

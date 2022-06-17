@@ -1,53 +1,54 @@
+import { IDrawable } from '../models/interfaces/idrawable';
 import { Vector2D } from '../objects/vector';
 import { ShapeBase } from './shape-base';
 
-export class Circle extends ShapeBase {
+export class Circle extends ShapeBase implements IDrawable {
     private _radius: number;
     public get radius(): number { return this._radius; }
     public set radius(v: number) {
         this._radius = v;
     }
 
-    constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        super(context, position);
+    constructor(position: Vector2D) {
+        super(position);
         this._radius = 10;
     }
 
-    public draw() {
-        super.context.save();
-        super.context.beginPath();
-        super.context.globalAlpha = 0;
+    public draw(context: CanvasRenderingContext2D, ) {
+        context.save();
+        context.beginPath();
+        context.globalAlpha = 0;
 
         // create the circle
-        super.context.arc(this.position.x, this.position.y, this._radius, 0, Math.fround(2 * Math.PI));
+        context.arc(this.position.x, this.position.y, this._radius, 0, Math.fround(2 * Math.PI));
 
         // does it have a shadow
         if (this.shadow !== undefined) {
-            super.context.shadowBlur = this.shadow.blur;
-            super.context.shadowColor = this.shadow.shade;
-            super.context.shadowOffsetX = this.shadow.offsetX;
-            super.context.shadowOffsetY = this.shadow.offsetY;
+            context.shadowBlur = this.shadow.blur;
+            context.shadowColor = this.shadow.shade;
+            context.shadowOffsetX = this.shadow.offsetX;
+            context.shadowOffsetY = this.shadow.offsetY;
         }
 
         // draw solid circle
         if (this.color !== undefined) {
-            super.context.globalAlpha = this.color.alpha;
-            super.context.fillStyle = this.color.shade;
+            context.globalAlpha = this.color.alpha;
+            context.fillStyle = this.color.shade;
 
-            super.context.fill();
+            context.fill();
         }
 
         // does it have an outline
         if (this.outline !== undefined) {
-            super.context.lineWidth = this.outline.width;
-            super.context.globalAlpha = this.outline.alpha;
-            super.context.strokeStyle = this.outline.shade;
+            context.lineWidth = this.outline.width;
+            context.globalAlpha = this.outline.alpha;
+            context.strokeStyle = this.outline.shade;
 
             // outline the circle
-            super.context.stroke();
+            context.stroke();
         }
 
-        super.context.restore();
+        context.restore();
     }
 
     pointWithinBounds(point: Vector2D) {
