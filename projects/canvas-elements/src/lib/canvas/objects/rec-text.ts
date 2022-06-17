@@ -1,8 +1,8 @@
 import { Color } from '../models/color';
+import { IDrawable } from '../models/interfaces/idrawable';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
 import { Size } from '../models/size';
-import { DrawBase } from '../shapes/draw-base';
 import { Rectangle } from '../shapes/rectangle';
 import { TextOptions } from '../shapes/text/models';
 import { TextObject } from '../shapes/text/text-object';
@@ -39,18 +39,18 @@ export class RecTextOptions {
     }
 }
 
-export class RecText extends DrawBase {
+export class RecText implements IDrawable {
     private _text: TextOptions;
     public get text(): TextOptions { return this._text; }
-    public set text(v: TextOptions) { this._text = v; this.isDirty = true; }
+    public set text(v: TextOptions) { this._text = v; }
 
     private _size: Size;
     public get size(): Size { return this._size; }
-    public set size(v: Size) { this._size = v; this.isDirty = true; }
+    public set size(v: Size) { this._size = v; }
 
     private _options: RecTextOptions;
     public get options(): RecTextOptions { return this._options; }
-    public set options(v: RecTextOptions) { this._options = v; this.isDirty = true; }
+    public set options(v: RecTextOptions) { this._options = v; }
 
     private _rectangle: Rectangle;
     public get rectangle() { return this._rectangle; }
@@ -58,31 +58,34 @@ export class RecText extends DrawBase {
     private _textObject: TextObject;
     public get textObject() { return this._textObject; }
 
-    constructor(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, text: TextOptions | string, options?: RecTextOptions) {
-        super(context, pos, () => this.draw());
+    private _position: Vector2D;
+    public get position(): Vector2D { return this._position; }
+
+    constructor(pos: Vector2D, size: Size, text: TextOptions | string, options?: RecTextOptions) {
+        this._position = pos;
         this._size = size;
         this._text = typeof text === 'string' ? new TextOptions(<string>text) : text;
         this._options = options || new RecTextOptions();
-
-        this.update();
     }
 
-    draw() {
-        // draw is called only when base properties are dirty
-        // so we update the rectangle and text before drawing the object
-        this.update();
-
-        this._rectangle.draw();
-        this._textObject.draw();
+    public setPosition(x: number, y: number) {
+        this._position.set(x, y);
     }
 
-    private update() {
-        let t = this.createText(this.position, this._text, this._options);
+    draw(context: CanvasRenderingContext2D) {
+        this.update(context);
+
+        this._rectangle.draw(context);
+        this._textObject.draw(context);
+    }
+
+    private update(context: CanvasRenderingContext2D) {
+        let t = this.createText(this._position, this._text, this._options);
 
         if (this._options.autoWidth) {
-            this._size.setSize(t.textWidth, this._size.height);
+            this._size.setSize(t.getTextWidth(context), this._size.height);
         }
-        let rec = this.createRectangle(this.position, this._size, this._options);
+        let rec = this.createRectangle(context, this._position, this._size, this._options);
 
         // set text width including rectangle padding
         t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - this._options.paddingLeft - this._options.paddingRight : undefined;
@@ -95,7 +98,7 @@ export class RecText extends DrawBase {
     }
 
     private createText(pos: Vector2D, options: TextOptions, recTextOptions: RecTextOptions) {
-        let t = new TextObject(this._context, pos, options);
+        let t = new TextObject(pos, options);
         t.color = recTextOptions.textColor;
 
         // adding a little shadow
@@ -117,16 +120,16 @@ export class RecText extends DrawBase {
         return t;
     }
 
-    private createRectangle(pos: Vector2D, size: Size, options: RecTextOptions) {
+    private createRectangle(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, options: RecTextOptions) {
 
         // create the rectangle (this could auto size to text width if we want)
-        let rec = new Rectangle(this._context, pos);
+        let rec = new Rectangle(pos);
 
         rec.size.setSize(size.width + options.paddingLeft + options.paddingRight, size.height);
         rec.outline = options ? options.recStyle.outline : new LineStyle();
 
         // create the graident
-        let g = this._context.createLinearGradient(rec.center.x, rec.topLeft.y, rec.center.x, rec.bottomRight.y);
+        let g = context.createLinearGradient(rec.center.x, rec.topLeft.y, rec.center.x, rec.bottomRight.y);
 
         // background
         g.addColorStop(0, options.recStyle.startColor);

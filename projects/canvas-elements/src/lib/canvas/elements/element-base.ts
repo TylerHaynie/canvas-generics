@@ -2,6 +2,7 @@ import { UI_EVENT_TYPE, MOUSE_STATE } from '../events/canvas-enums';
 import { CanvasEvent } from '../events/canvas-event';
 import { MouseData } from '../events/event-data';
 import { Color } from '../models/color';
+import { IDrawable } from '../models/interfaces/idrawable';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
 import { Vector2D } from '../objects/vector';
@@ -9,8 +10,7 @@ import { Circle } from '../shapes/circle';
 import { Rectangle } from '../shapes/rectangle';
 import { ResizeProperty } from './element-properties/resize-property';
 
-export class ElementBase {
-
+export class ElementBase implements IDrawable  {
     private _shape: Rectangle | Circle;
     public get shape(): Rectangle | Circle { return this._shape; }
     public set shape(v: Rectangle | Circle) {
@@ -69,7 +69,6 @@ export class ElementBase {
     protected activeOutline: LineStyle;
     protected activeShadow: Shadow;
 
-    protected _context: CanvasRenderingContext2D;
     private previousEventType: UI_EVENT_TYPE;
 
     // dragging
@@ -86,8 +85,7 @@ export class ElementBase {
         this.canvasEvent.subscribe(on, callback);
     }
 
-    constructor(context: CanvasRenderingContext2D) {
-        this._context = context;
+    constructor() {
         this.previousEventType = UI_EVENT_TYPE.UP;
 
         this.activeColor = new Color();
@@ -176,20 +174,20 @@ export class ElementBase {
         return this.shape.position;
     }
 
-    draw() {
+    draw(context: CanvasRenderingContext2D) {
         this.styleElement();
-        this._shape.draw();
+        this._shape.draw(context);
 
         // now draw children
         // TODO: need to index children to draw in correct order
         this.childElements.forEach(childElement => {
-            childElement.draw();
+            childElement.draw(context);
         });
 
         // draw menu(s)
         if (this.hoverMenuEnabled) {
             if (this.resizeMenu) {
-                this.resizeMenu.draw();
+                this.resizeMenu.draw(context);
             }
         }
     }
@@ -228,7 +226,7 @@ export class ElementBase {
         let dx = e.mousePosition.x - elementPosition.x;
         let dy = e.mousePosition.y - elementPosition.y;
 
-        this.dragOffset = new Vector2D(dx, dy);
+        this.dragOffset.set(dx, dy);
     }
 
     private dragElement(e: MouseData) {

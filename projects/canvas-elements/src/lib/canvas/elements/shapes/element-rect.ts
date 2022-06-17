@@ -18,16 +18,16 @@ export class ElementRect extends ElementBase {
         this.buildMenus();
     }
 
-    constructor(context: CanvasRenderingContext2D, position: Vector2D) {
-        super(context);
-        this.setupBaseElement(context, position);
+    constructor(position: Vector2D) {
+        super();
+        this.setupBaseElement(position);
         this.on(UI_EVENT_TYPE.MOVE, (e: MouseData) => {
             this.elementMoved(e);
         });
     }
 
-    private setupBaseElement(context: CanvasRenderingContext2D, position: Vector2D) {
-        let r = new Rectangle(context, position);
+    private setupBaseElement(position: Vector2D) {
+        let r = new Rectangle(position);
         this.shape = r;
     }
 
@@ -39,7 +39,7 @@ export class ElementRect extends ElementBase {
 
     buildMenus() {
         if (this.allowResize) {
-            let resizeMenu = new ResizeProperty(this._context, this.getposition(), this.size);
+            let resizeMenu = new ResizeProperty(this.getposition(), this.size);
 
             // passing down event
             this.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {

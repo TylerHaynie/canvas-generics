@@ -9,7 +9,7 @@ export class MouseData {
     clickPosition: Vector2D;
     mouseOnCanvas: boolean;
     scrollDirection: string;
-    leftMouseState: string;
+    primaryMouseState: string;
     mouseMoving: boolean;
 }
 

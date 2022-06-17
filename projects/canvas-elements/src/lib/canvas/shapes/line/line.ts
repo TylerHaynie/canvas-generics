@@ -1,10 +1,9 @@
+import { IDrawable } from '../../models/interfaces/idrawable';
 import { LineStyle } from '../../models/line-style';
 import { Shadow } from '../../models/shadow';
 import { LineSegment } from './line-segment';
 
-export class Line {
-    private context: CanvasRenderingContext2D;
-
+export class Line implements IDrawable {
     private segments: LineSegment[] = [];
 
     private _style: LineStyle;
@@ -13,7 +12,6 @@ export class Line {
         if (!this._style) {
             this._style = new LineStyle();
         }
-
         this._style = v;
     }
 
@@ -23,12 +21,10 @@ export class Line {
         if (!this._style) {
             this._style = new LineStyle();
         }
-
         this._shadow = v;
     }
 
-    constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
+    constructor() {
         this.style = new LineStyle();
     }
 
@@ -42,39 +38,39 @@ export class Line {
         });
     }
 
-    draw() {
-        if (this.context) {
+    draw(context: CanvasRenderingContext2D) {
+        if (context) {
             if (this.segments.length > 0) {
-                this.context.save();
-                this.context.beginPath();
+                context.save();
+                context.beginPath();
 
                 this.segments.forEach(segment => {
                     if (!segment || !(segment.points.length > 0)) {
                         console.warn('A segment in the line does not have one or all of the following properties: {startPosition, points}');
                         return;
                     }
-                    this.context.moveTo(segment.points[0].x, segment.points[0].y);
+                    context.moveTo(segment.points[0].x, segment.points[0].y);
                     for (let i = 1; i < segment.points.length; i++) {
-                        this.context.lineTo(segment.points[i].x, segment.points[i].y);
+                        context.lineTo(segment.points[i].x, segment.points[i].y);
                     }
                 });
 
                 // does it have a shadow
                 if (this.shadow) {
-                    // this.context.shadowBlur = this.shadow.shadowBlur;
-                    this.context.shadowColor = this.shadow.shade;
-                    this.context.shadowOffsetX = this.shadow.offsetX;
-                    this.context.shadowOffsetY = this.shadow.offsetY;
+                    // context.shadowBlur = this.shadow.shadowBlur;
+                    context.shadowColor = this.shadow.shade;
+                    context.shadowOffsetX = this.shadow.offsetX;
+                    context.shadowOffsetY = this.shadow.offsetY;
                 }
 
-                this.context.lineWidth = this.style.width;
-                this.context.strokeStyle = this.style.shade;
-                this.context.globalAlpha = this.style.alpha;
+                context.lineWidth = this.style.width;
+                context.strokeStyle = this.style.shade;
+                context.globalAlpha = this.style.alpha;
 
-                this.context.stroke();
+                context.stroke();
 
-                this.context.setTransform(1, 0, 0, 1, 0, 0);
-                this.context.restore();
+                context.setTransform(1, 0, 0, 1, 0, 0);
+                context.restore();
             }
             else {
                 console.warn('You are trying to draw a line without any segments');

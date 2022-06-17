@@ -19,7 +19,7 @@ export class UIManager {
     private _uiBuffer: [{ drawCallBack: () => void }];
     public get uiBuffer() { return this._uiBuffer; }
 
-    private _mainBuffer: [{ drawCallBack: () => void }];
+    private _mainBuffer: [{ drawCallBack: (context: CanvasRenderingContext2D) => void }];
     public get mainBuffer() { return this._mainBuffer; }
 
     private _debugEnabled: boolean = false;
@@ -69,15 +69,15 @@ export class UIManager {
 
     //#region Public UI Element Functions
 
-    addUIElement(element: ElementBase) {
+    addUIElement(context: CanvasRenderingContext2D, element: ElementBase) {
         this.uiElements.push(element);
-        this.addToUiBuffer(() => element.draw());
+        this.addToUiBuffer(() => element.draw(context));
     }
 
-    addUIElements(elements: ElementBase[]) {
+    addUIElements(context: CanvasRenderingContext2D, elements: ElementBase[]) {
         if (elements) {
             elements.forEach(element => {
-                this.addUIElement(element);
+                this.addUIElement(context, element);
             });
         }
     }
@@ -111,10 +111,10 @@ export class UIManager {
         }
     }
 
-    drawMainBuffer() {
+    drawMainBuffer(context: CanvasRenderingContext2D) {
         if (this._mainBuffer) {
             this._mainBuffer.forEach(buffer => {
-                buffer.drawCallBack();
+                buffer.drawCallBack(context);
             });
         }
     }

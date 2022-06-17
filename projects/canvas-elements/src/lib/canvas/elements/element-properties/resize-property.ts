@@ -8,7 +8,6 @@ import { Rectangle } from '../../shapes/rectangle';
 import { ElementBase } from '../element-base';
 
 export class ResizeProperty {
-    private context: CanvasRenderingContext2D;
     private position: Vector2D;
     private size: Size;
 
@@ -21,24 +20,23 @@ export class ResizeProperty {
     private topMidRect: ElementBase;
     private bottomMidRect: ElementBase;
 
-    constructor(context: CanvasRenderingContext2D, position: Vector2D, size: Size) {
-        this.context = context;
+    constructor(position: Vector2D, size: Size) {
         this.position = position;
         this.size = size;
 
         this.buildMenu();
     }
 
-    draw() {
-        this.topLeftCorner.draw();
-        this.topRightCorner.draw();
-        this.bottomRightCorner.draw();
-        this.bottomLeftCorner.draw();
+    draw(context: CanvasRenderingContext2D) {
+        this.topLeftCorner.draw(context);
+        this.topRightCorner.draw(context);
+        this.bottomRightCorner.draw(context);
+        this.bottomLeftCorner.draw(context);
 
-        this.leftMidRect.draw();
-        this.rightMidRect.draw();
-        this.topMidRect.draw();
-        this.bottomMidRect.draw();
+        this.leftMidRect.draw(context);
+        this.rightMidRect.draw(context);
+        this.topMidRect.draw(context);
+        this.bottomMidRect.draw(context);
     }
 
     private buildMenu() {
@@ -59,49 +57,49 @@ export class ResizeProperty {
         hoverColor.setAlpha(1);
 
         // top left corner
-        this.topLeftCorner = this.buildRect(this.context, b.topLeft, cornerSize, cornerColor);
+        this.topLeftCorner = this.buildRect(b.topLeft, cornerSize, cornerColor);
         this.topLeftCorner.hoverColor = hoverColor;
         this.topLeftCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.topLeftBottomRightCornerHover(e, this.topLeftCorner);
         });
 
         // top Right corner
-        this.topRightCorner = this.buildRect(this.context, new Vector2D(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
+        this.topRightCorner = this.buildRect(new Vector2D(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
         this.topRightCorner.hoverColor = hoverColor;
         this.topRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.topRightBottomLeftCornerHover(e, this.topRightCorner);
         });
 
         // bottom Right corner
-        this.bottomRightCorner = this.buildRect(this.context, new Vector2D(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
+        this.bottomRightCorner = this.buildRect(new Vector2D(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomRightCorner.hoverColor = hoverColor;
         this.bottomRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.topLeftBottomRightCornerHover(e, this.bottomRightCorner);
         });
 
         // bottom left corner
-        this.bottomLeftCorner = this.buildRect(this.context, new Vector2D(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
+        this.bottomLeftCorner = this.buildRect(new Vector2D(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomLeftCorner.hoverColor = hoverColor;
         this.bottomLeftCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.topRightBottomLeftCornerHover(e, this.bottomLeftCorner);
         });
 
         // left center rectangle
-        this.leftMidRect = this.leftCenterRect(this.context, b, cornerSize, straightColor);
+        this.leftMidRect = this.leftCenterRect(b, cornerSize, straightColor);
         this.leftMidRect.hoverColor = hoverColor;
         this.leftMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.verticalHovered(e, this.leftMidRect);
         });
 
         // right center rectangle
-        this.rightMidRect = this.rightCenterRect(this.context, b, cornerSize, straightColor);
+        this.rightMidRect = this.rightCenterRect(b, cornerSize, straightColor);
         this.rightMidRect.hoverColor = hoverColor;
         this.rightMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.verticalHovered(e, this.rightMidRect);
         });
 
         // top center rectangle
-        this.topMidRect = this.topCenterRect(this.context, b, cornerSize, straightColor);
+        this.topMidRect = this.topCenterRect(b, cornerSize, straightColor);
         this.topMidRect.hoverColor = hoverColor;
         this.topMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.horizontalHovered(e, this.topMidRect);
@@ -109,7 +107,7 @@ export class ResizeProperty {
 
 
         // bottom center rectangle
-        this.bottomMidRect = this.bottomCenterRect(this.context, b, cornerSize, straightColor);
+        this.bottomMidRect = this.bottomCenterRect(b, cornerSize, straightColor);
         this.bottomMidRect.hoverColor = hoverColor;
         this.bottomMidRect.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.horizontalHovered(e, this.bottomMidRect);
@@ -226,48 +224,48 @@ export class ResizeProperty {
         }
     }
 
-    private buildRect(context: CanvasRenderingContext2D, position: Vector2D, size: Size, color: Color): ElementBase {
-        let rect = new Rectangle(context, position);
+    private buildRect(position: Vector2D, size: Size, color: Color): ElementBase {
+        let rect = new Rectangle(position);
         rect.color = color;
         rect.size = size;
         rect.color.setAlpha(.35);
 
-        let eb = new ElementBase(context);
+        let eb = new ElementBase();
         eb.shape = rect;
 
         return eb;
     }
 
-    private topCenterRect(context: CanvasRenderingContext2D, bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
+    private topCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let w = bounds.width - (cornerSize.width * 2);
         let p = new Vector2D(bounds.topLeft.x + cornerSize.width, bounds.topLeft.y);
         let s = new Size(w, cornerSize.height);
 
-        return this.buildRect(context, p, s, color);
+        return this.buildRect(p, s, color);
     }
 
-    private bottomCenterRect(context: CanvasRenderingContext2D, bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
+    private bottomCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let w = bounds.width - (cornerSize.width * 2);
         let p = new Vector2D(bounds.bottomLeft.x + cornerSize.width, bounds.bottomLeft.y - cornerSize.height);
         let s = new Size(w, cornerSize.height);
 
-        return this.buildRect(context, p, s, color);
+        return this.buildRect(p, s, color);
     }
 
-    private leftCenterRect(context: CanvasRenderingContext2D, bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
+    private leftCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let h = bounds.height - (cornerSize.height * 2);
         let p = new Vector2D(bounds.topLeft.x, bounds.topLeft.y + cornerSize.height);
         let s = new Size(cornerSize.width, h);
 
-        return this.buildRect(context, p, s, color);
+        return this.buildRect(p, s, color);
     }
 
-    private rightCenterRect(context: CanvasRenderingContext2D, bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
+    private rightCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let h = bounds.height - (cornerSize.height * 2);
         let p = new Vector2D(bounds.topRight.x - cornerSize.width, bounds.topRight.y + cornerSize.height);
         let s = new Size(cornerSize.width, h);
 
-        return this.buildRect(context, p, s, color);
+        return this.buildRect(p, s, color);
     }
 
     private topLeftBottomRightCornerHover(e: MouseData, element: ElementBase) {

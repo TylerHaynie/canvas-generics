@@ -232,13 +232,13 @@ export class QuadTree {
 
     debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .20) {
         let p = new Vector2D(this.boundary.x, this.boundary.y);
-        let rect = new Rectangle(context, p);
+        let rect = new Rectangle(p);
         rect.size.setSize(this.boundary.width, this.boundary.height);
         rect.outline = new LineStyle(color, lineWidth);
         rect.outline.setShade(color);
         rect.outline.setAlpha(alpha);
         rect.color.setAlpha(0);
-        rect.draw();
+        rect.draw(context);
 
         if (this.isDivided) {
             this.topLeft.debugQuad(context, color, alpha, lineWidth);

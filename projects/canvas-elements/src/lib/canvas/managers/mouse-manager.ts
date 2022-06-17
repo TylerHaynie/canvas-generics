@@ -4,8 +4,8 @@ import { MouseData } from '../events/event-data';
 import { Vector2D } from '../objects/vector';
 
 export class MouseManager {
-
     public get mouseOnCanvas(): boolean { return this._mouseOnCanvas; }
+    public get mousePosition(): Vector2D { return this._mousePosition; }
 
     //#region private variables
     private _context: CanvasRenderingContext2D;
@@ -15,7 +15,7 @@ export class MouseManager {
     private _translatedPosition: Vector2D;
     private _mouseOnCanvas: boolean = false;
     private _scrollingDirection: string = 'none';
-    private _leftMousePosition: string = 'up';
+    private _primaryMousePosition: string = 'up';
     private _isMoving: boolean = false;
 
     //#endregion
@@ -43,6 +43,7 @@ export class MouseManager {
 
     // TODO: update location based on camera position
     // ... updateOrigin(camPosX, camPosY) or something like that
+    // ... or have a method in camera that will return mouse position based on camera location
 
     private registerEvents() {
         const cv = this._context.canvas;
@@ -55,7 +56,7 @@ export class MouseManager {
 
         cv.onmousedown = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.DOWN;
-            this.doMouseDown(e.clientX, e.clientY);
+            this.mouseDown(e.clientX, e.clientY);
         };
 
         cv.onmouseup = (e: MouseEvent) => {
@@ -91,32 +92,30 @@ export class MouseManager {
         e.mousePosition = this._mousePosition;
         e.mouseOnCanvas = this._mouseOnCanvas;
         e.scrollDirection = this._scrollingDirection;
-        e.leftMouseState = this._leftMousePosition;
+        e.primaryMouseState = this._primaryMousePosition;
         e.mouseMoving = this._isMoving;
 
         this._mouseEvents.fireEvent(e.eventType, e);
     }
 
-
-
-    private doMouseDown(x: number, y: number) {
+    private mouseDown(x: number, y: number) {
         this._mouseOnCanvas = true;
-        this._leftMousePosition = 'down';
-        this._mousePosition = new Vector2D(x, y);
+        this._primaryMousePosition = 'down';
+        this.setMousePosition(x, y);
 
         this.fireEvent();
     }
 
     private updateMousePosition(x: number, y: number) {
         this._isMoving = true;
-        this._mousePosition = new Vector2D(x, y);
+        this.setMousePosition(x, y);
         this._mouseOnCanvas = true;
 
         this.fireEvent();
     }
 
     private mouseUp() {
-        this._leftMousePosition = 'up';
+        this._primaryMousePosition = 'up';
         this.fireEvent();
     }
 
@@ -139,5 +138,9 @@ export class MouseManager {
         this._scrollingDirection = 'down';
 
         this.fireEvent();
+    }
+
+    private setMousePosition(x: number, y: number): void {
+        this._mousePosition ? this._mousePosition.set(x, y) : this._mousePosition = new Vector2D(x, y);
     }
 }
