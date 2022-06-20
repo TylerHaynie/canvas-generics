@@ -1,5 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { CanvasWrapper, RandomUtility, ColorUtility, QuadTree, FadableParticle, Vector2D, Boundary, MOUSE_EVENT_TYPE, MouseData, Color, Rectangle, Size, GradientUtility, Bounds, Velocity, QuadVector } from 'canvas-elements';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  CanvasWrapper, RandomUtility, ColorUtility,
+  QuadTree, FadableParticle, Vector2D, Boundary,
+  MOUSE_EVENT_TYPE, MouseData, Color, Rectangle, Size,
+  GradientUtility, Bounds, Velocity, QuadVector
+} from 'canvas-elements';
 
 @Component({
   selector: 'app-particle-test',
@@ -10,15 +15,12 @@ export class ParticleTestComponent implements AfterViewInit {
   @ViewChild('c') canvasRef: ElementRef;
   //#region Variables
 
-  private cw: CanvasWrapper;
+  private _cw: CanvasWrapper;
   private _foregroundGradient: CanvasGradient;
   private _random: RandomUtility = new RandomUtility();
   private _color: ColorUtility = new ColorUtility;
 
   private debugParticles = false;
-
-  // points-of-interest
-  // private pointsOfIntrest: FloatingParticle[] = [];
 
   // quads
   private particleQuad: QuadTree;
@@ -67,34 +69,34 @@ export class ParticleTestComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit() {
-    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
-    this.cw.panZoomManager.minScale = 1;
-    this.cw.panZoomManager.panningAllowed = false;
-    this.cw.panZoomManager.scalingAllowed = false;
-    this.cw.enableGrid = false;
-    this.cw.trackMouse = false;
-    this.cw.uiManager.debugEnabled = true;
+    this._cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
+    this._cw.panZoomManager.minScale = 1;
+    this._cw.panZoomManager.panningAllowed = false;
+    this._cw.panZoomManager.scalingAllowed = false;
+    this._cw.enableGrid = false;
+    this._cw.trackMouse = false;
+    this._cw.renderManager.debugEnabled = true;
 
     this.registerEvents();
 
     // set up quad trees
-    let boundary: Boundary = new Boundary(0, 0, 0, this.cw.width, this.cw.height, 0);
+    let boundary: Boundary = new Boundary(0, 0, 0, this._cw.width, this._cw.height, 0);
     this.particleQuad = new QuadTree(boundary, 1);
 
     this._foregroundGradient = this.createGradient();
 
-    // start the draw loop
-    this.cw.start();
+    // // start the draw loop
+    this._cw.start();
   }
 
   private registerEvents() {
-    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
+    this._cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
       this.mouseOnCanvas = true;
       this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
       console.log('Mouse X: ' + this.mousePosition.x + ' Mouse Y: ' + this.mousePosition.y);
     });
 
-    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
+    this._cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
       this.mouseOnCanvas = false;
     });
   }
@@ -104,60 +106,58 @@ export class ParticleTestComponent implements AfterViewInit {
   //#region Drawing
 
   draw() {
-    this.cw.saveContext();
+    this._cw.saveContext();
 
     this.drawBackground();
 
     // do some hover stuff
-    this.checkParticleHover();
+    this.checkParticleHover(); // TODO: put in update()
 
     // update and draw particles
-    this.updateParticles();
+    this.updateParticles(); // TODO: put in update()
     this.drawParticles();
 
     // drawing the gradient on the top
-    this.drawForeground();
+    // this.drawForeground();
 
     // debug
     if (this.debugParticles) {
-      this.particleQuad.debugQuad(this.cw.drawingContext);
+      this.particleQuad.debugQuad(this._cw.drawingContext);
     }
 
-    this.cw.restoreContext();
+    this._cw.restoreContext();
   }
 
   private drawBackground() {
-    let bounds = this.cw.bounds;
-    let p = new Vector2D(bounds.left, bounds.top);
+    let p = new Vector2D(0, 0);
     let b = new Rectangle(p);
-    b.size.setSize(bounds.width, bounds.height);
+    b.size.setSize(this._cw.width, this._cw.height);
     b.color.setShade(this.backgroundColor);
 
-    b.draw(this.cw.drawingContext);
+    b.draw(this._cw.drawingContext);
   }
 
   private drawForeground() {
-    let bounds = this.cw.bounds;
+    // let bounds = this._cw.bounds;
 
-    let p = new Vector2D(bounds.left, bounds.top);
+    let p = new Vector2D(0, 0);
     let f = new Rectangle(p);
-    f.size.setSize(bounds.width, bounds.height);
+    f.size.setSize(this._cw.width, this._cw.height);
     f.color.setShade(this._foregroundGradient);
 
-    f.draw(this.cw.drawingContext);
+    f.draw(this._cw.drawingContext);
   }
 
-  private drawParticles(){
+  private drawParticles() {
     this.floatingParticles.forEach(particle => {
-      particle.draw(this.cw.drawingContext);
+      particle.draw(this._cw.drawingContext);
     });
   }
 
   private createGradient(): CanvasGradient {
-    let bounds = this.cw.bounds;
-    let gradUtil = new GradientUtility(this.cw.drawingContext);
+    let gradUtil = new GradientUtility(this._cw.drawingContext);
     // Create gradient
-    let grd = gradUtil.createLinearGradient(bounds.height / 2, 0.000, bounds.height / 2, bounds.height);
+    let grd = gradUtil.createLinearGradient(this._cw.height / 2, 0.000, this._cw.height / 2, this._cw.height);
 
     // Top Color
     grd.addColorStop(this.foregroundEnd1, this.foregroundColorEndColor);
@@ -182,11 +182,11 @@ export class ParticleTestComponent implements AfterViewInit {
   private updateFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined) {
     if (trackingTree) {
       // clear the quad
-      trackingTree.reset(this.cw.width, this.cw.height);
+      trackingTree.reset(this._cw.width, this._cw.height);
     }
 
     let bp = new Vector2D(0, 0);
-    let bs = new Size(this.cw.width, this.cw.height);
+    let bs = new Size(this._cw.width, this._cw.height);
     let particleBounds = new Bounds(bp, bs);
 
     for (let x = particles.length - 1; x >= 0; x--) {
@@ -215,15 +215,13 @@ export class ParticleTestComponent implements AfterViewInit {
 
   //#endregion
 
-  //#region Generation
-
-  generateMissingParticles() {
+  private generateMissingParticles() {
 
     for (let x = this.floatingParticles.length; x < this.maxParticles; x++) {
 
       let pLocation = new Vector2D(
-        Math.fround(Math.random() * (this.cw.width - this.particleMaxRadius)),
-        Math.fround(Math.random() * (this.cw.height - this.particleMaxRadius))
+        Math.fround(Math.random() * (this._cw.width - this.particleMaxRadius)),
+        Math.fround(Math.random() * (this._cw.height - this.particleMaxRadius))
       );
 
       let rect = new Rectangle(pLocation);
@@ -254,10 +252,6 @@ export class ParticleTestComponent implements AfterViewInit {
     }
   }
 
-  //#endregion
-
-  //#region Interaction
-
   private checkParticleHover() {
     if (this.mouseOnCanvas) {
       // current mouse location
@@ -281,7 +275,5 @@ export class ParticleTestComponent implements AfterViewInit {
     }
 
   }
-
-  //#endregion
 
 }

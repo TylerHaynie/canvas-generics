@@ -12,7 +12,6 @@ import { RayTestComponent } from './scenes/ray-test/ray-test.component';
     ElementTestComponent,
     ParticleTestComponent,
     RayTestComponent,
-
   ],
   imports: [
     BrowserModule

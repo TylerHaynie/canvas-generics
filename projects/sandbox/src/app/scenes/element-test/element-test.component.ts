@@ -22,7 +22,7 @@ export class ElementTestComponent implements AfterViewInit {
     this.cw.panZoomManager.scalingAllowed = false;
     this.cw.trackMouse = false;
     this.cw.gridAsBackground = false;
-    this.cw.uiManager.debugEnabled = true;
+    this.cw.renderManager.debugEnabled = true;
 
     this.createTestUI();
 
@@ -49,7 +49,7 @@ export class ElementTestComponent implements AfterViewInit {
     rect.isDraggable = true;
 
     // add to buffer
-    this.cw.uiManager.addUIElement(this.cw.drawingContext, rect);
+    this.cw.renderManager.addUIElement(this.cw.drawingContext, rect);
   }
 
   private circleButton() {
@@ -67,7 +67,7 @@ export class ElementTestComponent implements AfterViewInit {
       // do something with your circle button
     });
 
-    this.cw.uiManager.addUIElement(this.cw.drawingContext, ce);
+    this.cw.renderManager.addUIElement(this.cw.drawingContext, ce);
   }
 
   private rectangleButton() {
@@ -87,7 +87,7 @@ export class ElementTestComponent implements AfterViewInit {
 
     });
 
-    this.cw.uiManager.addUIElement(this.cw.drawingContext, re);
+    this.cw.renderManager.addUIElement(this.cw.drawingContext, re);
   }
 
 }

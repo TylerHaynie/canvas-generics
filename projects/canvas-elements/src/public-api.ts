@@ -9,7 +9,7 @@ export * from './lib/canvas/events/event-data';
 export * from './lib/canvas/managers/keyboard-manager';
 export * from './lib/canvas/managers/mouse-manager';
 export * from './lib/canvas/managers/pan-zoom-manager';
-export * from './lib/canvas/managers/ui-manager';
+export * from './lib/canvas/managers/render-manager';
 export * from './lib/canvas/managers/window-manager';
 export * from './lib/canvas/models/color';
 export * from './lib/canvas/models/line-style';

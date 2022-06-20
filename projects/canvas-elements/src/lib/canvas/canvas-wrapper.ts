@@ -3,8 +3,9 @@ import { MouseData } from './events/event-data';
 import { KeyboardManager } from './managers/keyboard-manager';
 import { MouseManager } from './managers/mouse-manager';
 import { PanZoomManager } from './managers/pan-zoom-manager';
-import { UIManager } from './managers/ui-manager';
+import { RenderManager } from './managers/render-manager';
 import { WindowManager } from './managers/window-manager';
+import { IDrawable } from './models/interfaces/idrawable';
 import { HelperUtility } from './utilities/helper-utility';
 
 export class CanvasWrapper {
@@ -18,9 +19,8 @@ export class CanvasWrapper {
     public get mouseManager() { return this._mouseManager; }
     public get panZoomManager() { return this._panZoomManager; }
     public get keyboardManager() { return this._keyboardManager; }
-    public get uiManager() { return this._uiManager; }
+    public get renderManager() { return this._renderManager; }
 
-    public get bounds() { return this._context.canvas.getBoundingClientRect(); }
     public get width() { return this._context.canvas.width; }
     public get height() { return this._context.canvas.height; }
 
@@ -50,9 +50,11 @@ export class CanvasWrapper {
     // managers
     private _panZoomManager: PanZoomManager;
     private _mouseManager: MouseManager;
-    private _uiManager: UIManager;
+    private _renderManager: RenderManager;
     private _keyboardManager: KeyboardManager;
     private _WindowManager: WindowManager;
+
+    private _drawables: IDrawable[] = [];
 
     // mouse
     private currentMouseData: MouseData;
@@ -65,7 +67,9 @@ export class CanvasWrapper {
         this.registerEvents();
         this.setupCanvas();
 
-        this._uiManager.addToMainBuffer(drawCallback);
+        // this means only 1 component can be drawn per canvas.
+        // need to add an array to the canvas wrapper that can hold drawable objects.
+        this._renderManager.addToMainBuffer(drawCallback);
         this._WindowManager.fit();
     }
 
@@ -81,6 +85,10 @@ export class CanvasWrapper {
         this._context.restore();
     }
 
+    addToDrawables(drawable: IDrawable) {
+        this._drawables.push(drawable);
+    }
+
     private setupManagers() {
         // window
         this._WindowManager = new WindowManager(this._context);
@@ -92,7 +100,7 @@ export class CanvasWrapper {
         this._keyboardManager = new KeyboardManager(this._context);
 
         // UI and main drawing
-        this._uiManager = new UIManager(this._mouseManager);
+        this._renderManager = new RenderManager(this._mouseManager);
 
         // pan-zoom
         this._panZoomManager = new PanZoomManager(this._context, this._mouseManager);
@@ -148,10 +156,10 @@ export class CanvasWrapper {
             // draw the grid first?
             if (this._gridAsBackground) { this.drawGrid(); }
 
-            this._uiManager.drawMainBuffer(this._context);
+            this._renderManager.drawMainBuffer(this._context);
 
-            if (this._uiManager.uiEnabled) { this._uiManager.drawUiBuffer(); }
-            if (this._uiManager.debugEnabled) { this._uiManager.drawDebugBuffer(); }
+            if (this._renderManager.uiEnabled) { this._renderManager.drawUiBuffer(); }
+            if (this._renderManager.debugEnabled) { this._renderManager.drawDebugBuffer(); }
 
             this.trackMousePosition();
 
@@ -171,11 +179,11 @@ export class CanvasWrapper {
 
         this.lastRender = performance.now();
         // do it all again
-        requestAnimationFrame(() => this.start());
+        requestAnimationFrame(() => this.draw());
     }
 
     private beginDebugStuff() {
-        if (this._uiManager.debugEnabled) {
+        if (this._renderManager.debugEnabled) {
             this.timeSinceFpsTick = this.timeSinceFpsTick + this.delta;
 
             if (this.timeSinceFpsTick > 100) {
@@ -186,17 +194,19 @@ export class CanvasWrapper {
     }
 
     private endDebugStuff() {
-        if (this._uiManager.debugEnabled) {
+        if (this._renderManager.debugEnabled) {
             this._context.fillStyle = 'yellow';
             this._context.font = '14px courier new';
 
-            // frame render
-            this._context.fillText('delta: ', 15, 15);
-            this._context.fillText(this.delta.toString(), 75, 15);
+            const rightSide = this._context.canvas.width;
 
-            // // fps
-            this._context.fillText('fps  : ', 15, 30);
-            this._context.fillText(this.fps.toString(), 75, 30);
+            // delta
+            this._context.fillText('delta: ', rightSide - 100, 15);
+            this._context.fillText(this.delta.toFixed(2).toString(), rightSide - 45, 15);
+
+            // fps
+            this._context.fillText('fps  : ', rightSide - 100, 30);
+            this._context.fillText(this.fps.toString(), rightSide - 45, 30);
         }
     }
 
