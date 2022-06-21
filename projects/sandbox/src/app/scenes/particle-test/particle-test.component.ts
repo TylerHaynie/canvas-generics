@@ -5,13 +5,15 @@ import {
   MOUSE_EVENT_TYPE, MouseData, Color, Rectangle, Size,
   GradientUtility, Bounds, Velocity, QuadVector
 } from 'canvas-elements';
+import { IDrawable } from 'projects/canvas-elements/src/lib/canvas/models/interfaces/idrawable';
+import { ITickable } from 'projects/canvas-elements/src/lib/canvas/models/interfaces/itickable';
 
 @Component({
   selector: 'app-particle-test',
   templateUrl: './particle-test.component.html',
   styleUrls: ['./particle-test.component.css']
 })
-export class ParticleTestComponent implements AfterViewInit {
+export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawable {
   @ViewChild('c') canvasRef: ElementRef;
   //#region Variables
 
@@ -69,7 +71,11 @@ export class ParticleTestComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit() {
-    this._cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
+    // this._cw = new CanvasWrapper(
+    //   (this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'),
+    //   () => { this.draw(); }
+    // );
+    this._cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
     this._cw.panZoomManager.minScale = 1;
     this._cw.panZoomManager.panningAllowed = false;
     this._cw.panZoomManager.scalingAllowed = false;
@@ -85,7 +91,11 @@ export class ParticleTestComponent implements AfterViewInit {
 
     this._foregroundGradient = this.createGradient();
 
-    // // start the draw loop
+    // register parts
+    this._cw.addToTick(this);
+    this._cw.addToDraw(this);
+
+    // start the draw loop
     this._cw.start();
   }
 
@@ -105,27 +115,28 @@ export class ParticleTestComponent implements AfterViewInit {
 
   //#region Drawing
 
-  draw() {
-    this._cw.saveContext();
+  draw(context: CanvasRenderingContext2D) {
+    context.save();
 
     this.drawBackground();
+    this.drawParticles();
+    // this.drawForeground();
+
+    // debug
+    if (this.debugParticles) {
+      this.particleQuad.debugQuad(context);
+    }
+
+    context.restore();
+  }
+
+  tick(delta: number) {
 
     // do some hover stuff
     this.checkParticleHover(); // TODO: put in update()
 
     // update and draw particles
     this.updateParticles(); // TODO: put in update()
-    this.drawParticles();
-
-    // drawing the gradient on the top
-    // this.drawForeground();
-
-    // debug
-    if (this.debugParticles) {
-      this.particleQuad.debugQuad(this._cw.drawingContext);
-    }
-
-    this._cw.restoreContext();
   }
 
   private drawBackground() {

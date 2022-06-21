@@ -6,6 +6,7 @@ import { PanZoomManager } from './managers/pan-zoom-manager';
 import { RenderManager } from './managers/render-manager';
 import { WindowManager } from './managers/window-manager';
 import { IDrawable } from './models/interfaces/idrawable';
+import { ITickable } from './models/interfaces/itickable';
 import { HelperUtility } from './utilities/helper-utility';
 
 export class CanvasWrapper {
@@ -54,12 +55,14 @@ export class CanvasWrapper {
     private _keyboardManager: KeyboardManager;
     private _WindowManager: WindowManager;
 
+    // scene objects
     private _drawables: IDrawable[] = [];
+    private _tickables: ITickable[] = [];
 
     // mouse
     private currentMouseData: MouseData;
 
-    constructor(context: CanvasRenderingContext2D, drawCallback: () => void) {
+    constructor(context: CanvasRenderingContext2D) {
         this._context = context;
 
         this.setupManagers();
@@ -69,7 +72,7 @@ export class CanvasWrapper {
 
         // this means only 1 component can be drawn per canvas.
         // need to add an array to the canvas wrapper that can hold drawable objects.
-        this._renderManager.addToMainBuffer(drawCallback);
+        // this._renderManager.addToMainBuffer(drawCallback);
         this._WindowManager.fit();
     }
 
@@ -85,7 +88,11 @@ export class CanvasWrapper {
         this._context.restore();
     }
 
-    addToDrawables(drawable: IDrawable) {
+    addToTick(tickable: ITickable): void {
+        this._tickables.push(tickable);
+    }
+
+    addToDraw(drawable: IDrawable): void {
         this._drawables.push(drawable);
     }
 
@@ -156,7 +163,14 @@ export class CanvasWrapper {
             // draw the grid first?
             if (this._gridAsBackground) { this.drawGrid(); }
 
-            this._renderManager.drawMainBuffer(this._context);
+            // this._renderManager.drawMainBuffer(this._context);
+            this._tickables.forEach(tickable => {
+                tickable.tick(this.delta);
+            });
+
+            this._drawables.forEach(drawable => {
+                drawable.draw(this._context);
+            });
 
             if (this._renderManager.uiEnabled) { this._renderManager.drawUiBuffer(); }
             if (this._renderManager.debugEnabled) { this._renderManager.drawDebugBuffer(); }
