@@ -17,7 +17,7 @@ export class ElementTestComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit() {
-    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
+    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
     this.cw.panZoomManager.panningAllowed = false;
     this.cw.panZoomManager.scalingAllowed = false;
     this.cw.trackMouse = false;
@@ -25,6 +25,9 @@ export class ElementTestComponent implements AfterViewInit {
     this.cw.renderManager.debugEnabled = true;
 
     this.createTestUI();
+
+    // this.cw.addToTick(this);
+    // this.cw.addToDraw(this);
 
     // start the draw loop
     this.cw.start();

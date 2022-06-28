@@ -20,5 +20,8 @@
         "projects/canvas-elements/src/public-api",
       ]
     }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
   }
 }

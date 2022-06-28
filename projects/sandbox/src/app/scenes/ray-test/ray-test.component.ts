@@ -27,7 +27,7 @@ export class RayTestComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit() {
-    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
+    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
 
     this.cw.panZoomManager.minScale = 1;
     this.cw.panZoomManager.panningAllowed = false;
@@ -41,6 +41,9 @@ export class RayTestComponent implements AfterViewInit {
 
     this.setFocalPoint();
     this.generateSquares();
+
+    // this.cw.addToTick(this);
+    this.cw.addToDraw(this);
 
     // start the draw loop
     this.cw.start();

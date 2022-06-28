@@ -62,7 +62,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
 
   // mouse
   private mouseOnCanvas: boolean = false;
-  private mousePosition: Vector2D;
+  // private mousePosition: Vector2D;
 
   //#endregion
 
@@ -71,10 +71,6 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
   constructor() { }
 
   ngAfterViewInit() {
-    // this._cw = new CanvasWrapper(
-    //   (this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'),
-    //   () => { this.draw(); }
-    // );
     this._cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
     this._cw.panZoomManager.minScale = 1;
     this._cw.panZoomManager.panningAllowed = false;
@@ -86,6 +82,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
     this.registerEvents();
 
     // set up quad trees
+    // TODO: boundary needs to be updated with window resize
     let boundary: Boundary = new Boundary(0, 0, 0, this._cw.width, this._cw.height, 0);
     this.particleQuad = new QuadTree(boundary, 1);
 
@@ -102,8 +99,6 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
   private registerEvents() {
     this._cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
       this.mouseOnCanvas = true;
-      this.mousePosition = e.translatedPosition ? e.translatedPosition : e.mousePosition;
-      console.log('Mouse X: ' + this.mousePosition.x + ' Mouse Y: ' + this.mousePosition.y);
     });
 
     this._cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
@@ -202,6 +197,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
 
     for (let x = particles.length - 1; x >= 0; x--) {
       let particle = particles[x];
+      this._cw.addToDraw(particle);
 
       if (particle.isAlive) {
         // move particle
@@ -219,6 +215,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
       }
       else {
         // remove it
+        this._cw.removeFromDraw(particle);
         particles.splice(x, 1);
       }
     }
@@ -266,8 +263,8 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
   private checkParticleHover() {
     if (this.mouseOnCanvas) {
       // current mouse location
-      let mx = this.mousePosition.x;
-      let my = this.mousePosition.y;
+      let mx = this._cw.mouseManager.mousePosition.x;
+      let my = this._cw.mouseManager.mousePosition.y;
 
       // boundary around mouse
       let b: Boundary = new Boundary(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), 0, this.pointerRadius, this.pointerRadius, 0);

@@ -37,19 +37,19 @@ export class Bounds {
         return new Vector2D(this._x + this._width, this._y + this._height);
     }
 
-    public get topLength(): number {
-        return Math.max(this.topLeft.x, this.topRight.x) - Math.max(this.topLeft.x, this.topRight.x);
-    }
+    // public get topLength(): number {
+    //     return Math.max(this.topLeft.x, this.topRight.x) - Math.max(this.topLeft.x, this.topRight.x);
+    // }
 
-    public get bottomLength(): number {
-        return Math.max(this.bottomLeft.x, this.bottomRight.x) - Math.max(this.bottomLeft.x, this.bottomRight.x);
-    }
+    // public get bottomLength(): number {
+    //     return Math.max(this.bottomLeft.x, this.bottomRight.x) - Math.max(this.bottomLeft.x, this.bottomRight.x);
+    // }
 
-    public get left_height(): number {
-        return Math.max(this.topLeft.y, this.bottomLeft.y) - Math.max(this.topLeft.y, this.bottomLeft.y);
-    }
+    // public get left_height(): number {
+    //     return Math.max(this.topLeft.y, this.bottomLeft.y) - Math.max(this.topLeft.y, this.bottomLeft.y);
+    // }
 
-    public get right_height(): number {
-        return Math.max(this.topRight.y, this.bottomRight.y) - Math.max(this.topRight.y, this.bottomRight.y);
-    }
+    // public get right_height(): number {
+    //     return Math.max(this.topRight.y, this.bottomRight.y) - Math.max(this.topRight.y, this.bottomRight.y);
+    // }
 }

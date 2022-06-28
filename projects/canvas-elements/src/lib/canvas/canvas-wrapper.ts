@@ -96,6 +96,14 @@ export class CanvasWrapper {
         this._drawables.push(drawable);
     }
 
+    removeFromDraw(drawable: IDrawable): void {
+        // var found = this._drawables.find(f => f == drawable);
+        var index = this._drawables.indexOf(drawable);
+        if (index) {
+            console.log('removing drawable', index);
+        }
+    }
+
     private setupManagers() {
         // window
         this._WindowManager = new WindowManager(this._context);
@@ -151,7 +159,7 @@ export class CanvasWrapper {
     private draw() {
         this.delta = performance.now() - this.lastRender;
 
-        this.beginDebugStuff();
+        this.trackDebug();
         this.checkKeys();
 
         if (!this.paused || this.frameStep) {
@@ -163,7 +171,7 @@ export class CanvasWrapper {
             // draw the grid first?
             if (this._gridAsBackground) { this.drawGrid(); }
 
-            // this._renderManager.drawMainBuffer(this._context);
+            // now we can tick more than we draw if we want
             this._tickables.forEach(tickable => {
                 tickable.tick(this.delta);
             });
@@ -189,14 +197,14 @@ export class CanvasWrapper {
 
         // update keyboard
         this._keyboardManager.update(); // TODO: Do we need this?
-        this.endDebugStuff();
+        this.drawDebug();
 
         this.lastRender = performance.now();
         // do it all again
         requestAnimationFrame(() => this.draw());
     }
 
-    private beginDebugStuff() {
+    private trackDebug() {
         if (this._renderManager.debugEnabled) {
             this.timeSinceFpsTick = this.timeSinceFpsTick + this.delta;
 
@@ -207,20 +215,32 @@ export class CanvasWrapper {
         }
     }
 
-    private endDebugStuff() {
+    private drawDebug() {
         if (this._renderManager.debugEnabled) {
+            var edgeOffset: number = 185;
+            var valueOffset: number = 120;
+
             this._context.fillStyle = 'yellow';
             this._context.font = '14px courier new';
 
-            const rightSide = this._context.canvas.width;
+            const rightEdge = this._context.canvas.width;
 
             // delta
-            this._context.fillText('delta: ', rightSide - 100, 15);
-            this._context.fillText(this.delta.toFixed(2).toString(), rightSide - 45, 15);
+            this._context.fillText('delta : ', rightEdge - edgeOffset, 15);
+            this._context.fillText(`${this.delta.toFixed(2).toString()}`, rightEdge - valueOffset, 15);
 
             // fps
-            this._context.fillText('fps  : ', rightSide - 100, 30);
-            this._context.fillText(this.fps.toString(), rightSide - 45, 30);
+            this._context.fillText('fps   : ', rightEdge - edgeOffset, 30);
+            this._context.fillText(this.fps.toString(), rightEdge - valueOffset, 30);
+
+            // mouse
+            this._context.fillText('mouse : ', rightEdge - edgeOffset, 45);
+            var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
+            this._context.fillText(mouseText, rightEdge - valueOffset, 45);
+
+            // screen
+            this._context.fillText('size  : ', rightEdge - edgeOffset, 60);
+            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, 60);
         }
     }
 
