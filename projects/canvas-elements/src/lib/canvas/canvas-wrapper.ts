@@ -12,8 +12,17 @@ import { HelperUtility } from './utilities/helper-utility';
 export class CanvasWrapper {
     public delta: number = 0;
     private lastRender: number = 0;
+
+    // debug
     private fps: number = 0;
-    private timeSinceFpsTick = 0.0;
+    private timeSinceFpsTick: number = 0.0;
+    private drawCalls: number = 0;
+    private tickStartMarker = 'tickStart';
+    private tickEndMarker = 'tickEnd';
+    private tickMeasureName = 'tickMeasure';
+    private drawStartMarker = 'drawStart';
+    private drawEndMarker = 'drawEnd';
+    private drawMeasureName = 'drawMeasure';
 
     // public properties
     public get drawingContext(): CanvasRenderingContext2D { return this._context; }
@@ -97,10 +106,9 @@ export class CanvasWrapper {
     }
 
     removeFromDraw(drawable: IDrawable): void {
-        // var found = this._drawables.find(f => f == drawable);
         var index = this._drawables.indexOf(drawable);
         if (index) {
-            console.log('removing drawable', index);
+            this._drawables.splice(index, 1);
         }
     }
 
@@ -172,16 +180,24 @@ export class CanvasWrapper {
             if (this._gridAsBackground) { this.drawGrid(); }
 
             // now we can tick more than we draw if we want
+            performance.mark(this.tickStartMarker);
             this._tickables.forEach(tickable => {
                 tickable.tick(this.delta);
             });
+            performance.mark(this.tickEndMarker);
+            performance.measure(this.tickMeasureName, this.tickStartMarker, this.tickEndMarker);
 
+            this.drawCalls = 0;
+            performance.mark(this.drawStartMarker);
             this._drawables.forEach(drawable => {
                 drawable.draw(this._context);
+                this.drawCalls += 1;
             });
+            performance.mark(this.drawEndMarker);
+            performance.measure(this.drawMeasureName, this.drawStartMarker, this.drawEndMarker)
 
-            if (this._renderManager.uiEnabled) { this._renderManager.drawUiBuffer(); }
-            if (this._renderManager.debugEnabled) { this._renderManager.drawDebugBuffer(); }
+            // if (this._renderManager.uiEnabled) { this._renderManager.drawUiBuffer(); }
+            // if (this._renderManager.debugEnabled) { this._renderManager.drawDebugBuffer(); }
 
             this.trackMousePosition();
 
@@ -217,8 +233,9 @@ export class CanvasWrapper {
 
     private drawDebug() {
         if (this._renderManager.debugEnabled) {
-            var edgeOffset: number = 185;
-            var valueOffset: number = 120;
+            var edgeOffset: number = 245;
+            var valueOffset: number = edgeOffset / 1.9;
+            var horzGap: number = 15;
 
             this._context.fillStyle = 'yellow';
             this._context.font = '14px courier new';
@@ -226,21 +243,41 @@ export class CanvasWrapper {
             const rightEdge = this._context.canvas.width;
 
             // delta
-            this._context.fillText('delta : ', rightEdge - edgeOffset, 15);
-            this._context.fillText(`${this.delta.toFixed(2).toString()}`, rightEdge - valueOffset, 15);
+            this._context.fillText('delta      : ', rightEdge - edgeOffset, horzGap);
+            this._context.fillText(`${this.delta.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap);
+
+            // drawables
+            this._context.fillText('drawables  : ', rightEdge - edgeOffset, horzGap * 2);
+            this._context.fillText(`${this._drawables.length.toString()}`, rightEdge - valueOffset, horzGap * 2);
+
+            // draw calls
+            this._context.fillText('draw calls : ', rightEdge - edgeOffset, horzGap * 3);
+            this._context.fillText(`${this.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 3);
 
             // fps
-            this._context.fillText('fps   : ', rightEdge - edgeOffset, 30);
-            this._context.fillText(this.fps.toString(), rightEdge - valueOffset, 30);
+            this._context.fillText('fps        : ', rightEdge - edgeOffset, horzGap * 4);
+            this._context.fillText(this.fps.toString(), rightEdge - valueOffset, horzGap * 4);
 
             // mouse
-            this._context.fillText('mouse : ', rightEdge - edgeOffset, 45);
+            this._context.fillText('mouse      : ', rightEdge - edgeOffset, horzGap * 5);
             var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
-            this._context.fillText(mouseText, rightEdge - valueOffset, 45);
+            this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 5);
 
             // screen
-            this._context.fillText('size  : ', rightEdge - edgeOffset, 60);
-            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, 60);
+            this._context.fillText('size       : ', rightEdge - edgeOffset, horzGap * 6);
+            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 6);
+
+            // tick rate
+            this._context.fillText('all ticks  : ', rightEdge - edgeOffset, horzGap * 7);
+            this._context.fillText(`${performance.getEntriesByType("measure").find(f => f.name == this.tickMeasureName).duration.toFixed(2)}`, rightEdge - valueOffset, horzGap * 7);
+
+            // draw rate
+            this._context.fillText('all draws  : ', rightEdge - edgeOffset, horzGap * 8);
+            this._context.fillText(`${performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName).duration.toFixed(2)}`, rightEdge - valueOffset, horzGap * 8);
+
+
+            performance.clearMarks();
+            performance.clearMeasures();
         }
     }
 

@@ -13,7 +13,7 @@ import { ITickable } from 'projects/canvas-elements/src/lib/canvas/models/interf
   templateUrl: './particle-test.component.html',
   styleUrls: ['./particle-test.component.css']
 })
-export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawable {
+export class ParticleTestComponent implements AfterViewInit, ITickable {
   @ViewChild('c') canvasRef: ElementRef;
   //#region Variables
 
@@ -89,8 +89,8 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
     this._foregroundGradient = this.createGradient();
 
     // register parts
+    this._cw.addToDraw(this.createBackground());
     this._cw.addToTick(this);
-    this._cw.addToDraw(this);
 
     // start the draw loop
     this._cw.start();
@@ -110,20 +110,20 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
 
   //#region Drawing
 
-  draw(context: CanvasRenderingContext2D) {
-    context.save();
+  // draw(context: CanvasRenderingContext2D) {
+  //   // context.save();
 
-    this.drawBackground();
-    this.drawParticles();
-    // this.drawForeground();
+  //   // this.drawBackground();
+  //   // this.drawParticles();
+  //   // // this.drawForeground();
 
-    // debug
-    if (this.debugParticles) {
-      this.particleQuad.debugQuad(context);
-    }
+  //   // // debug
+  //   // if (this.debugParticles) {
+  //   //   this.particleQuad.debugQuad(context);
+  //   // }
 
-    context.restore();
-  }
+  //   // context.restore();
+  // }
 
   tick(delta: number) {
 
@@ -134,13 +134,14 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
     this.updateParticles(); // TODO: put in update()
   }
 
-  private drawBackground() {
+  private createBackground() {
     let p = new Vector2D(0, 0);
     let b = new Rectangle(p);
     b.size.setSize(this._cw.width, this._cw.height);
     b.color.setShade(this.backgroundColor);
 
-    b.draw(this._cw.drawingContext);
+    // b.draw(this._cw.drawingContext);
+   return b;
   }
 
   private drawForeground() {
@@ -151,7 +152,8 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
     f.size.setSize(this._cw.width, this._cw.height);
     f.color.setShade(this._foregroundGradient);
 
-    f.draw(this._cw.drawingContext);
+    // f.draw(this._cw.drawingContext);
+    this._cw.addToDraw(f);
   }
 
   private drawParticles() {
@@ -197,7 +199,6 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
 
     for (let x = particles.length - 1; x >= 0; x--) {
       let particle = particles[x];
-      this._cw.addToDraw(particle);
 
       if (particle.isAlive) {
         // move particle
@@ -215,8 +216,8 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
       }
       else {
         // remove it
-        this._cw.removeFromDraw(particle);
         particles.splice(x, 1);
+        this._cw.removeFromDraw(particle);
       }
     }
   }
@@ -257,6 +258,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable, IDrawabl
       fp.fadeSpan = this.particleFadeTime;
 
       this.floatingParticles.push(fp);
+      this._cw.addToDraw(fp);
     }
   }
 
