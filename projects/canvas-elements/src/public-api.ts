@@ -37,3 +37,6 @@ export * from './lib/canvas/utilities/pattern-utility';
 export * from './lib/canvas/utilities/random-utility';
 export * from './lib/canvas/utilities/raycast-utility';
 export * from './lib/quadtree/quad-tree';
+export * from './lib/canvas/models/interfaces/idrawable';
+export * from './lib/canvas/models/interfaces/itickable';
+export * from './lib/canvas/models/interfaces/iupdateable';

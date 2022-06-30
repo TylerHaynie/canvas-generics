@@ -3,17 +3,15 @@ import {
   CanvasWrapper, RandomUtility, ColorUtility,
   QuadTree, FadableParticle, Vector2D, Boundary,
   MOUSE_EVENT_TYPE, MouseData, Color, Rectangle, Size,
-  GradientUtility, Bounds, Velocity, QuadVector
+  GradientUtility, Bounds, Velocity, QuadVector, IUpdateable
 } from 'canvas-elements';
-import { IDrawable } from 'projects/canvas-elements/src/lib/canvas/models/interfaces/idrawable';
-import { ITickable } from 'projects/canvas-elements/src/lib/canvas/models/interfaces/itickable';
 
 @Component({
   selector: 'app-particle-test',
   templateUrl: './particle-test.component.html',
   styleUrls: ['./particle-test.component.css']
 })
-export class ParticleTestComponent implements AfterViewInit, ITickable {
+export class ParticleTestComponent implements AfterViewInit, IUpdateable {
   @ViewChild('c') canvasRef: ElementRef;
   //#region Variables
 
@@ -21,6 +19,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
   private _foregroundGradient: CanvasGradient;
   private _random: RandomUtility = new RandomUtility();
   private _color: ColorUtility = new ColorUtility;
+  private _background: Rectangle;
 
   private debugParticles = false;
 
@@ -49,15 +48,17 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
   // particles
   private maxParticles: number = 3000; // play with the amount
   private colorArray: string[] = ['#3E4F6A', '#74FFE8', '#5FBEBC'];
-  private particleSpeedModifier: number = .5;
+  private particleSpeedModifier: number = .01;
   private particleCornerRadius: number = 1.5; // check code below for optimization when using this on a large scale
   private particleMaxRadius: number = 4.25;
   private particleMinRadius: number = 0.15;
-  private maxParticleLifespan: number = 425;
-  private minParticleLifespan: number = 175;
-  private particleFadeTime: number = 100;
+  private maxParticleLifespan: number = 10350;
+  private minParticleLifespan: number = 3000;
+  private particleFadeTime: number = 2000;
+  private maxParticleSpeed: number = .020;
+  private minParticleSpeed: number = .001;
 
-  private maxOpacity: number = .35;
+  private maxOpacity: number = 0.35;
   private particleHighlightColor: string = '#ff2dd4';
 
   // mouse
@@ -82,15 +83,14 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
     this.registerEvents();
 
     // set up quad trees
-    // TODO: boundary needs to be updated with window resize
     let boundary: Boundary = new Boundary(0, 0, 0, this._cw.width, this._cw.height, 0);
     this.particleQuad = new QuadTree(boundary, 1);
 
-    this._foregroundGradient = this.createGradient();
+    // this._foregroundGradient = this.createGradient();
 
     // register parts
-    this._cw.addToDraw(this.createBackground());
-    this._cw.addToTick(this);
+    this.createBackground();
+    this._cw.addToUpdate(this);
 
     // start the draw loop
     this._cw.start();
@@ -125,42 +125,35 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
   //   // context.restore();
   // }
 
-  tick(delta: number) {
-
+  update(delta: number) {
+    this._background.size.setSize(this._cw.width, this._cw.height);
     // do some hover stuff
-    this.checkParticleHover(); // TODO: put in update()
+    this.checkParticleHover();
 
     // update and draw particles
-    this.updateParticles(); // TODO: put in update()
+    this.updateParticles(delta);
   }
 
   private createBackground() {
     let p = new Vector2D(0, 0);
-    let b = new Rectangle(p);
-    b.size.setSize(this._cw.width, this._cw.height);
-    b.color.setShade(this.backgroundColor);
+    this._background = new Rectangle(p);
+    this._background.size.setSize(this._cw.width, this._cw.height);
+    this._background.color.setShade(this.backgroundColor);
 
-    // b.draw(this._cw.drawingContext);
-   return b;
+    this._cw.addToDraw(this._background);
   }
 
-  private drawForeground() {
-    // let bounds = this._cw.bounds;
+  // private drawForeground() {
+  //   // let bounds = this._cw.bounds;
 
-    let p = new Vector2D(0, 0);
-    let f = new Rectangle(p);
-    f.size.setSize(this._cw.width, this._cw.height);
-    f.color.setShade(this._foregroundGradient);
+  //   let p = new Vector2D(0, 0);
+  //   let f = new Rectangle(p);
+  //   f.size.setSize(this._cw.width, this._cw.height);
+  //   f.color.setShade(this._foregroundGradient);
 
-    // f.draw(this._cw.drawingContext);
-    this._cw.addToDraw(f);
-  }
-
-  private drawParticles() {
-    this.floatingParticles.forEach(particle => {
-      particle.draw(this._cw.drawingContext);
-    });
-  }
+  //   // f.draw(this._cw.drawingContext);
+  //   this._cw.addToDraw(f);
+  // }
 
   private createGradient(): CanvasGradient {
     let gradUtil = new GradientUtility(this._cw.drawingContext);
@@ -178,16 +171,16 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
     return grd;
   }
 
-  private updateParticles() {
+  private updateParticles(delta: number) {
     // replace particles that have died off
     if (this.floatingParticles.length - 1 !== this.maxParticles) {
       this.generateMissingParticles();
     }
 
-    this.updateFloatingParticle(this.floatingParticles, this.particleQuad);
+    this.updateFloatingParticle(this.floatingParticles, this.particleQuad, delta);
   }
 
-  private updateFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined) {
+  private updateFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined, delta: number) {
     if (trackingTree) {
       // clear the quad
       trackingTree.reset(this._cw.width, this._cw.height);
@@ -202,13 +195,9 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
 
       if (particle.isAlive) {
         // move particle
-        particle.move(particleBounds);
-
-        // update particle
-        particle.tick();
+        particle.move(particleBounds, delta);
 
         if (trackingTree) {
-          // insert particle
           let pPosition = particle.getPosition();
           let qd = new QuadVector(pPosition.x, pPosition.y, 0, particle);
           trackingTree.insert(qd);
@@ -217,6 +206,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
       else {
         // remove it
         particles.splice(x, 1);
+        this._cw.removeFromTick(particle);
         this._cw.removeFromDraw(particle);
       }
     }
@@ -243,11 +233,12 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
 
       rect.size.setSize(Math.fround(rad * 2), rad * Math.fround(2));
       rect.color.setShade(this._color.randomColorFromArray(this.colorArray));
+      rect.color.setAlpha(0);
       // rect.color.setShade(this._color.randomColor());
 
       let v = new Velocity(
-        this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(.20, .80),
-        this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(.20, .80)
+        this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(this.minParticleSpeed, this.maxParticleSpeed),
+        this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(this.minParticleSpeed, this.maxParticleSpeed)
       );
 
       let fp = new FadableParticle(rect, v);
@@ -258,6 +249,7 @@ export class ParticleTestComponent implements AfterViewInit, ITickable {
       fp.fadeSpan = this.particleFadeTime;
 
       this.floatingParticles.push(fp);
+      this._cw.addToTick(fp);
       this._cw.addToDraw(fp);
     }
   }

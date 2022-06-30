@@ -82,9 +82,9 @@ export class QuadTree {
     bottomLeft: QuadTree;
     bottomRight: QuadTree;
 
-    constructor(b: Boundary, c: number) {
-        this.boundary = b;
-        this.capicity = c;
+    constructor(boundary: Boundary, capicity: number) {
+        this.boundary = boundary;
+        this.capicity = capicity;
     }
 
     insert(p: QuadVector) {

@@ -7,15 +7,19 @@ import { RenderManager } from './managers/render-manager';
 import { WindowManager } from './managers/window-manager';
 import { IDrawable } from './models/interfaces/idrawable';
 import { ITickable } from './models/interfaces/itickable';
+import { IUpdateable } from './models/interfaces/iupdateable';
 import { HelperUtility } from './utilities/helper-utility';
 
 export class CanvasWrapper {
-    public delta: number = 0;
-    private lastRender: number = 0;
+    // game loop
+    public loopDelta: number = 0;
+    private previousTime: number = 0;
+    private tickTimer: number = 0;
+    private tickRate: number = 0.1;
+    private totalTime: number = 0;
 
     // debug
     private fps: number = 0;
-    private timeSinceFpsTick: number = 0.0;
     private drawCalls: number = 0;
     private tickStartMarker = 'tickStart';
     private tickEndMarker = 'tickEnd';
@@ -67,6 +71,7 @@ export class CanvasWrapper {
     // scene objects
     private _drawables: IDrawable[] = [];
     private _tickables: ITickable[] = [];
+    private _updateables: IUpdateable[] = [];
 
     // mouse
     private currentMouseData: MouseData;
@@ -79,14 +84,11 @@ export class CanvasWrapper {
         this.registerEvents();
         this.setupCanvas();
 
-        // this means only 1 component can be drawn per canvas.
-        // need to add an array to the canvas wrapper that can hold drawable objects.
-        // this._renderManager.addToMainBuffer(drawCallback);
         this._WindowManager.fit();
     }
 
     start() {
-        this.draw();
+        this.gameLoop();
     }
 
     saveContext() {
@@ -99,6 +101,17 @@ export class CanvasWrapper {
 
     addToTick(tickable: ITickable): void {
         this._tickables.push(tickable);
+    }
+
+    removeFromTick(tickable: ITickable): void {
+        var index = this._tickables.indexOf(tickable);
+        if (index) {
+            this._tickables.splice(index, 1);
+        }
+    }
+
+    addToUpdate(updateable: IUpdateable): void {
+        this._updateables.push(updateable);
     }
 
     addToDraw(drawable: IDrawable): void {
@@ -135,7 +148,6 @@ export class CanvasWrapper {
 
     private registerEvents() {
         this.registerMouseEvents();
-        /// ... other events
     }
 
     // This is needed for the element base to set mouse state
@@ -164,71 +176,96 @@ export class CanvasWrapper {
         this._context.imageSmoothingEnabled = false;
     }
 
-    private draw() {
-        this.delta = performance.now() - this.lastRender;
+    private gameLoop() {
+        const currentTime = performance.now();
+        this.loopDelta = currentTime - this.previousTime;
+        this.previousTime = currentTime;
+        this.tickTimer += this.loopDelta;
 
         this.trackDebug();
-        this.checkKeys();
+        this.readInput();
 
         if (!this.paused || this.frameStep) {
-            this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
-            this.saveContext();
-
-            // TODO: Apply camera positon
-
-            // draw the grid first?
-            if (this._gridAsBackground) { this.drawGrid(); }
-
-            // now we can tick more than we draw if we want
-            performance.mark(this.tickStartMarker);
-            this._tickables.forEach(tickable => {
-                tickable.tick(this.delta);
-            });
-            performance.mark(this.tickEndMarker);
-            performance.measure(this.tickMeasureName, this.tickStartMarker, this.tickEndMarker);
-
-            this.drawCalls = 0;
-            performance.mark(this.drawStartMarker);
-            this._drawables.forEach(drawable => {
-                drawable.draw(this._context);
-                this.drawCalls += 1;
-            });
-            performance.mark(this.drawEndMarker);
-            performance.measure(this.drawMeasureName, this.drawStartMarker, this.drawEndMarker)
-
-            // if (this._renderManager.uiEnabled) { this._renderManager.drawUiBuffer(); }
-            // if (this._renderManager.debugEnabled) { this._renderManager.drawDebugBuffer(); }
-
-            this.trackMousePosition();
-
-            // draw the grid last?
-            if (!this._gridAsBackground) {
-                this.drawGrid();
+            while (this.tickTimer >= this.tickRate) {
+                this.tickPhysics();
+                this.tickTimer -= this.tickRate;
+                this.totalTime += this.tickRate;
             }
 
-            this.drawMouse();
-            this.restoreContext();
+            this.updateScene();
+            this.render();
             this.frameStep = false;
         }
 
         // update keyboard
         this._keyboardManager.update(); // TODO: Do we need this?
-        this.drawDebug();
 
-        this.lastRender = performance.now();
         // do it all again
-        requestAnimationFrame(() => this.draw());
+        requestAnimationFrame(() => this.gameLoop());
+    }
+
+    private readInput(): void {
+        this.checkKeys();
+    }
+
+    private tickPhysics(): void {
+        performance.mark(this.tickStartMarker);
+        this._tickables.forEach(tickable => {
+            tickable.tick(this.tickRate);
+        });
+        performance.mark(this.tickEndMarker);
+        performance.measure(this.tickMeasureName, this.tickStartMarker, this.tickEndMarker);
+    }
+
+    private updateScene(): void {
+        this._updateables.forEach(updateable => {
+            updateable.update(this.loopDelta);
+        });
+    }
+
+    private render(): void {
+        performance.mark(this.drawStartMarker);
+        // TODO: create camera
+        // TODO: apply camera positon
+
+        // draw the grid first?
+        // if (this._gridAsBackground) { this.drawGrid(); }
+
+        this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
+        this.saveContext();
+
+        this.drawCalls = 0;
+
+        this._drawables.forEach(drawable => {
+            // TODO: combine paths and draw once
+            drawable.draw(this._context);
+            this.drawCalls += 1;
+        });
+
+        this.trackMousePosition();
+
+        // draw the grid last?
+        // if (!this._gridAsBackground) {
+        //     this.drawGrid();
+        // }
+
+        this.drawMouse();
+
+        performance.mark(this.drawEndMarker);
+        performance.measure(this.drawMeasureName, this.drawStartMarker, this.drawEndMarker)
+        this.drawDebug();
+        this.restoreContext();
     }
 
     private trackDebug() {
-        if (this._renderManager.debugEnabled) {
-            this.timeSinceFpsTick = this.timeSinceFpsTick + this.delta;
+        // if (this._renderManager.debugEnabled) {
+        //     this.timeSinceFpsTick = this.timeSinceFpsTick + this.frameTime;
 
-            if (this.timeSinceFpsTick > 100) {
-                this.fps = Math.floor(1000 / this.delta);
-                this.timeSinceFpsTick = 0;
-            }
-        }
+        //     if (this.timeSinceFpsTick > 100) {
+        //         this.fps = Math.floor(1000 / this.frameTime);
+        //         this.timeSinceFpsTick = 0;
+        //     }
+        // }
     }
 
     private drawDebug() {
@@ -242,38 +279,52 @@ export class CanvasWrapper {
 
             const rightEdge = this._context.canvas.width;
 
+            // runtime
+            this._context.fillText('run time   : ', rightEdge - edgeOffset, horzGap);
+            this._context.fillText(`${(this.totalTime / 1000).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap);
+
+            // tick timer
+            this._context.fillText('tick timer : ', rightEdge - edgeOffset, horzGap * 2);
+            this._context.fillText(`${(this.tickTimer / 1000).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 2);
+
             // delta
-            this._context.fillText('delta      : ', rightEdge - edgeOffset, horzGap);
-            this._context.fillText(`${this.delta.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap);
+            this._context.fillText('delta      : ', rightEdge - edgeOffset, horzGap * 3);
+            this._context.fillText(`${this.loopDelta.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 3);
 
             // drawables
-            this._context.fillText('drawables  : ', rightEdge - edgeOffset, horzGap * 2);
-            this._context.fillText(`${this._drawables.length.toString()}`, rightEdge - valueOffset, horzGap * 2);
+            this._context.fillText('drawables  : ', rightEdge - edgeOffset, horzGap * 4);
+            this._context.fillText(`${this._drawables.length.toString()}`, rightEdge - valueOffset, horzGap * 4);
 
             // draw calls
-            this._context.fillText('draw calls : ', rightEdge - edgeOffset, horzGap * 3);
-            this._context.fillText(`${this.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 3);
+            this._context.fillText('draw calls : ', rightEdge - edgeOffset, horzGap * 5);
+            this._context.fillText(`${this.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 5);
 
             // fps
-            this._context.fillText('fps        : ', rightEdge - edgeOffset, horzGap * 4);
-            this._context.fillText(this.fps.toString(), rightEdge - valueOffset, horzGap * 4);
+            // this._context.fillText('fps        : ', rightEdge - edgeOffset, horzGap * 4);
+            // this._context.fillText(this.fps.toString(), rightEdge - valueOffset, horzGap * 4);
 
             // mouse
-            this._context.fillText('mouse      : ', rightEdge - edgeOffset, horzGap * 5);
+            this._context.fillText('mouse      : ', rightEdge - edgeOffset, horzGap * 6);
             var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
-            this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 5);
+            this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 6);
 
             // screen
-            this._context.fillText('size       : ', rightEdge - edgeOffset, horzGap * 6);
-            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 6);
+            this._context.fillText('size       : ', rightEdge - edgeOffset, horzGap * 7);
+            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 7);
 
             // tick rate
-            this._context.fillText('all ticks  : ', rightEdge - edgeOffset, horzGap * 7);
-            this._context.fillText(`${performance.getEntriesByType("measure").find(f => f.name == this.tickMeasureName).duration.toFixed(2)}`, rightEdge - valueOffset, horzGap * 7);
+            let tickMeasure = performance.getEntriesByType("measure").find(f => f.name == this.tickMeasureName);
+            this._context.fillText('all ticks  : ', rightEdge - edgeOffset, horzGap * 8);
+            this._context.fillText(`${tickMeasure ? tickMeasure.duration.toFixed(2) : ''}`, rightEdge - valueOffset, horzGap * 8);
 
             // draw rate
-            this._context.fillText('all draws  : ', rightEdge - edgeOffset, horzGap * 8);
-            this._context.fillText(`${performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName).duration.toFixed(2)}`, rightEdge - valueOffset, horzGap * 8);
+            let drawMeasure = performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName);
+            this._context.fillText('all draws  : ', rightEdge - edgeOffset, horzGap * 9);
+            this._context.fillText(`${drawMeasure ? drawMeasure.duration.toFixed(2) : ''}`, rightEdge - valueOffset, horzGap * 9);
+
+            // // lag
+            // this._context.fillText('lag        : ', rightEdge - edgeOffset, horzGap * 9);
+            // this._context.fillText(`${this.lag.toFixed(2)}`, rightEdge - valueOffset, horzGap * 9);
 
 
             performance.clearMarks();

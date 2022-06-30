@@ -2,8 +2,12 @@ import { Color } from '../models/color';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
 import { Vector2D } from '../objects/vector';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ShapeBase {
+    private _id: string = uuidv4();
+    public get id(): string { return this._id; }
+
     private _position: Vector2D;
     public get position(): Vector2D { return this._position; }
     public setPosition(x: number, y: number) {

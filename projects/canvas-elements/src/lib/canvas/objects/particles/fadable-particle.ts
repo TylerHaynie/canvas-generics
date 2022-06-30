@@ -1,8 +1,9 @@
+import { ITickable } from '../../models/interfaces/itickable';
 import { Velocity } from '../../models/velocity';
 import { Rectangle } from '../../shapes/rectangle';
 import { ParticleBase } from './particle-base';
 
-export class FadableParticle extends ParticleBase {
+export class FadableParticle extends ParticleBase implements ITickable {
     maximumAlpha: number = 1;
     currentLifeTime: number = 0;
     maximumLifeTime: number = 30;
@@ -12,7 +13,7 @@ export class FadableParticle extends ParticleBase {
         super(shape, v);
     }
 
-    tick() {
+    tick(delta: number) {
         if (this.currentLifeTime < this.maximumLifeTime) {
             let step = this.maximumAlpha / this.fadeSpan;
             let a = this.maximumAlpha;
@@ -34,6 +35,6 @@ export class FadableParticle extends ParticleBase {
         }
 
         // add to lifetime
-        this.currentLifeTime += 1;
+        this.currentLifeTime += delta;
     }
 }

@@ -55,33 +55,39 @@ export class ParticleBase implements IDrawable {
         }
     }
 
-    move(bounds: Bounds) {
-        let posX = this.shape.position.x + this.velocity.vx;
-        let posY = this.shape.position.y + this.velocity.vy;
+    move(bounds: Bounds, delta: number) {
+        // let posX = this.shape.position.x + this.velocity.vx;
+        // let posY = this.shape.position.y + this.velocity.vy;
+
+        let xMovement: number = this.velocity.vx * delta;
+        let yMovement: number = this.velocity.vy * delta;
+
+        let newPosX = this.shape.position.x + xMovement;
+        let newPosY = this.shape.position.y + yMovement;
 
         let w = (<Rectangle>this.shape).size ? (<Rectangle>this.shape).size.width : (<Circle>this.shape).radius * 2;
         let h = (<Rectangle>this.shape).size ? (<Rectangle>this.shape).size.height : (<Circle>this.shape).radius * 2;
 
-        // reverse x direction
-        if (posX + w >= bounds.width) {
+        // reverse x direction (bounce off edge)
+        if (newPosX + w >= bounds.width) {
             this.velocity.vx = -this.velocity.vx;
         }
-        else if (posX <= bounds.x) {
+        else if (newPosX <= bounds.x) {
             this.velocity.vx = Math.abs(this.velocity.vx);
         }
 
-        // reverse y direction
-        if (posY + h >= bounds.height) {
+        // reverse y direction (bounce off edge)
+        if (newPosY + h >= bounds.height) {
             this.velocity.vy = -this.velocity.vy;
         }
-        else if (posY <= bounds.y) {
+        else if (newPosY <= bounds.y) {
             this.velocity.vy = Math.abs(this.velocity.vy);
         }
 
         // update vector with speed
         this.shape.setPosition(
-            this.shape.position.x + this.velocity.vx,
-            this.shape.position.y + this.velocity.vy
+            this.shape.position.x + (this.velocity.vx * delta),
+            this.shape.position.y + (this.velocity.vy * delta)
         );
     }
 
