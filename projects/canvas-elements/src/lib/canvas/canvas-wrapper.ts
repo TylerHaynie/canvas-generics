@@ -187,10 +187,13 @@ export class CanvasWrapper {
 
         if (!this.paused || this.frameStep) {
             while (this.tickTimer >= this.tickRate) {
+                performance.mark(this.tickStartMarker);
                 this.tickPhysics();
                 this.tickTimer -= this.tickRate;
                 this.totalTime += this.tickRate;
             }
+            performance.mark(this.tickEndMarker);
+            performance.measure(this.tickMeasureName, this.tickStartMarker, this.tickEndMarker);
 
             this.updateScene();
             this.render();
@@ -209,12 +212,9 @@ export class CanvasWrapper {
     }
 
     private tickPhysics(): void {
-        performance.mark(this.tickStartMarker);
         this._tickables.forEach(tickable => {
             tickable.tick(this.tickRate);
         });
-        performance.mark(this.tickEndMarker);
-        performance.measure(this.tickMeasureName, this.tickStartMarker, this.tickEndMarker);
     }
 
     private updateScene(): void {
@@ -238,6 +238,7 @@ export class CanvasWrapper {
 
         this._drawables.forEach(drawable => {
             // TODO: combine paths and draw once
+            // TODO: Create a new line with a single path. loop all lines and add segements to it, then draw
             drawable.draw(this._context);
             this.drawCalls += 1;
         });
@@ -314,12 +315,12 @@ export class CanvasWrapper {
 
             // tick rate
             let tickMeasure = performance.getEntriesByType("measure").find(f => f.name == this.tickMeasureName);
-            this._context.fillText('all ticks  : ', rightEdge - edgeOffset, horzGap * 8);
+            this._context.fillText('tick time  : ', rightEdge - edgeOffset, horzGap * 8);
             this._context.fillText(`${tickMeasure ? tickMeasure.duration.toFixed(2) : ''}`, rightEdge - valueOffset, horzGap * 8);
 
             // draw rate
             let drawMeasure = performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName);
-            this._context.fillText('all draws  : ', rightEdge - edgeOffset, horzGap * 9);
+            this._context.fillText('draw time  : ', rightEdge - edgeOffset, horzGap * 9);
             this._context.fillText(`${drawMeasure ? drawMeasure.duration.toFixed(2) : ''}`, rightEdge - valueOffset, horzGap * 9);
 
             // // lag

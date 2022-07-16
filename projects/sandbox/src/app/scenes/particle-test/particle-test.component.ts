@@ -46,7 +46,7 @@ export class ParticleTestComponent implements AfterViewInit, IUpdateable {
   private foregroundEnd2: number = 1.000; // where the bottom gradient ends
 
   // particles
-  private maxParticles: number = 3000; // play with the amount
+  private maxParticles: number = 1500; // play with the amount
   private colorArray: string[] = ['#3E4F6A', '#74FFE8', '#5FBEBC'];
   private particleSpeedModifier: number = .01;
   private particleCornerRadius: number = 1.5; // check code below for optimization when using this on a large scale
