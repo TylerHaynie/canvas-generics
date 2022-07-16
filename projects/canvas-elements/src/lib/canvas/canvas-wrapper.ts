@@ -17,6 +17,7 @@ export class CanvasWrapper {
     private tickTimer: number = 0;
     private tickRate: number = 0.1;
     private totalTime: number = 0;
+    private ticksPerFrame: number = 0;
 
     // debug
     private fps: number = 0;
@@ -186,11 +187,13 @@ export class CanvasWrapper {
         this.readInput();
 
         if (!this.paused || this.frameStep) {
+            this.ticksPerFrame = 0;
             while (this.tickTimer >= this.tickRate) {
                 performance.mark(this.tickStartMarker);
                 this.tickPhysics();
                 this.tickTimer -= this.tickRate;
                 this.totalTime += this.tickRate;
+                this.ticksPerFrame += 1;
             }
             performance.mark(this.tickEndMarker);
             performance.measure(this.tickMeasureName, this.tickStartMarker, this.tickEndMarker);
@@ -281,37 +284,45 @@ export class CanvasWrapper {
             const rightEdge = this._context.canvas.width;
 
             // runtime
-            this._context.fillText('run time   : ', rightEdge - edgeOffset, horzGap);
-            this._context.fillText(`${(this.totalTime / 1000).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap);
+            let time = this.totalTime / 1000;
+            let timerLabel = time > 1 && time < 60 ? 's' : time > 60 && time < 3600 ? 'm' : time > 3600 ? 'h' : 'ms';
+            time = time > 60 ? time / 60 : time;
+
+            this._context.fillText(`time (${timerLabel})   : `, rightEdge - edgeOffset, horzGap);
+            this._context.fillText(`${(time).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap);
 
             // tick timer
             this._context.fillText('tick timer : ', rightEdge - edgeOffset, horzGap * 2);
             this._context.fillText(`${(this.tickTimer / 1000).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 2);
 
+            // tick per frame
+            this._context.fillText('tick/frame : ', rightEdge - edgeOffset, horzGap * 3);
+            this._context.fillText(`${(this.ticksPerFrame).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 3);
+
             // delta
-            this._context.fillText('delta      : ', rightEdge - edgeOffset, horzGap * 3);
-            this._context.fillText(`${this.loopDelta.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 3);
+            this._context.fillText('delta      : ', rightEdge - edgeOffset, horzGap * 4);
+            this._context.fillText(`${this.loopDelta.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 4);
 
             // drawables
-            this._context.fillText('drawables  : ', rightEdge - edgeOffset, horzGap * 4);
-            this._context.fillText(`${this._drawables.length.toString()}`, rightEdge - valueOffset, horzGap * 4);
+            this._context.fillText('drawables  : ', rightEdge - edgeOffset, horzGap * 5);
+            this._context.fillText(`${this._drawables.length.toString()}`, rightEdge - valueOffset, horzGap * 5);
 
             // draw calls
-            this._context.fillText('draw calls : ', rightEdge - edgeOffset, horzGap * 5);
-            this._context.fillText(`${this.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 5);
+            this._context.fillText('draw calls : ', rightEdge - edgeOffset, horzGap * 6);
+            this._context.fillText(`${this.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 6);
 
             // fps
             // this._context.fillText('fps        : ', rightEdge - edgeOffset, horzGap * 4);
             // this._context.fillText(this.fps.toString(), rightEdge - valueOffset, horzGap * 4);
 
             // mouse
-            this._context.fillText('mouse      : ', rightEdge - edgeOffset, horzGap * 6);
+            this._context.fillText('mouse      : ', rightEdge - edgeOffset, horzGap * 7);
             var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
-            this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 6);
+            this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 7);
 
             // screen
-            this._context.fillText('size       : ', rightEdge - edgeOffset, horzGap * 7);
-            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 7);
+            this._context.fillText('size       : ', rightEdge - edgeOffset, horzGap * 8);
+            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 8);
 
             // tick rate
             let tickMeasure = performance.getEntriesByType("measure").find(f => f.name == this.tickMeasureName);
