@@ -1,5 +1,5 @@
 import { IDrawable } from '../models/interfaces/idrawable';
-import { Vector2D } from '../objects/vector';
+import { Vector } from '../objects/vector';
 import { ShapeBase } from './shape-base';
 
 export class Circle extends ShapeBase implements IDrawable {
@@ -9,7 +9,7 @@ export class Circle extends ShapeBase implements IDrawable {
         this._radius = v;
     }
 
-    constructor(position: Vector2D) {
+    constructor(position: Vector) {
         super(position);
         this._radius = 10;
     }
@@ -51,7 +51,7 @@ export class Circle extends ShapeBase implements IDrawable {
         context.restore();
     }
 
-    pointWithinBounds(point: Vector2D) {
+    pointWithinBounds(point: Vector) {
         let withinBounds: boolean = false;
 
         let circle1 = { radius: 1, x: point.x, y: point.y };

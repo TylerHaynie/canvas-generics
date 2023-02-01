@@ -6,7 +6,7 @@ import { Circle } from '../../shapes/circle';
 import { Rectangle } from '../../shapes/rectangle';
 import { RandomUtility } from '../../utilities/random-utility';
 import { Bounds } from '../bounds';
-import { Vector2D } from '../vector';
+import { Vector } from '../vector';
 
 export class ParticleBase implements IDrawable {
     private velocity: Velocity;
@@ -21,8 +21,8 @@ export class ParticleBase implements IDrawable {
         this.velocity = v;
     }
 
-    setPosition(p: Vector2D) {
-        this.shape.setPosition(p.x, p.y);
+    setPosition(p: Vector) {
+        this.shape.setPosition(p.x, p.y, p.z);
     }
 
     getPosition() {
@@ -87,14 +87,15 @@ export class ParticleBase implements IDrawable {
         // update vector with speed
         this.shape.setPosition(
             this.shape.position.x + (this.velocity.vx * delta),
-            this.shape.position.y + (this.velocity.vy * delta)
+            this.shape.position.y + (this.velocity.vy * delta),
+            this.shape.position.z
         );
     }
 
     wiggle() {
         let nx = this.shape.position.x + this.randomUtil.randomWithNegative();
         let ny = this.shape.position.y + this.randomUtil.randomWithNegative();
-        this.shape.setPosition(nx, ny);
+        this.shape.setPosition(nx, ny, this.shape.position.z);
     }
 
     draw(context: CanvasRenderingContext2D) {

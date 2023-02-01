@@ -1,10 +1,10 @@
-import { Vector2D } from '../../objects/vector';
+import { Vector } from '../../objects/vector';
 import { Circle } from '../../shapes/circle';
 import { ElementBase } from '../element-base';
 
 export class ElementCircle extends ElementBase {
     radius: number = 25;
-    constructor(position: Vector2D) {
+    constructor(position: Vector) {
         super();
 
         let c = new Circle(position);

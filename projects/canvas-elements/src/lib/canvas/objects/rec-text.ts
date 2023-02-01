@@ -6,7 +6,7 @@ import { Size } from '../models/size';
 import { Rectangle } from '../shapes/rectangle';
 import { TextOptions } from '../shapes/text/models';
 import { TextObject } from '../shapes/text/text-object';
-import { Vector2D } from './vector';
+import { Vector } from './vector';
 
 export class RecTextOptions {
     textColor: Color = new Color('#eee');
@@ -58,18 +58,18 @@ export class RecText implements IDrawable {
     private _textObject: TextObject;
     public get textObject() { return this._textObject; }
 
-    private _position: Vector2D;
-    public get position(): Vector2D { return this._position; }
+    private _position: Vector;
+    public get position(): Vector { return this._position; }
 
-    constructor(pos: Vector2D, size: Size, text: TextOptions | string, options?: RecTextOptions) {
+    constructor(pos: Vector, size: Size, text: TextOptions | string, options?: RecTextOptions) {
         this._position = pos;
         this._size = size;
         this._text = typeof text === 'string' ? new TextOptions(<string>text) : text;
         this._options = options || new RecTextOptions();
     }
 
-    public setPosition(x: number, y: number) {
-        this._position.set(x, y);
+    public setPosition(x: number, y: number, z: number) {
+        this._position.set(x, y, z);
     }
 
     draw(context: CanvasRenderingContext2D) {
@@ -91,13 +91,13 @@ export class RecText implements IDrawable {
         t.textOptions.maxWidth = t.textOptions.maxWidth ? rec.size.width - this._options.paddingLeft - this._options.paddingRight : undefined;
 
         // reposition text so it is in the correct position
-        t.setPosition(rec.topLeft.x + this._options.paddingLeft, rec.center.y);
+        t.setPosition(rec.topLeft.x + this._options.paddingLeft, rec.center.y, rec.position.z);
 
         this._rectangle = rec;
         this._textObject = t;
     }
 
-    private createText(pos: Vector2D, options: TextOptions, recTextOptions: RecTextOptions) {
+    private createText(pos: Vector, options: TextOptions, recTextOptions: RecTextOptions) {
         let t = new TextObject(pos, options);
         t.color = recTextOptions.textColor;
 
@@ -120,7 +120,7 @@ export class RecText implements IDrawable {
         return t;
     }
 
-    private createRectangle(context: CanvasRenderingContext2D, pos: Vector2D, size: Size, options: RecTextOptions) {
+    private createRectangle(context: CanvasRenderingContext2D, pos: Vector, size: Size, options: RecTextOptions) {
 
         // create the rectangle (this could auto size to text width if we want)
         let rec = new Rectangle(pos);

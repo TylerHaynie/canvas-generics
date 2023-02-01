@@ -1,29 +1,33 @@
-import { vec2 } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 
-export class Vector2D {
-    protected vector: vec2;
+export class Vector {
+    protected vector: vec3;
 
     public get x() {
         return <number>this.vector[0];
     }
+
     public get y() {
         return <number>this.vector[1];
     }
 
-    constructor(x: number, y: number) {
-        this.vector = vec2.fromValues(x, y);
+    public get z() {
+        return <number>this.vector[2];
+    }
+
+    constructor(x: number, y: number, z: number = 0) {
+        this.vector = vec3.fromValues(x, y, z);
     }
 
     public scaleBy(scaleAmount: number): void{
-        vec2.scale(this.vector, this.vector, scaleAmount);
+        vec3.scale(this.vector, this.vector, scaleAmount);
     }
 
-    public distanceTo(other: Vector2D): number {
-        let outResult = vec2.dist(this.vector, other.vector);
-        return outResult;
+    public distanceTo(other: Vector): number {
+        return vec3.dist(this.vector, other.vector);
     }
 
-    public set(x: number, y: number): void {
-        vec2.set(this.vector, x, y);
+    public set(x: number, y: number, z: number): void {
+        vec3.set(this.vector, x, y, z);
     }
 }

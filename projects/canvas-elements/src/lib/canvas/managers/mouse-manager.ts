@@ -1,16 +1,16 @@
 import { MOUSE_EVENT_TYPE } from '../events/canvas-enums';
 import { CanvasEvent } from '../events/canvas-event';
 import { MouseData } from '../events/event-data';
-import { Vector2D } from '../objects/vector';
+import { Vector } from '../objects/vector';
 
 export class MouseManager {
     public get mouseOnCanvas(): boolean { return this._mouseOnCanvas; }
-    public get mousePosition(): Vector2D { return this._mousePosition; }
+    public get mousePosition(): Vector { return this._mousePosition; }
 
     private _context: CanvasRenderingContext2D;
 
-    private _mousePosition: Vector2D;
-    private _translatedPosition: Vector2D;
+    private _mousePosition: Vector;
+    private _translatedPosition: Vector;
     private _mouseOnCanvas: boolean = false;
     private _scrollingDirection: string = 'none';
     private _primaryMousePosition: string = 'up';
@@ -38,6 +38,7 @@ export class MouseManager {
 
         // this forces you to use 'movementX' and 'movementY' instead of 'offsetX' and 'offsetY'
         // this._context.canvas.requestPointerLock();
+        // https://mdn.github.io/dom-examples/pointer-lock/
 
         cv.onmousemove = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.MOVE;
@@ -132,6 +133,6 @@ export class MouseManager {
     }
 
     private setMousePosition(x: number, y: number): void {
-        this._mousePosition ? this._mousePosition.set(x, y) : this._mousePosition = new Vector2D(x, y);
+        this._mousePosition ? this._mousePosition.set(x, y, 0) : this._mousePosition = new Vector(x, y, 0);
     }
 }

@@ -1,5 +1,3 @@
-// TODO: Make fire and subscribe async
-
 export class CanvasEvent<T>{
     private callbackList: [
         {

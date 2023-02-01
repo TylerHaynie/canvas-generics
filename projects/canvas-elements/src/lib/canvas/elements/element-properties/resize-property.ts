@@ -3,12 +3,12 @@ import { MouseData } from '../../events/event-data';
 import { Color } from '../../models/color';
 import { Size } from '../../models/size';
 import { Bounds } from '../../objects/bounds';
-import { Vector2D } from '../../objects/vector';
+import { Vector } from '../../objects/vector';
 import { Rectangle } from '../../shapes/rectangle';
 import { ElementBase } from '../element-base';
 
 export class ResizeProperty {
-    private position: Vector2D;
+    private position: Vector;
     private size: Size;
 
     private topLeftCorner: ElementBase;
@@ -20,7 +20,7 @@ export class ResizeProperty {
     private topMidRect: ElementBase;
     private bottomMidRect: ElementBase;
 
-    constructor(position: Vector2D, size: Size) {
+    constructor(position: Vector, size: Size) {
         this.position = position;
         this.size = size;
 
@@ -64,21 +64,21 @@ export class ResizeProperty {
         });
 
         // top Right corner
-        this.topRightCorner = this.buildRect(new Vector2D(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
+        this.topRightCorner = this.buildRect(new Vector(b.topRight.x - cornerSize.width, b.topRight.y), cornerSize, cornerColor);
         this.topRightCorner.hoverColor = hoverColor;
         this.topRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.topRightBottomLeftCornerHover(e, this.topRightCorner);
         });
 
         // bottom Right corner
-        this.bottomRightCorner = this.buildRect(new Vector2D(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
+        this.bottomRightCorner = this.buildRect(new Vector(b.bottomRight.x - cornerSize.width, b.bottomRight.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomRightCorner.hoverColor = hoverColor;
         this.bottomRightCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.topLeftBottomRightCornerHover(e, this.bottomRightCorner);
         });
 
         // bottom left corner
-        this.bottomLeftCorner = this.buildRect(new Vector2D(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
+        this.bottomLeftCorner = this.buildRect(new Vector(b.bottomLeft.x, b.bottomLeft.y - cornerSize.height), cornerSize, cornerColor);
         this.bottomLeftCorner.hoverColor = hoverColor;
         this.bottomLeftCorner.on(UI_EVENT_TYPE.HOVER, (e: MouseData) => {
             this.topRightBottomLeftCornerHover(e, this.bottomLeftCorner);
@@ -224,7 +224,7 @@ export class ResizeProperty {
         }
     }
 
-    private buildRect(position: Vector2D, size: Size, color: Color): ElementBase {
+    private buildRect(position: Vector, size: Size, color: Color): ElementBase {
         let rect = new Rectangle(position);
         rect.color = color;
         rect.size = size;
@@ -238,7 +238,7 @@ export class ResizeProperty {
 
     private topCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let w = bounds.width - (cornerSize.width * 2);
-        let p = new Vector2D(bounds.topLeft.x + cornerSize.width, bounds.topLeft.y);
+        let p = new Vector(bounds.topLeft.x + cornerSize.width, bounds.topLeft.y);
         let s = new Size(w, cornerSize.height);
 
         return this.buildRect(p, s, color);
@@ -246,7 +246,7 @@ export class ResizeProperty {
 
     private bottomCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let w = bounds.width - (cornerSize.width * 2);
-        let p = new Vector2D(bounds.bottomLeft.x + cornerSize.width, bounds.bottomLeft.y - cornerSize.height);
+        let p = new Vector(bounds.bottomLeft.x + cornerSize.width, bounds.bottomLeft.y - cornerSize.height);
         let s = new Size(w, cornerSize.height);
 
         return this.buildRect(p, s, color);
@@ -254,7 +254,7 @@ export class ResizeProperty {
 
     private leftCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let h = bounds.height - (cornerSize.height * 2);
-        let p = new Vector2D(bounds.topLeft.x, bounds.topLeft.y + cornerSize.height);
+        let p = new Vector(bounds.topLeft.x, bounds.topLeft.y + cornerSize.height);
         let s = new Size(cornerSize.width, h);
 
         return this.buildRect(p, s, color);
@@ -262,7 +262,7 @@ export class ResizeProperty {
 
     private rightCenterRect(bounds: Bounds, cornerSize: Size, color: Color): ElementBase {
         let h = bounds.height - (cornerSize.height * 2);
-        let p = new Vector2D(bounds.topRight.x - cornerSize.width, bounds.topRight.y + cornerSize.height);
+        let p = new Vector(bounds.topRight.x - cornerSize.width, bounds.topRight.y + cornerSize.height);
         let s = new Size(cornerSize.width, h);
 
         return this.buildRect(p, s, color);

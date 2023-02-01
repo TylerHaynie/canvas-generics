@@ -1,5 +1,5 @@
 import { IDrawable } from '../../models/interfaces/idrawable';
-import { Vector2D } from '../../objects/vector';
+import { Vector } from '../../objects/vector';
 import { ShapeBase } from '../shape-base';
 import { TextOptions } from './models';
 
@@ -11,7 +11,7 @@ export class TextObject extends ShapeBase implements IDrawable {
     public get textOptions(): TextOptions { return this._textOptions; }
     private _textOptions: TextOptions = new TextOptions();
 
-    constructor(position: Vector2D, options?: TextOptions) {
+    constructor(position: Vector, options?: TextOptions) {
         super(position);
         this._textOptions = options ? options : new TextOptions();
     }

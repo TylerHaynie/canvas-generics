@@ -1,9 +1,9 @@
-import { Vector2D } from '../../objects/vector';
+import { Vector } from '../../objects/vector';
 
 export class LineSegment {
 
-    public get points(): Vector2D[] { return this._points; }
-    private _points: Vector2D[] = [];
+    public get points(): Vector[] { return this._points; }
+    private _points: Vector[] = [];
 
     private _fillSegment: boolean = false;
     public get fillSegment(): boolean { return this._fillSegment; }
@@ -12,21 +12,21 @@ export class LineSegment {
         // isDirty = true;
     }
 
-    constructor(startPoint?: Vector2D) {
+    constructor(startPoint?: Vector) {
         if (startPoint) { this._points.push(startPoint); }
     }
 
-    addPoint(point: Vector2D) {
+    addPoint(point: Vector) {
         this._points.push(point);
     }
 
-    addPoints(points: Vector2D[]) {
+    addPoints(points: Vector[]) {
         points.forEach(point => {
             this._points.push(point);
         });
     }
 
-    removePoint(point: Vector2D) {
+    removePoint(point: Vector) {
         let i = this._points.indexOf(point);
         this._points.splice(i, 1);
     }

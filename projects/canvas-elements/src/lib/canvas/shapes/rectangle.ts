@@ -1,18 +1,18 @@
 import { IDrawable } from '../models/interfaces/idrawable';
 import { Size } from '../models/size';
-import { Vector2D } from '../objects/vector';
+import { Vector } from '../objects/vector';
 import { ShapeBase } from './shape-base';
 
 export class Corner {
-    private _controlPoint: Vector2D;
-    public get controlPoint(): Vector2D { return this._controlPoint; }
-    public set controlPoint(v: Vector2D) { this._controlPoint = v; }
+    private _controlPoint: Vector;
+    public get controlPoint(): Vector { return this._controlPoint; }
+    public set controlPoint(v: Vector) { this._controlPoint = v; }
 
-    private _endingPoint: Vector2D;
-    public get endingPoint(): Vector2D { return this._endingPoint; }
-    public set endingPoint(v: Vector2D) { this._endingPoint = v; }
+    private _endingPoint: Vector;
+    public get endingPoint(): Vector { return this._endingPoint; }
+    public set endingPoint(v: Vector) { this._endingPoint = v; }
 
-    constructor(_controlPoint: Vector2D, _endingPoint: Vector2D) {
+    constructor(_controlPoint: Vector, _endingPoint: Vector) {
         this._controlPoint = _controlPoint;
         this._endingPoint = _endingPoint;
     }
@@ -29,7 +29,7 @@ export class Rectangle extends ShapeBase implements IDrawable {
 
     public get endGap(): number { return this._endGap; }
     public set endGap(v: number) {
-        let limit = new Vector2D(this.size.width / 2, this.size.height / 2);
+        let limit = new Vector(this.size.width / 2, this.size.height / 2);
 
         if (v > limit.x || v > limit.y) {
             this._endGap = Math.min(limit.x, limit.y);
@@ -42,80 +42,80 @@ export class Rectangle extends ShapeBase implements IDrawable {
         }
     }
 
-    public get center(): Vector2D {
-        return new Vector2D(
+    public get center(): Vector {
+        return new Vector(
             Math.fround(this.position.x - this._size.width / 2),
             Math.fround(this.position.y - this._size.height / 2)
         );
     }
 
-    public get topLeft(): Vector2D {
+    public get topLeft(): Vector {
         return this.position;
     }
 
-    public get topRight(): Vector2D {
-        return new Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y));
+    public get topRight(): Vector {
+        return new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y));
     }
 
-    public get bottomRight(): Vector2D {
-        return new Vector2D(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height));
+    public get bottomRight(): Vector {
+        return new Vector(Math.fround(this.position.x + this._size.width), Math.fround(this.position.y + this._size.height));
     }
 
-    public get bottomLeft(): Vector2D {
-        return new Vector2D(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height));
+    public get bottomLeft(): Vector {
+        return new Vector(Math.fround(this.position.x), Math.fround(this.position.y + this._size.height));
     }
 
     public get topLine() {
         return {
-            p1: new Vector2D(this.position.x + this._endGap, this.position.y),
-            p2: new Vector2D(this.position.x + this.size.width - this._endGap, this.position.y)
+            p1: new Vector(this.position.x + this._endGap, this.position.y),
+            p2: new Vector(this.position.x + this.size.width - this._endGap, this.position.y)
         };
     }
 
     public get topRightCorner(): Corner {
-        let cp = new Vector2D(this.position.x + this.size.width, this.position.y);
-        let ep = new Vector2D(this.position.x + this.size.width, this.position.y + this._endGap);
+        let cp = new Vector(this.position.x + this.size.width, this.position.y);
+        let ep = new Vector(this.position.x + this.size.width, this.position.y + this._endGap);
         return new Corner(cp, ep);
     }
 
     public get rightLine() {
         return {
-            p1: new Vector2D(this.position.x + this.size.width, this.position.y + this._endGap),
-            p2: new Vector2D(this.position.x + this.size.width, this.position.y + this.size.height - this._endGap)
+            p1: new Vector(this.position.x + this.size.width, this.position.y + this._endGap),
+            p2: new Vector(this.position.x + this.size.width, this.position.y + this.size.height - this._endGap)
         };
     }
 
     public get bottomRightCorner(): Corner {
 
-        let cp = new Vector2D(this.position.x + this._size.width, this.position.y + this._size.height);
-        let ep = new Vector2D(this.position.x + this._size.width - this._endGap, this.position.y + this._size.height);
+        let cp = new Vector(this.position.x + this._size.width, this.position.y + this._size.height);
+        let ep = new Vector(this.position.x + this._size.width - this._endGap, this.position.y + this._size.height);
 
         return new Corner(cp, ep);
     }
 
     public get bottomLine() {
         return {
-            p1: new Vector2D(this.position.x + this.size.width - this._endGap, this.position.y + this.size.height),
-            p2: new Vector2D(this.position.x + this._endGap, this.position.y + this.size.height)
+            p1: new Vector(this.position.x + this.size.width - this._endGap, this.position.y + this.size.height),
+            p2: new Vector(this.position.x + this._endGap, this.position.y + this.size.height)
         };
     }
 
     public get bottomLeftCorner(): Corner {
-        let cp = new Vector2D(this.position.x, this.position.y + this.size.height);
-        let ep = new Vector2D(this.position.x, this.position.y + this.size.height - this._endGap);
+        let cp = new Vector(this.position.x, this.position.y + this.size.height);
+        let ep = new Vector(this.position.x, this.position.y + this.size.height - this._endGap);
         return new Corner(cp, ep);
     }
 
     public get leftLine() {
         return {
-            p1: new Vector2D(this.position.x, this.position.y + this.size.height - this._endGap),
-            p2: new Vector2D(this.position.x, this.position.y + this._endGap)
+            p1: new Vector(this.position.x, this.position.y + this.size.height - this._endGap),
+            p2: new Vector(this.position.x, this.position.y + this._endGap)
         };
     }
 
     public get topLeftCorner(): Corner {
-        let cp = new Vector2D(this.position.x, this.position.y);
-        let ep = new Vector2D(this.position.x + this._endGap, this.position.y);
+        let cp = new Vector(this.position.x, this.position.y);
+        let ep = new Vector(this.position.x + this._endGap, this.position.y);
         return new Corner(cp, ep);
     }
 
@@ -125,14 +125,14 @@ export class Rectangle extends ShapeBase implements IDrawable {
     private _endGap: number = 0;
     private _roundedCorners: boolean = false;
 
-    constructor(position: Vector2D) {
+    constructor(position: Vector) {
         super(position);
     }
 
     draw(context: CanvasRenderingContext2D) {
         context.save();
 
-        // craeate rectangle path
+        // create rectangle path
         if (this._endGap > 0) {
             this.drawComplexRectangle(context);
         }
@@ -263,7 +263,7 @@ export class Rectangle extends ShapeBase implements IDrawable {
         context.closePath();
     }
 
-    pointWithinBounds(v: Vector2D): boolean {
+    pointWithinBounds(v: Vector): boolean {
         let topLeft = this.topLeft;
         let bottomRight = this.bottomRight;
 
@@ -276,14 +276,14 @@ export class Rectangle extends ShapeBase implements IDrawable {
         return false;
     }
 
-    lineIntersects(other: { p1: Vector2D, p2: Vector2D }) {
+    lineIntersects(other: { p1: Vector, p2: Vector }) {
         let segments = [];
         segments.push(this.topLine);
         segments.push(this.rightLine);
         segments.push(this.bottomLine);
         segments.push(this.leftLine);
 
-        let closestIntersect: { intersection: Vector2D, param: number } = null;
+        let closestIntersect: { intersection: Vector, param: number } = null;
 
         for (let i = 0; i < segments.length; i++) {
             let intersect = this.getIntersection(other, segments[i]);
@@ -296,7 +296,7 @@ export class Rectangle extends ShapeBase implements IDrawable {
         return closestIntersect ? closestIntersect.intersection : undefined;
     }
 
-    getIntersection(ray: { p1: Vector2D, p2: Vector2D }, segment: { p1: Vector2D, p2: Vector2D }) {
+    getIntersection(ray: { p1: Vector, p2: Vector }, segment: { p1: Vector, p2: Vector }) {
         // sources
         // https://www.youtube.com/watch?v=c065KoXooSw
         // https://ncase.me/sight-and-light/
@@ -330,7 +330,7 @@ export class Rectangle extends ShapeBase implements IDrawable {
 
         // return point-of-intersection
         return {
-            intersection: new Vector2D(
+            intersection: new Vector(
                 r_px + r_dx * T1,
                 r_py + r_dy * T1
             ),

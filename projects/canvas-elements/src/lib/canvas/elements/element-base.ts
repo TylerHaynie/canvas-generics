@@ -5,10 +5,14 @@ import { Color } from '../models/color';
 import { IDrawable } from '../models/interfaces/idrawable';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
-import { Vector2D } from '../objects/vector';
+import { Vector } from '../objects/vector';
 import { Circle } from '../shapes/circle';
 import { Rectangle } from '../shapes/rectangle';
 import { ResizeProperty } from './element-properties/resize-property';
+
+
+//TODO: This need full redesign
+
 
 export class ElementBase implements IDrawable  {
     private _shape: Rectangle | Circle;
@@ -76,7 +80,7 @@ export class ElementBase implements IDrawable  {
     public set isDragging(v: boolean) { this._dragging = v; }
     public get isDragging(): boolean { return this._dragging; }
 
-    private dragOffset: Vector2D = new Vector2D(0, 0);
+    private dragOffset: Vector = new Vector(0, 0, 0);
 
     // event
     private _eventType: UI_EVENT_TYPE;
@@ -167,7 +171,7 @@ export class ElementBase implements IDrawable  {
     }
 
     setPosition(x: number, y: number) {
-        this.shape.setPosition(x, y);
+        this.shape.setPosition(x, y, this.shape.position.z);
     }
 
     getposition() {
@@ -226,7 +230,7 @@ export class ElementBase implements IDrawable  {
         let dx = e.mousePosition.x - elementPosition.x;
         let dy = e.mousePosition.y - elementPosition.y;
 
-        this.dragOffset.set(dx, dy);
+        this.dragOffset.set(dx, dy, 0);
     }
 
     private dragElement(e: MouseData) {

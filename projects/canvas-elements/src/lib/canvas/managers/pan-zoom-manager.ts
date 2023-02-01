@@ -1,7 +1,7 @@
 import { PAN_ZOOM_EVENT_TYPE, MOUSE_EVENT_TYPE } from '../events/canvas-enums';
 import { CanvasEvent } from '../events/canvas-event';
 import { PanZoomData } from '../events/event-data';
-import { Vector2D } from '../objects/vector';
+import { Vector } from '../objects/vector';
 import { MouseManager } from './mouse-manager';
 
 export class PanZoomManager {
@@ -24,7 +24,7 @@ export class PanZoomManager {
 
     private context: CanvasRenderingContext2D;
     private mouseManager: MouseManager;
-    private mousePosition: Vector2D;
+    private mousePosition: Vector;
 
     // canvas
     private canvasScaleStep: number = .10;
@@ -35,10 +35,10 @@ export class PanZoomManager {
     private maximumPanSpeed: number = 2;
     private allowPanning: boolean = false;
     private pannableModifier: number = 1;
-    private panOffset: Vector2D;
+    private panOffset: Vector;
     private isPanning = false;
-    private panStartPosition: Vector2D;
-    private totalPanning: Vector2D = new Vector2D(0, 0);
+    private panStartPosition: Vector;
+    private totalPanning: Vector = new Vector(0, 0);
     private panModifier: number = 1;
 
     // scaling
@@ -185,15 +185,15 @@ export class PanZoomManager {
 
     //#region Input logic
 
-    private mouseDown(mousePosition: Vector2D) {
+    private mouseDown(mousePosition: Vector) {
         if (!this.isPanning) {
-            this.panStartPosition = new Vector2D(mousePosition.x - this.panOffset.x, mousePosition.y - this.panOffset.y);
+            this.panStartPosition = new Vector(mousePosition.x - this.panOffset.x, mousePosition.y - this.panOffset.y);
 
             this.isPanning = true;
         }
     }
 
-    private mouseMove(mousePosition: Vector2D) {
+    private mouseMove(mousePosition: Vector) {
         this.mousePosition = mousePosition;
         this.pan(mousePosition);
     }
@@ -224,7 +224,7 @@ export class PanZoomManager {
 
     //#endregion
 
-    private pan(mousePosition: Vector2D) {
+    private pan(mousePosition: Vector) {
         // are we panning?
         if (this.isPanning && this.allowPanning) {
             // movement delta
@@ -232,10 +232,10 @@ export class PanZoomManager {
             let dy = (mousePosition.y - this.panStartPosition.y) * this.panModifier;
 
             // update panstart
-            this.panStartPosition = new Vector2D(mousePosition.x, mousePosition.y);
+            this.panStartPosition = new Vector(mousePosition.x, mousePosition.y);
 
             // total pan amount
-            this.totalPanning = new Vector2D(this.totalPanning.x + dx, this.totalPanning.y + dy);
+            this.totalPanning = new Vector(this.totalPanning.x + dx, this.totalPanning.y + dy);
 
             this.eventType = PAN_ZOOM_EVENT_TYPE.PAN;
             this.fireEvent();
@@ -283,8 +283,8 @@ export class PanZoomManager {
     }
 
     private resetView() {
-        this.panOffset = new Vector2D(0, 0);
-        this.totalPanning = new Vector2D(0, 0);
+        this.panOffset = new Vector(0, 0);
+        this.totalPanning = new Vector(0, 0);
 
         this.canvasScale = 1;
         this.eventType = PAN_ZOOM_EVENT_TYPE.RESET;

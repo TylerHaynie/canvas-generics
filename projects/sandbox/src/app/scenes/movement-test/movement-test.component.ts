@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CanvasWrapper, ElementRect, Vector2D } from 'canvas-elements';
+import { CanvasWrapper, Color, ColorUtility, ElementRect, RandomUtility, Rectangle, Size, Vector } from 'canvas-elements';
 
 @Component({
   selector: 'app-movement-test',
@@ -9,20 +9,26 @@ import { CanvasWrapper, ElementRect, Vector2D } from 'canvas-elements';
 export class MovementTestComponent implements AfterViewInit {
   @ViewChild('c') canvasRef: ElementRef;
   private cw: CanvasWrapper;
+  private _numUtil: RandomUtility = new RandomUtility();
+  private _colorUtil: ColorUtility = new ColorUtility();
 
-  constructor() { }
+  // inputs
+  private testCubeCount: number = 5000;
+
+  constructor() {
+
+  }
 
   ngAfterViewInit() {
     var renderTarget = this.canvasRef.nativeElement as HTMLCanvasElement;
     this.cw = new CanvasWrapper(renderTarget.getContext('2d'));
-    this.cw.renderManager.debugEnabled = true;
 
     this.register();
   }
 
   // should be called from canvas wrapper or render manager when engine starts
   public register(): void {
-    this.createTestRect();
+    this.createTestShapes();
 
     // TODO: Should register self with canvas wrapper/rendering manager
     // From there, call a startup/register method on this component
@@ -30,26 +36,33 @@ export class MovementTestComponent implements AfterViewInit {
   }
 
   // called on each frame render
-  public update(): void{
+  public update(): void {
 
   }
 
   // called when a component is deleted
-  public dispose(): void{
+  public dispose(): void {
 
   }
 
-  private createTestRect() {
-    // create rectangle
-    let rect = new ElementRect(new Vector2D(600, 300));
-    rect.size.setSize(200, 100);
-    rect.isDraggable = true;
+  private createTestShapes() {
+    for (let i = 0; i < this.testCubeCount; i++) {
+      let size = new Size(
+        this._numUtil.randomNumberBetween(50, 300),
+        this._numUtil.randomNumberBetween(50, 300));
 
-    // TODO: I should just be able to add the rect without knowing about rendermanager or context.
-    // this.cw.addElement(rect);
+      let pos = new Vector(
+        this._numUtil.randomNumberBetween(0, this.cw.width - size.width),
+        this._numUtil.randomNumberBetween(0, this.cw.height - size.height),
+        this._numUtil.randomNumberBetween(1, 10));
 
-    // add to buffer
-    this.cw.renderManager.addUIElement(this.cw.drawingContext, rect);
+      let shape = new Rectangle(pos);
+      shape.size.setSize(size.width, size.height);
+
+      shape.color = new Color(this._colorUtil.randomColor());
+
+      this.cw.renderManager.addShape(shape);
+    }
   }
 
 }

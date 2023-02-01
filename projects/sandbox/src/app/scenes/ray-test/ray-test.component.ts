@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Vector2D, CanvasWrapper, Rectangle, QuadTree, Circle, RandomUtility, Boundary, MOUSE_EVENT_TYPE, MouseData, Color, Size, Line, LineSegment, LineStyle, QuadVector } from 'canvas-elements';
+import { Vector, CanvasWrapper, Rectangle, QuadTree, Circle, RandomUtility, Boundary, MOUSE_EVENT_TYPE, MouseData, Color, Size, Line, LineSegment, LineStyle, QuadVector } from 'canvas-elements';
 
 interface Ray {
-  a: Vector2D;
-  b: Vector2D;
+  a: Vector;
+  b: Vector;
 }
 
 @Component({
@@ -22,7 +22,7 @@ export class RayTestComponent implements AfterViewInit {
 
   // mouse
   private mouseOnCanvas: boolean = false;
-  private mousePosition: Vector2D;
+  private mousePosition: Vector;
 
   constructor() { }
 
@@ -61,7 +61,7 @@ export class RayTestComponent implements AfterViewInit {
   }
 
   setFocalPoint() {
-    let p = new Vector2D(this.cw.width / 2, this.cw.height / 2);
+    let p = new Vector(this.cw.width / 2, this.cw.height / 2);
     this.focalPoint = new Circle(p);
     this.focalPoint.radius = 4;
     this.focalPoint.color.setShade('lime');
@@ -113,7 +113,7 @@ export class RayTestComponent implements AfterViewInit {
     let seg = new LineSegment(this.focalPoint.position);
 
     let range = this.mousePosition.distanceTo(this.focalPoint.position);
-    let p = new Vector2D(this.focalPoint.position.x - range, this.focalPoint.position.y - range);
+    let p = new Vector(this.focalPoint.position.x - range, this.focalPoint.position.y - range);
 
     // draw light range
     let lr = new Rectangle(p);
@@ -133,7 +133,7 @@ export class RayTestComponent implements AfterViewInit {
     let results = this.qtSquares.searchBoundary(b);
 
     // draw light range
-    let debugREct = new Rectangle(new Vector2D(b.x, b.y));
+    let debugREct = new Rectangle(new Vector(b.x, b.y));
     debugREct.size.setSize(b.width, b.height);
     debugREct.color = undefined;
     let dls = new LineStyle();

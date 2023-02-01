@@ -1,7 +1,7 @@
 import { MOUSE_STATE } from '../events/canvas-enums';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
-import { Vector2D } from '../objects/vector';
+import { Vector } from '../objects/vector';
 import { Circle } from '../shapes/circle';
 import { Line } from '../shapes/line/line';
 import { LineSegment } from '../shapes/line/line-segment';
@@ -22,76 +22,76 @@ export class HelperUtility {
         // vertical lines
         // start at 0.5 so the lines take up 1 whole pixel and not 2 halves
         for (let x = 0 + 0.5; x < this.context.canvas.width; x += spacing) {
-            let segment = new LineSegment(new Vector2D(x, 0));
-            segment.addPoint(new Vector2D(x, this.context.canvas.height));
+            let segment = new LineSegment(new Vector(x, 0));
+            segment.addPoint(new Vector(x, this.context.canvas.height));
             gridLines.addSegment(segment);
         }
 
         // horizontal
         // start at 0.5 so the lines take up 1 whole pixel and not 2 half pixels
         for (let y = 0 + 0.5; y < this.context.canvas.height; y += spacing) {
-            let segment = new LineSegment(new Vector2D(0, y));
-            segment.addPoint(new Vector2D(this.context.canvas.width, y));
+            let segment = new LineSegment(new Vector(0, y));
+            segment.addPoint(new Vector(this.context.canvas.width, y));
             gridLines.addSegment(segment);
         }
 
         return gridLines;
     }
 
-    trackMouse(v: Vector2D, color: string, drawArrows: boolean = false): Line {
+    trackMouse(v: Vector, color: string, drawArrows: boolean = false): Line {
         let line = new Line();
         line.style.setShade(color);
 
         // horizontal line (left)
-        let h1 = new LineSegment(new Vector2D(0, v.y));
-        h1.addPoint(new Vector2D(v.x, v.y));
+        let h1 = new LineSegment(new Vector(0, v.y));
+        h1.addPoint(new Vector(v.x, v.y));
         line.addSegment(h1);
 
         // horizontal line (right)
-        let x1 = new LineSegment(new Vector2D(this.context.canvas.width, v.y));
-        x1.addPoint(new Vector2D(v.x, v.y));
+        let x1 = new LineSegment(new Vector(this.context.canvas.width, v.y));
+        x1.addPoint(new Vector(v.x, v.y));
         line.addSegment(x1);
 
         // vertical line (top)
-        let v1 = new LineSegment(new Vector2D(v.x, 0));
-        v1.addPoint(new Vector2D(v.x, v.y));
+        let v1 = new LineSegment(new Vector(v.x, 0));
+        v1.addPoint(new Vector(v.x, v.y));
         line.addSegment(v1);
 
         // vertical line (bottom)
-        let v2 = new LineSegment(new Vector2D(v.x, this.context.canvas.height));
-        v2.addPoint(new Vector2D(v.x, v.y));
+        let v2 = new LineSegment(new Vector(v.x, this.context.canvas.height));
+        v2.addPoint(new Vector(v.x, v.y));
         line.addSegment(v2);
 
         if (drawArrows) {
             // right arrow
-            let ra = new LineSegment(new Vector2D(this.context.canvas.width - 5, v.y - 5));
-            ra.addPoint(new Vector2D(this.context.canvas.width, v.y));
-            ra.addPoint(new Vector2D(this.context.canvas.width - 5, v.y + 5));
+            let ra = new LineSegment(new Vector(this.context.canvas.width - 5, v.y - 5));
+            ra.addPoint(new Vector(this.context.canvas.width, v.y));
+            ra.addPoint(new Vector(this.context.canvas.width - 5, v.y + 5));
             line.addSegment(ra);
 
             // left arrow
-            let la = new LineSegment(new Vector2D(5, v.y - 5));
-            la.addPoint(new Vector2D(0, v.y));
-            la.addPoint(new Vector2D(5, v.y + 5));
+            let la = new LineSegment(new Vector(5, v.y - 5));
+            la.addPoint(new Vector(0, v.y));
+            la.addPoint(new Vector(5, v.y + 5));
             line.addSegment(la);
 
             // bottom arrow
-            let da = new LineSegment(new Vector2D(v.x + 5, this.context.canvas.height - 5));
-            da.addPoint(new Vector2D(v.x, this.context.canvas.height));
-            da.addPoint(new Vector2D(v.x - 5, this.context.canvas.height - 5));
+            let da = new LineSegment(new Vector(v.x + 5, this.context.canvas.height - 5));
+            da.addPoint(new Vector(v.x, this.context.canvas.height));
+            da.addPoint(new Vector(v.x - 5, this.context.canvas.height - 5));
             line.addSegment(da);
 
             // top  arrow
-            let ta = new LineSegment(new Vector2D(v.x + 5, 5));
-            ta.addPoint(new Vector2D(v.x, 0));
-            ta.addPoint(new Vector2D(v.x - 5, 5));
+            let ta = new LineSegment(new Vector(v.x + 5, 5));
+            ta.addPoint(new Vector(v.x, 0));
+            ta.addPoint(new Vector(v.x - 5, 5));
             line.addSegment(ta);
         }
 
         return line;
     }
 
-    drawMouse(position: Vector2D, state: MOUSE_STATE) {
+    drawMouse(position: Vector, state: MOUSE_STATE) {
         switch (state) {
             case MOUSE_STATE.DEFAULT:
                 this.redDotMouse(position);
@@ -105,7 +105,7 @@ export class HelperUtility {
         }
     }
 
-    private redDotMouse(position: Vector2D) {
+    private redDotMouse(position: Vector) {
         // circle outline
         let co = new Circle(position);
         co.radius = 20;
@@ -126,7 +126,7 @@ export class HelperUtility {
         co.draw(this.context);
     }
 
-    private holdMeMouse(position: Vector2D) {
+    private holdMeMouse(position: Vector) {
         let lineLength = 10;
         let line = new Line();
         line.style.setShade('#d14d02');
@@ -136,13 +136,13 @@ export class HelperUtility {
         // line.shadow.shadowBlur = 4;
 
         // top right
-        let trp = new Vector2D(position.x + lineLength + 1, position.y - lineLength - 1);
+        let trp = new Vector(position.x + lineLength + 1, position.y - lineLength - 1);
         // top left
-        let tlp = new Vector2D(position.x - lineLength, position.y - lineLength);
+        let tlp = new Vector(position.x - lineLength, position.y - lineLength);
         // bottom right
-        let brp = new Vector2D(position.x + lineLength, position.y + lineLength);
+        let brp = new Vector(position.x + lineLength, position.y + lineLength);
         // bottom left
-        let blp = new Vector2D(position.x - lineLength + 3, position.y + lineLength - 3);
+        let blp = new Vector(position.x - lineLength + 3, position.y + lineLength - 3);
 
         let trs = new LineSegment(position);
         trs.addPoint(trp);
@@ -176,7 +176,7 @@ export class HelperUtility {
         // arrows.draw();
 
         // center circle
-        let r1 = new Circle(new Vector2D(position.x, position.y));
+        let r1 = new Circle(new Vector(position.x, position.y));
         r1.color.setShade('#121212');
         r1.outline = new LineStyle();
         r1.outline.setShade('red');

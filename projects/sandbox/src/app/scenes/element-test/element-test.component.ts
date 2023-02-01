@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { CanvasWrapper, Color, ElementCircle, ElementRect, LineStyle, MouseData, Size, UI_EVENT_TYPE, Vector2D } from 'canvas-elements';
+import { CanvasWrapper, Color, ElementCircle, ElementRect, LineStyle, MouseData, Size, UI_EVENT_TYPE, Vector } from 'canvas-elements';
 
 @Component({
   selector: 'app-element-test',
@@ -12,7 +12,7 @@ export class ElementTestComponent implements AfterViewInit {
 
   // moving
   private isDragging = false;
-  private dragOffset: Vector2D = new Vector2D(0, 0);
+  private dragOffset: Vector = new Vector(0, 0);
 
   constructor() { }
 
@@ -45,52 +45,52 @@ export class ElementTestComponent implements AfterViewInit {
   }
 
   private createTestRect() {
-    // create rectangle
-    let rect = new ElementRect(new Vector2D(600, 300));
-    rect.size.setSize(200, 100);
-    rect.endGap = 8;
-    rect.isDraggable = true;
+    // // create rectangle
+    // let rect = new ElementRect(new Vector(600, 300));
+    // rect.size.setSize(200, 100);
+    // rect.endGap = 8;
+    // rect.isDraggable = true;
 
-    // add to buffer
-    this.cw.renderManager.addUIElement(this.cw.drawingContext, rect);
+    // // add to buffer
+    // this.cw.renderManager.addUIElement(this.cw.drawingContext, rect);
   }
 
   private circleButton() {
-    // create a circle element for testing
-    let ce = new ElementCircle(new Vector2D(525, 100));
-    ce.isDraggable = false;
-    let ls = new LineStyle('#f442d7', 2);
-    ce.defaultOutline = ls;
+    // // create a circle element for testing
+    // let ce = new ElementCircle(new Vector(525, 100));
+    // ce.isDraggable = false;
+    // let ls = new LineStyle('#f442d7', 2);
+    // ce.defaultOutline = ls;
 
-    ce.defaultColor = new Color('#333');
-    ce.hoverColor = new Color('#7bd1cb');
-    ce.downColor = new Color('#111');
+    // ce.defaultColor = new Color('#333');
+    // ce.hoverColor = new Color('#7bd1cb');
+    // ce.downColor = new Color('#111');
 
-    ce.on(UI_EVENT_TYPE.DOWN, (e: MouseData) => {
-      // do something with your circle button
-    });
+    // ce.on(UI_EVENT_TYPE.DOWN, (e: MouseData) => {
+    //   // do something with your circle button
+    // });
 
-    this.cw.renderManager.addUIElement(this.cw.drawingContext, ce);
+    // this.cw.renderManager.addUIElement(this.cw.drawingContext, ce);
   }
 
   private rectangleButton() {
-    // create a rectangular element for testing
-    let re = new ElementRect(new Vector2D(800, 250));
-    re.isDraggable = false;
-    re.endGap = 8;
+    // // create a rectangular element for testing
+    // let re = new ElementRect(new Vector(800, 250));
+    // re.isDraggable = false;
+    // re.endGap = 8;
 
-    let rls = new LineStyle('#f442d7', 2);
-    re.defaultOutline = rls;
+    // let rls = new LineStyle('#f442d7', 2);
+    // re.defaultOutline = rls;
 
-    re.defaultColor = new Color('#333');
-    re.hoverColor = new Color('#7bd1cb');
-    re.downColor = new Color('#111');
+    // re.defaultColor = new Color('#333');
+    // re.hoverColor = new Color('#7bd1cb');
+    // re.downColor = new Color('#111');
 
-    re.on(UI_EVENT_TYPE.DOWN, (e: MouseData) => {
+    // re.on(UI_EVENT_TYPE.DOWN, (e: MouseData) => {
 
-    });
+    // });
 
-    this.cw.renderManager.addUIElement(this.cw.drawingContext, re);
+    // this.cw.renderManager.addUIElement(this.cw.drawingContext, re);
   }
 
 }
