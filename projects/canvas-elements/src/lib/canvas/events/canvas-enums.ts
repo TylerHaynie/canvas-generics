@@ -1,9 +1,9 @@
 export enum MOUSE_STATE {
     MOVING = 'move',
-    TLBR_CORNER_RESIZE = 'tlbr-corner-resize',
-    TRBL_CORNER_RESIZE = 'trbl-corner-resize',
-    HORIZONTAL_RESIZE = 'horizontal-resize',
-    VERTICAL_RESIZE = 'vertical-resize',
+    TLBR_CORNER_RESIZE = 'tlbr_corner_resize',
+    TRBL_CORNER_RESIZE = 'trbl_corner_resize',
+    HORIZONTAL_RESIZE = 'horizontal_resize',
+    VERTICAL_RESIZE = 'vertical_resize',
     GRAB = 'grab',
     DEFAULT = 'default',
 }
@@ -14,6 +14,11 @@ export enum MOUSE_EVENT_TYPE {
     UP = 'up',
     WHEEL = 'wheel',
     OUT = 'out'
+}
+
+export enum KEYBOARD_EVENT_TYPE {
+    KEY_DOWN = 'key_down',
+    KEY_UP = 'key_up',
 }
 
 export enum PAN_ZOOM_EVENT_TYPE {

@@ -17,20 +17,20 @@ export class ElementTestComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit() {
-    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
-    this.cw.panZoomManager.panningAllowed = false;
-    this.cw.panZoomManager.scalingAllowed = false;
-    this.cw.trackMouse = false;
-    this.cw.gridAsBackground = false;
-    this.cw.renderManager.debugEnabled = true;
+    // this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
+    // this.cw.panZoomManager.panningAllowed = false;
+    // this.cw.panZoomManager.scalingAllowed = false;
+    // this.cw.trackMouse = false;
+    // this.cw.gridAsBackground = false;
+    // this.cw.renderManager.debugEnabled = true;
 
-    this.createTestUI();
+    // this.createTestUI();
 
-    // this.cw.addToTick(this);
-    // this.cw.addToDraw(this);
+    // // this.cw.addToTick(this);
+    // // this.cw.addToDraw(this);
 
-    // start the draw loop
-    this.cw.start();
+    // // start the draw loop
+    // this.cw.start();
   }
 
   private draw() {

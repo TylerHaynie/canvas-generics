@@ -1,4 +1,4 @@
-// TODO: look into using promises possibly. Would they provide any benefit?
+// TODO: Make fire and subscribe async
 
 export class CanvasEvent<T>{
     private callbackList: [
@@ -8,27 +8,23 @@ export class CanvasEvent<T>{
         }
     ];
 
-    subscribe(on: string, callback: (e: T) => void) {
-        if (!this.callbackList) {
+    async subscribe(on: string, callback: (e: T) => void) {
+        if (!this.callbackList)
             this.callbackList = [{ eventName: on, callback: callback }];
-        }
-        else {
+        else
             this.callbackList.push({ eventName: on, callback: callback });
-        }
     }
 
     private updateSubscribers(eventName: string, e: T) {
         if (this.callbackList) {
             this.callbackList.forEach(subscriber => {
-                if (subscriber.eventName === eventName) {
+                if (subscriber.eventName === eventName)
                     subscriber.callback(e);
-                }
-
             });
         }
     }
 
-    fireEvent(eventName: string, e: T) {
+    async fireEvent(eventName: string, e: T) {
         this.updateSubscribers(eventName, e);
     }
 

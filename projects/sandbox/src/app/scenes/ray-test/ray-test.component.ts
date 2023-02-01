@@ -27,26 +27,26 @@ export class RayTestComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit() {
-    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
+    // this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
 
-    this.cw.panZoomManager.minScale = 1;
-    this.cw.panZoomManager.panningAllowed = false;
-    this.cw.panZoomManager.scalingAllowed = false;
-    this.cw.gridAsBackground = true;
+    // this.cw.panZoomManager.minScale = 1;
+    // this.cw.panZoomManager.panningAllowed = false;
+    // this.cw.panZoomManager.scalingAllowed = false;
+    // this.cw.gridAsBackground = true;
 
-    let b: Boundary = new Boundary(0, 0, 0, this.cw.width, this.cw.height, 0);
-    this.qtSquares = new QuadTree(b, 1);
+    // let b: Boundary = new Boundary(0, 0, 0, this.cw.width, this.cw.height, 0);
+    // this.qtSquares = new QuadTree(b, 1);
 
-    this.registerEvents();
+    // this.registerEvents();
 
-    this.setFocalPoint();
-    this.generateSquares();
+    // this.setFocalPoint();
+    // this.generateSquares();
 
-    // this.cw.addToTick(this);
-    this.cw.addToDraw(this);
+    // // this.cw.addToTick(this);
+    // this.cw.addToDraw(this);
 
-    // start the draw loop
-    this.cw.start();
+    // // start the draw loop
+    // this.cw.start();
   }
 
   private registerEvents() {

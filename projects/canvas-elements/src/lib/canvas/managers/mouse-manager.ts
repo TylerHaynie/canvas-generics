@@ -7,10 +7,8 @@ export class MouseManager {
     public get mouseOnCanvas(): boolean { return this._mouseOnCanvas; }
     public get mousePosition(): Vector2D { return this._mousePosition; }
 
-    //#region private variables
     private _context: CanvasRenderingContext2D;
 
-    // mouse
     private _mousePosition: Vector2D;
     private _translatedPosition: Vector2D;
     private _mouseOnCanvas: boolean = false;
@@ -18,9 +16,6 @@ export class MouseManager {
     private _primaryMousePosition: string = 'up';
     private _isMoving: boolean = false;
 
-    //#endregion
-
-    // event
     private _currentEvent: MOUSE_EVENT_TYPE;
     private _mouseEvents = new CanvasEvent<MouseData>();
     on(on: MOUSE_EVENT_TYPE, callback: (e: MouseData) => void) {
@@ -32,26 +27,22 @@ export class MouseManager {
         this.registerEvents();
     }
 
-    // contextupdated(data: PanZoomData) {
-    //     if (this._mouseOnCanvas) {
-    //         let mx = (this.mousePosition.x - data.pan.x) / data.scale;
-    //         let my = (this.mousePosition.y - data.pan.y) / data.scale;
-
-    //         this.translatedPosition = new Vector2D(mx, my);
-    //     }
-    // }
-
-    // TODO: update location based on camera position
-    // ... updateOrigin(camPosX, camPosY) or something like that
-    // ... or have a method in camera that will return mouse position based on camera location
-
     private registerEvents() {
         const cv = this._context.canvas;
 
-        // mouse events
+        // TODO: Once browser is updated to support
+        // This removes mouse acceleration and give access to raw input.
+        // this._context.canvas.requestPointerLock({
+        //     unadjustedMovement: true
+        // });
+
+        // this forces you to use 'movementX' and 'movementY' instead of 'offsetX' and 'offsetY'
+        // this._context.canvas.requestPointerLock();
+
         cv.onmousemove = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.MOVE;
             this.updateMousePosition(e.offsetX, e.offsetY);
+            // this.updateMousePosition(this._mousePosition.x + e.movementX, this._mousePosition.y + e.movementY);
         };
 
         cv.onmousedown = (e: MouseEvent) => {

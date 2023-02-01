@@ -32,10 +32,10 @@ export class RenderManager {
 
 
     // TODO: need to fire off UI events and refactor a bit after that.
+    // TODO: QuadTree needs to live here
 
     constructor(mouseManager: MouseManager) {
         this.mouseManager = mouseManager;
-
         this.registerEvents();
     }
 

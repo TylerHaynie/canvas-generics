@@ -6,8 +6,12 @@ export class WindowManager {
         this.registerEvents();
     }
 
-    fit(){
+    public fit(){
         this.fitCanvasToContainer();
+    }
+
+    public setCursorStyle(style: string){
+        this.context.canvas.style.cursor = style;
     }
 
     private registerEvents() {

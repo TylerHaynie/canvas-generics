@@ -1,5 +1,5 @@
 import { Vector2D } from '../objects/vector';
-import { MOUSE_STATE, MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE } from './canvas-enums';
+import { MOUSE_STATE, MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, KEYBOARD_EVENT_TYPE } from './canvas-enums';
 
 export class MouseData {
     uiMouseState: MOUSE_STATE;
@@ -11,6 +11,17 @@ export class MouseData {
     scrollDirection: string;
     primaryMouseState: string;
     mouseMoving: boolean;
+}
+
+export class KeyboardData {
+    eventType: KEYBOARD_EVENT_TYPE;
+    keyQueue: string[];
+    latestKeyDown: string;
+    latestKeyUp: string;
+    controlDown: boolean;
+    shiftDown: boolean;
+    altDown: boolean;
+    hasKeyDown: Boolean;
 }
 
 export class PanZoomData {

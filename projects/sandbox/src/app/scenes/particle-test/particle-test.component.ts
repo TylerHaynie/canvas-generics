@@ -13,7 +13,6 @@ import {
 })
 export class ParticleTestComponent implements AfterViewInit, IUpdateable {
   @ViewChild('c') canvasRef: ElementRef;
-  //#region Variables
 
   private _cw: CanvasWrapper;
   private _foregroundGradient: CanvasGradient;
@@ -28,10 +27,6 @@ export class ParticleTestComponent implements AfterViewInit, IUpdateable {
 
   // particles
   private floatingParticles: FadableParticle[] = [];
-
-  //#endregion
-
-  //#region Configuration
 
   // pointer
   private pointerRadius = 40;
@@ -65,217 +60,179 @@ export class ParticleTestComponent implements AfterViewInit, IUpdateable {
   private mouseOnCanvas: boolean = false;
   // private mousePosition: Vector2D;
 
-  //#endregion
-
-  //#region Init
-
   constructor() { }
 
   ngAfterViewInit() {
-    this._cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
-    this._cw.panZoomManager.minScale = 1;
-    this._cw.panZoomManager.panningAllowed = false;
-    this._cw.panZoomManager.scalingAllowed = false;
-    this._cw.enableGrid = false;
-    this._cw.trackMouse = false;
-    this._cw.renderManager.debugEnabled = true;
+    // this._cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
+    // this._cw.panZoomManager.minScale = 1;
+    // this._cw.panZoomManager.panningAllowed = false;
+    // this._cw.panZoomManager.scalingAllowed = false;
+    // this._cw.enableGrid = false;
+    // this._cw.trackMouse = false;
+    // this._cw.renderManager.debugEnabled = true;
 
-    this.registerEvents();
+    // this.registerEvents();
 
-    // set up quad trees
-    let boundary: Boundary = new Boundary(0, 0, 0, this._cw.width, this._cw.height, 0);
-    this.particleQuad = new QuadTree(boundary, 1);
+    // // set up quad trees
+    // let boundary: Boundary = new Boundary(0, 0, 0, this._cw.width, this._cw.height, 0);
+    // this.particleQuad = new QuadTree(boundary, 1);
 
-    // this._foregroundGradient = this.createGradient();
+    // // this._foregroundGradient = this.createGradient();
 
-    // register parts
-    this.createBackground();
-    this._cw.addToUpdate(this);
+    // // register parts
+    // this.createBackground();
+    // this._cw.addToUpdate(this);
 
-    // start the draw loop
-    this._cw.start();
+    // // start the draw loop
+    // this._cw.start();
   }
 
-  private registerEvents() {
-    this._cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
-      this.mouseOnCanvas = true;
-    });
+  // private registerEvents() {
+  //   this._cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
+  //     this.mouseOnCanvas = true;
+  //   });
 
-    this._cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
-      this.mouseOnCanvas = false;
-    });
-  }
-
-  //#endregion
-
-  //#region Drawing
-
-  // draw(context: CanvasRenderingContext2D) {
-  //   // context.save();
-
-  //   // this.drawBackground();
-  //   // this.drawParticles();
-  //   // // this.drawForeground();
-
-  //   // // debug
-  //   // if (this.debugParticles) {
-  //   //   this.particleQuad.debugQuad(context);
-  //   // }
-
-  //   // context.restore();
+  //   this._cw.mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
+  //     this.mouseOnCanvas = false;
+  //   });
   // }
 
   update(delta: number) {
-    this._background.size.setSize(this._cw.width, this._cw.height);
-    // do some hover stuff
-    this.checkParticleHover();
+    // this._background.size.setSize(this._cw.width, this._cw.height);
+    // // do some hover stuff
+    // this.checkParticleHover();
 
-    // update and draw particles
-    this.updateParticles(delta);
+    // // update and draw particles
+    // this.updateParticles(delta);
   }
 
-  private createBackground() {
-    let p = new Vector2D(0, 0);
-    this._background = new Rectangle(p);
-    this._background.size.setSize(this._cw.width, this._cw.height);
-    this._background.color.setShade(this.backgroundColor);
-
-    this._cw.addToDraw(this._background);
-  }
-
-  // private drawForeground() {
-  //   // let bounds = this._cw.bounds;
-
+  // private createBackground() {
   //   let p = new Vector2D(0, 0);
-  //   let f = new Rectangle(p);
-  //   f.size.setSize(this._cw.width, this._cw.height);
-  //   f.color.setShade(this._foregroundGradient);
+  //   this._background = new Rectangle(p);
+  //   this._background.size.setSize(this._cw.width, this._cw.height);
+  //   this._background.color.setShade(this.backgroundColor);
 
-  //   // f.draw(this._cw.drawingContext);
-  //   this._cw.addToDraw(f);
+  //   this._cw.addToDraw(this._background);
   // }
 
-  private createGradient(): CanvasGradient {
-    let gradUtil = new GradientUtility(this._cw.drawingContext);
-    // Create gradient
-    let grd = gradUtil.createLinearGradient(this._cw.height / 2, 0.000, this._cw.height / 2, this._cw.height);
+  // private createGradient(): CanvasGradient {
+  //   let gradUtil = new GradientUtility(this._cw.drawingContext);
+  //   // Create gradient
+  //   let grd = gradUtil.createLinearGradient(this._cw.height / 2, 0.000, this._cw.height / 2, this._cw.height);
 
-    // Top Color
-    grd.addColorStop(this.foregroundEnd1, this.foregroundColorEndColor);
-    grd.addColorStop(this.foregroundStart1, this.foregroundColorStartColor);
+  //   // Top Color
+  //   grd.addColorStop(this.foregroundEnd1, this.foregroundColorEndColor);
+  //   grd.addColorStop(this.foregroundStart1, this.foregroundColorStartColor);
 
-    // bottom color
-    grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
-    grd.addColorStop(this.foregroundEnd2, this.foregroundColorEndColor);
+  //   // bottom color
+  //   grd.addColorStop(this.foregroundStart2, this.foregroundColorStartColor);
+  //   grd.addColorStop(this.foregroundEnd2, this.foregroundColorEndColor);
 
-    return grd;
-  }
+  //   return grd;
+  // }
 
-  private updateParticles(delta: number) {
-    // replace particles that have died off
-    if (this.floatingParticles.length - 1 !== this.maxParticles) {
-      this.generateMissingParticles();
-    }
+  // private updateParticles(delta: number) {
+  //   // replace particles that have died off
+  //   if (this.floatingParticles.length - 1 !== this.maxParticles) {
+  //     this.generateMissingParticles();
+  //   }
 
-    this.updateFloatingParticle(this.floatingParticles, this.particleQuad, delta);
-  }
+  //   this.updateFloatingParticle(this.floatingParticles, this.particleQuad, delta);
+  // }
 
-  private updateFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined, delta: number) {
-    if (trackingTree) {
-      // clear the quad
-      trackingTree.reset(this._cw.width, this._cw.height);
-    }
+  // private updateFloatingParticle(particles: FadableParticle[], trackingTree: QuadTree = undefined, delta: number) {
+  //   if (trackingTree) {
+  //     // clear the quad
+  //     trackingTree.reset(this._cw.width, this._cw.height);
+  //   }
 
-    let bp = new Vector2D(0, 0);
-    let bs = new Size(this._cw.width, this._cw.height);
-    let particleBounds = new Bounds(bp, bs);
+  //   let bp = new Vector2D(0, 0);
+  //   let bs = new Size(this._cw.width, this._cw.height);
+  //   let particleBounds = new Bounds(bp, bs);
 
-    for (let x = particles.length - 1; x >= 0; x--) {
-      let particle = particles[x];
+  //   for (let x = particles.length - 1; x >= 0; x--) {
+  //     let particle = particles[x];
 
-      if (particle.isAlive) {
-        // move particle
-        particle.move(particleBounds, delta);
+  //     if (particle.isAlive) {
+  //       // move particle
+  //       particle.move(particleBounds, delta);
 
-        if (trackingTree) {
-          let pPosition = particle.getPosition();
-          let qd = new QuadVector(pPosition.x, pPosition.y, 0, particle);
-          trackingTree.insert(qd);
-        }
-      }
-      else {
-        // remove it
-        particles.splice(x, 1);
-        this._cw.removeFromTick(particle);
-        this._cw.removeFromDraw(particle);
-      }
-    }
-  }
+  //       if (trackingTree) {
+  //         let pPosition = particle.getPosition();
+  //         let qd = new QuadVector(pPosition.x, pPosition.y, 0, particle);
+  //         trackingTree.insert(qd);
+  //       }
+  //     }
+  //     else {
+  //       // remove it
+  //       particles.splice(x, 1);
+  //       this._cw.removeFromTick(particle);
+  //       this._cw.removeFromDraw(particle);
+  //     }
+  //   }
+  // }
 
-  //#endregion
+  // private generateMissingParticles() {
 
-  private generateMissingParticles() {
+  //   for (let x = this.floatingParticles.length; x < this.maxParticles; x++) {
 
-    for (let x = this.floatingParticles.length; x < this.maxParticles; x++) {
+  //     let pLocation = new Vector2D(
+  //       Math.fround(Math.random() * (this._cw.width - this.particleMaxRadius)),
+  //       Math.fround(Math.random() * (this._cw.height - this.particleMaxRadius))
+  //     );
 
-      let pLocation = new Vector2D(
-        Math.fround(Math.random() * (this._cw.width - this.particleMaxRadius)),
-        Math.fround(Math.random() * (this._cw.height - this.particleMaxRadius))
-      );
+  //     let rect = new Rectangle(pLocation);
+  //     let rad = this._random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
 
-      let rect = new Rectangle(pLocation);
-      let rad = this._random.randomNumberBetween(this.particleMinRadius, this.particleMaxRadius);
+  //     // if they are too small we can skip the corners. corner calculations are expensive
+  //     if (rad > 3) {
+  //       rect.endGap = this.particleCornerRadius;
+  //     }
 
-      // if they are too small we can skip the corners. corner calculations are expensive
-      if (rad > 3) {
-        rect.endGap = this.particleCornerRadius;
-      }
+  //     rect.size.setSize(Math.fround(rad * 2), rad * Math.fround(2));
+  //     rect.color.setShade(this._color.randomColorFromArray(this.colorArray));
+  //     rect.color.setAlpha(0);
+  //     // rect.color.setShade(this._color.randomColor());
 
-      rect.size.setSize(Math.fround(rad * 2), rad * Math.fround(2));
-      rect.color.setShade(this._color.randomColorFromArray(this.colorArray));
-      rect.color.setAlpha(0);
-      // rect.color.setShade(this._color.randomColor());
+  //     let v = new Velocity(
+  //       this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(this.minParticleSpeed, this.maxParticleSpeed),
+  //       this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(this.minParticleSpeed, this.maxParticleSpeed)
+  //     );
 
-      let v = new Velocity(
-        this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(this.minParticleSpeed, this.maxParticleSpeed),
-        this._random.randomWithNegative() * this.particleSpeedModifier * this._random.randomNumberBetween(this.minParticleSpeed, this.maxParticleSpeed)
-      );
+  //     let fp = new FadableParticle(rect, v);
 
-      let fp = new FadableParticle(rect, v);
+  //     fp.maximumLifeTime = this._random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan);
+  //     fp.currentLifeTime = 0;
+  //     fp.maximumAlpha = this._random.randomNumberBetween(0, this.maxOpacity * 100) / 100;
+  //     fp.fadeSpan = this.particleFadeTime;
 
-      fp.maximumLifeTime = this._random.randomNumberBetween(this.maxParticleLifespan, this.minParticleLifespan);
-      fp.currentLifeTime = 0;
-      fp.maximumAlpha = this._random.randomNumberBetween(0, this.maxOpacity * 100) / 100;
-      fp.fadeSpan = this.particleFadeTime;
+  //     this.floatingParticles.push(fp);
+  //     this._cw.addToTick(fp);
+  //     this._cw.addToDraw(fp);
+  //   }
+  // }
 
-      this.floatingParticles.push(fp);
-      this._cw.addToTick(fp);
-      this._cw.addToDraw(fp);
-    }
-  }
+  // private checkParticleHover() {
+  //   if (this.mouseOnCanvas) {
+  //     // current mouse location
+  //     let mx = this._cw.mouseManager.mousePosition.x;
+  //     let my = this._cw.mouseManager.mousePosition.y;
 
-  private checkParticleHover() {
-    if (this.mouseOnCanvas) {
-      // current mouse location
-      let mx = this._cw.mouseManager.mousePosition.x;
-      let my = this._cw.mouseManager.mousePosition.y;
+  //     // boundary around mouse
+  //     let b: Boundary = new Boundary(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), 0, this.pointerRadius, this.pointerRadius, 0);
 
-      // boundary around mouse
-      let b: Boundary = new Boundary(mx - (this.pointerRadius / 2), my - (this.pointerRadius / 2), 0, this.pointerRadius, this.pointerRadius, 0);
+  //     // check particles
+  //     let particlesInRange: QuadVector[] = this.particleQuad.searchBoundary(b);
 
-      // check particles
-      let particlesInRange: QuadVector[] = this.particleQuad.searchBoundary(b);
-
-      // update particles in range
-      if (particlesInRange.length > 0) {
-        particlesInRange.forEach(p => {
-          let fp = <FadableParticle>(p.data);
-          fp.maximumAlpha = 1;
-          fp.setColor(new Color(this.particleHighlightColor));
-        });
-      }
-    }
-
-  }
+  //     // update particles in range
+  //     if (particlesInRange.length > 0) {
+  //       particlesInRange.forEach(p => {
+  //         let fp = <FadableParticle>(p.data);
+  //         fp.maximumAlpha = 1;
+  //         fp.setColor(new Color(this.particleHighlightColor));
+  //       });
+  //     }
+  //   }
+  // }
 
 }

@@ -1,5 +1,5 @@
-import { MOUSE_EVENT_TYPE } from './events/canvas-enums';
-import { MouseData } from './events/event-data';
+import { KEYBOARD_EVENT_TYPE, MOUSE_EVENT_TYPE } from './events/canvas-enums';
+import { KeyboardData, MouseData } from './events/event-data';
 import { KeyboardManager } from './managers/keyboard-manager';
 import { MouseManager } from './managers/mouse-manager';
 import { PanZoomManager } from './managers/pan-zoom-manager';
@@ -8,26 +8,24 @@ import { WindowManager } from './managers/window-manager';
 import { IDrawable } from './models/interfaces/idrawable';
 import { ITickable } from './models/interfaces/itickable';
 import { IUpdateable } from './models/interfaces/iupdateable';
+import { Size } from './models/size';
+import { RecText } from './objects/rec-text';
+import { Vector2D } from './objects/vector';
 import { HelperUtility } from './utilities/helper-utility';
 
 export class CanvasWrapper {
     // game loop
     public loopDelta: number = 0;
     private previousTime: number = 0;
-    private tickTimer: number = 0;
-    private tickRate: number = 0.1;
     private totalTime: number = 0;
-    private ticksPerFrame: number = 0;
 
     // debug
     private fps: number = 0;
     private drawCalls: number = 0;
-    private tickStartMarker = 'tickStart';
-    private tickEndMarker = 'tickEnd';
-    private tickMeasureName = 'tickMeasure';
     private drawStartMarker = 'drawStart';
     private drawEndMarker = 'drawEnd';
     private drawMeasureName = 'drawMeasure';
+    private debugCurrentKeyDown = '';
 
     // public properties
     public get drawingContext(): CanvasRenderingContext2D { return this._context; }
@@ -39,7 +37,7 @@ export class CanvasWrapper {
     public get width() { return this._context.canvas.width; }
     public get height() { return this._context.canvas.height; }
 
-    public set pauseKeys(v: string[]) { this._pauseKeys = v; }
+    // public set pauseKeys(v: string) { this._pauseKey = v; }
     public set frameForwardKeys(v: string[]) { this.frameForwardKeys = v; }
     public set enableGrid(v: boolean) { this._enableGrid = v; }
     public set gridAsBackground(v: boolean) { this._gridAsBackground = v; }
@@ -49,7 +47,7 @@ export class CanvasWrapper {
     private _context: CanvasRenderingContext2D;
 
     // control
-    private _pauseKeys: string[] = ['p', 'P'];
+    private _pauseKey: string[] = ['Escape'];
     private _frameForwardKeys: string[] = ['>', '.'];
     private paused = false;
     private frameStep: boolean = false;
@@ -69,11 +67,6 @@ export class CanvasWrapper {
     private _keyboardManager: KeyboardManager;
     private _WindowManager: WindowManager;
 
-    // scene objects
-    private _drawables: IDrawable[] = [];
-    private _tickables: ITickable[] = [];
-    private _updateables: IUpdateable[] = [];
-
     // mouse
     private currentMouseData: MouseData;
 
@@ -89,6 +82,7 @@ export class CanvasWrapper {
     }
 
     start() {
+        this._WindowManager.setCursorStyle('none');
         this.gameLoop();
     }
 
@@ -98,32 +92,6 @@ export class CanvasWrapper {
 
     restoreContext() {
         this._context.restore();
-    }
-
-    addToTick(tickable: ITickable): void {
-        this._tickables.push(tickable);
-    }
-
-    removeFromTick(tickable: ITickable): void {
-        var index = this._tickables.indexOf(tickable);
-        if (index) {
-            this._tickables.splice(index, 1);
-        }
-    }
-
-    addToUpdate(updateable: IUpdateable): void {
-        this._updateables.push(updateable);
-    }
-
-    addToDraw(drawable: IDrawable): void {
-        this._drawables.push(drawable);
-    }
-
-    removeFromDraw(drawable: IDrawable): void {
-        var index = this._drawables.indexOf(drawable);
-        if (index) {
-            this._drawables.splice(index, 1);
-        }
     }
 
     private setupManagers() {
@@ -136,9 +104,10 @@ export class CanvasWrapper {
         // keyboard
         this._keyboardManager = new KeyboardManager(this._context);
 
-        // UI and main drawing
+        // drawing
         this._renderManager = new RenderManager(this._mouseManager);
 
+        // TODO: replace with camera
         // pan-zoom
         this._panZoomManager = new PanZoomManager(this._context, this._mouseManager);
     }
@@ -149,25 +118,36 @@ export class CanvasWrapper {
 
     private registerEvents() {
         this.registerMouseEvents();
+        this.registerKeyboardEvents();
     }
 
     // This is needed for the element base to set mouse state
     // This connects element base to mouse. probably needs to change.
     private registerMouseEvents() {
-        this._mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
             this.currentMouseData = e;
         });
 
-        this._mouseManager.on(MOUSE_EVENT_TYPE.DOWN, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.DOWN, (e: MouseData) => {
             this.currentMouseData = e;
         });
 
-        this._mouseManager.on(MOUSE_EVENT_TYPE.UP, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.UP, (e: MouseData) => {
             this.currentMouseData = e;
         });
 
-        this._mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e) => {
+        this._mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
             this.currentMouseData = e;
+        });
+    }
+
+    private registerKeyboardEvents() {
+        this._keyboardManager.on(KEYBOARD_EVENT_TYPE.KEY_DOWN, (e: KeyboardData) => {
+            this.handleKeyDown(e);
+        });
+
+        this._keyboardManager.on(KEYBOARD_EVENT_TYPE.KEY_UP, (e: KeyboardData) => {
+            this.handleKeyUp(e);
         });
     }
 
@@ -181,84 +161,41 @@ export class CanvasWrapper {
         const currentTime = performance.now();
         this.loopDelta = currentTime - this.previousTime;
         this.previousTime = currentTime;
-        this.tickTimer += this.loopDelta;
 
         this.trackDebug();
-        this.readInput();
 
         if (!this.paused || this.frameStep) {
-            this.ticksPerFrame = 0;
-            while (this.tickTimer >= this.tickRate) {
-                performance.mark(this.tickStartMarker);
-                this.tickPhysics();
-                this.tickTimer -= this.tickRate;
-                this.totalTime += this.tickRate;
-                this.ticksPerFrame += 1;
-            }
-            performance.mark(this.tickEndMarker);
-            performance.measure(this.tickMeasureName, this.tickStartMarker, this.tickEndMarker);
+            this.totalTime += this.loopDelta;
 
-            this.updateScene();
+            // this.tickphysics();
             this.render();
             this.frameStep = false;
         }
 
-        // update keyboard
-        this._keyboardManager.update(); // TODO: Do we need this?
+        if (this.paused) {
+            this.renderPauseMenu();
+        }
 
         // do it all again
         requestAnimationFrame(() => this.gameLoop());
     }
 
-    private readInput(): void {
-        this.checkKeys();
-    }
-
-    private tickPhysics(): void {
-        this._tickables.forEach(tickable => {
-            tickable.tick(this.tickRate);
-        });
-    }
-
-    private updateScene(): void {
-        this._updateables.forEach(updateable => {
-            updateable.update(this.loopDelta);
-        });
-    }
-
     private render(): void {
         performance.mark(this.drawStartMarker);
-        // TODO: create camera
-        // TODO: apply camera positon
-
-        // draw the grid first?
-        // if (this._gridAsBackground) { this.drawGrid(); }
 
         this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
-        this.saveContext();
 
         this.drawCalls = 0;
-
-        this._drawables.forEach(drawable => {
-            // TODO: combine paths and draw once
-            // TODO: Create a new line with a single path. loop all lines and add segements to it, then draw
-            drawable.draw(this._context);
-            this.drawCalls += 1;
-        });
+        this.saveContext();
+        this.renderManager.drawUiBuffer();
+        this.restoreContext();
 
         this.trackMousePosition();
-
-        // draw the grid last?
-        // if (!this._gridAsBackground) {
-        //     this.drawGrid();
-        // }
-
         this.drawMouse();
 
         performance.mark(this.drawEndMarker);
         performance.measure(this.drawMeasureName, this.drawStartMarker, this.drawEndMarker)
         this.drawDebug();
-        this.restoreContext();
     }
 
     private trackDebug() {
@@ -272,76 +209,62 @@ export class CanvasWrapper {
         // }
     }
 
+    private renderPauseMenu(): void {
+        this.saveContext();
+        this._context.fillStyle = 'red';
+        this._context.font = '25px courier new';
+        this._context.fillText(`-- PAUSED --`, (this.width / 2) - 95, 50);
+        this.restoreContext();
+    }
+
     private drawDebug() {
-        if (this._renderManager.debugEnabled) {
-            var edgeOffset: number = 245;
-            var valueOffset: number = edgeOffset / 1.9;
-            var horzGap: number = 15;
+        if (!this._renderManager.debugEnabled) return;
 
-            this._context.fillStyle = 'yellow';
-            this._context.font = '14px courier new';
+        var edgeOffset: number = 245;
+        var valueOffset: number = edgeOffset / 1.9;
+        var horzGap: number = 15;
 
-            const rightEdge = this._context.canvas.width;
+        this._context.fillStyle = 'yellow';
+        this._context.font = '14px courier new';
 
-            // runtime
-            let time = this.totalTime / 1000;
-            let timerLabel = time > 1 && time < 60 ? 's' : time > 60 && time < 3600 ? 'm' : time > 3600 ? 'h' : 'ms';
-            time = time > 60 ? time / 60 : time;
+        const rightEdge = this._context.canvas.width;
 
-            this._context.fillText(`time (${timerLabel})   : `, rightEdge - edgeOffset, horzGap);
-            this._context.fillText(`${(time).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap);
+        // runtime
+        let time = this.totalTime / 1000;
+        let timerLabel = time > 1 && time < 60 ? 's' : time > 60 && time < 3600 ? 'm' : time > 3600 ? 'h' : 'ms';
+        time = time > 60 ? time / 60 : time;
 
-            // tick timer
-            this._context.fillText('tick timer : ', rightEdge - edgeOffset, horzGap * 2);
-            this._context.fillText(`${(this.tickTimer / 1000).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 2);
+        this._context.fillText(`time (${timerLabel})   : `, rightEdge - edgeOffset, horzGap);
+        this._context.fillText(`${(time).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap);
 
-            // tick per frame
-            this._context.fillText('tick/frame : ', rightEdge - edgeOffset, horzGap * 3);
-            this._context.fillText(`${(this.ticksPerFrame).toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 3);
+        // delta
+        this._context.fillText('delta      : ', rightEdge - edgeOffset, horzGap * 2);
+        this._context.fillText(`${this.loopDelta.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 2);
 
-            // delta
-            this._context.fillText('delta      : ', rightEdge - edgeOffset, horzGap * 4);
-            this._context.fillText(`${this.loopDelta.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 4);
+        // draw calls
+        this._context.fillText('draw calls : ', rightEdge - edgeOffset, horzGap * 3);
+        this._context.fillText(`${this.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 3);
 
-            // drawables
-            this._context.fillText('drawables  : ', rightEdge - edgeOffset, horzGap * 5);
-            this._context.fillText(`${this._drawables.length.toString()}`, rightEdge - valueOffset, horzGap * 5);
+        // draw rate
+        let drawMeasure = performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName);
+        this._context.fillText('draw time  : ', rightEdge - edgeOffset, horzGap * 4);
+        this._context.fillText(`${drawMeasure ? drawMeasure.duration.toFixed(2) : ''}`, rightEdge - valueOffset, horzGap * 4);
 
-            // draw calls
-            this._context.fillText('draw calls : ', rightEdge - edgeOffset, horzGap * 6);
-            this._context.fillText(`${this.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 6);
+        // mouse
+        this._context.fillText('mouse      : ', rightEdge - edgeOffset, horzGap * 5);
+        var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
+        this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 5);
 
-            // fps
-            // this._context.fillText('fps        : ', rightEdge - edgeOffset, horzGap * 4);
-            // this._context.fillText(this.fps.toString(), rightEdge - valueOffset, horzGap * 4);
+        // screen
+        this._context.fillText('canvas size: ', rightEdge - edgeOffset, horzGap * 6);
+        this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 6);
 
-            // mouse
-            this._context.fillText('mouse      : ', rightEdge - edgeOffset, horzGap * 7);
-            var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
-            this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 7);
+        // keydown
+        this._context.fillText('keydown    : ', rightEdge - edgeOffset, horzGap * 7);
+        this._context.fillText(`'${this.debugCurrentKeyDown}'`, rightEdge - valueOffset, horzGap * 7);
 
-            // screen
-            this._context.fillText('size       : ', rightEdge - edgeOffset, horzGap * 8);
-            this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 8);
-
-            // tick rate
-            let tickMeasure = performance.getEntriesByType("measure").find(f => f.name == this.tickMeasureName);
-            this._context.fillText('tick time  : ', rightEdge - edgeOffset, horzGap * 8);
-            this._context.fillText(`${tickMeasure ? tickMeasure.duration.toFixed(2) : ''}`, rightEdge - valueOffset, horzGap * 8);
-
-            // draw rate
-            let drawMeasure = performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName);
-            this._context.fillText('draw time  : ', rightEdge - edgeOffset, horzGap * 9);
-            this._context.fillText(`${drawMeasure ? drawMeasure.duration.toFixed(2) : ''}`, rightEdge - valueOffset, horzGap * 9);
-
-            // // lag
-            // this._context.fillText('lag        : ', rightEdge - edgeOffset, horzGap * 9);
-            // this._context.fillText(`${this.lag.toFixed(2)}`, rightEdge - valueOffset, horzGap * 9);
-
-
-            performance.clearMarks();
-            performance.clearMeasures();
-        }
+        performance.clearMarks();
+        performance.clearMeasures();
     }
 
     private drawGrid(): void {
@@ -365,17 +288,20 @@ export class CanvasWrapper {
         }
     }
 
-    private checkKeys() {
-        if (this._keyboardManager.isDirty) {
-            if (this._keyboardManager.hasKeyDown) {
-                if (this._pauseKeys.includes(this._keyboardManager.key)) {
-                    this.paused = !this.paused;
-                }
+    private handleKeyDown(kData: KeyboardData) {
+        if (this._pauseKey.includes(kData.latestKeyDown)) this.togglePause();
+        if (this._frameForwardKeys.includes(kData.latestKeyDown)) this.frameStep = !this.frameStep;
 
-                if (this._frameForwardKeys.includes(this._keyboardManager.key)) {
-                    this.frameStep = !this.frameStep;
-                }
-            }
-        }
+        this.debugCurrentKeyDown = kData.keyQueue.join(',');
+    }
+
+    private handleKeyUp(kData: KeyboardData) {
+        this.debugCurrentKeyDown = kData.keyQueue.join(',');
+    }
+
+    private togglePause(): void {
+        this.paused = !this.paused;
+        this._WindowManager.setCursorStyle(this.paused ? 'default' : 'none');
+        this._keyboardManager.allowPropagation(this.paused);
     }
 }
