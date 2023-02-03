@@ -7,7 +7,7 @@ export class MouseManager {
     public get mouseOnCanvas(): boolean { return this._mouseOnCanvas; }
     public get mousePosition(): Vector { return this._mousePosition; }
 
-    private _context: CanvasRenderingContext2D;
+    private element: HTMLElement;
 
     private _mousePosition: Vector;
     private _translatedPosition: Vector;
@@ -22,14 +22,12 @@ export class MouseManager {
         this._mouseEvents.subscribe(on, callback);
     }
 
-    constructor(context: CanvasRenderingContext2D) {
-        this._context = context;
+    constructor(e: HTMLElement) {
+        this.element = e;
         this.registerEvents();
     }
 
     private registerEvents() {
-        const cv = this._context.canvas;
-
         // TODO: Once browser is updated to support
         // This removes mouse acceleration and give access to raw input.
         // this._context.canvas.requestPointerLock({
@@ -40,38 +38,36 @@ export class MouseManager {
         // this._context.canvas.requestPointerLock();
         // https://mdn.github.io/dom-examples/pointer-lock/
 
-        cv.onmousemove = (e: MouseEvent) => {
+        this.element.onmousemove = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.MOVE;
             this.updateMousePosition(e.offsetX, e.offsetY);
             // this.updateMousePosition(this._mousePosition.x + e.movementX, this._mousePosition.y + e.movementY);
         };
 
-        cv.onmousedown = (e: MouseEvent) => {
+        this.element.onmousedown = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.DOWN;
             this.mouseDown(e.offsetX, e.offsetY);
         };
 
-        cv.onmouseup = (e: MouseEvent) => {
+        this.element.onmouseup = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.UP;
             this.mouseUp();
         };
 
-        cv.onwheel = (e: WheelEvent) => {
+        this.element.onwheel = (e: WheelEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.WHEEL;
-            if (e.deltaY > 0) {
+            if (e.deltaY > 0)
                 this.mouseScrollDown();
-            }
-            else {
+            else
                 this.mouseScrollUp();
-            }
         };
 
-        cv.onmouseout = (e: MouseEvent) => {
+        this.element.onmouseout = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };
 
-        cv.onmouseleave = (e: MouseEvent) => {
+        this.element.onmouseleave = (e: MouseEvent) => {
             this._currentEvent = MOUSE_EVENT_TYPE.OUT;
             this.mouseLeave();
         };

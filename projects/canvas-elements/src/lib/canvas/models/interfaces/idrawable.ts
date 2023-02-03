@@ -1,3 +1,3 @@
 export interface IDrawable{
-  draw(context: CanvasRenderingContext2D): void;
+  draw(context: CanvasRenderingContext2D): Promise<void>;
 }

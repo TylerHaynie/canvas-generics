@@ -38,7 +38,7 @@ export class Line implements IDrawable {
         });
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    async draw(context: CanvasRenderingContext2D) {
         if (context) {
             if (this.segments.length > 0) {
                 context.save();

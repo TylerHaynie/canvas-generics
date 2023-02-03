@@ -27,7 +27,7 @@ export class TextObject extends ShapeBase implements IDrawable {
         return width;
     }
 
-    public draw(context: CanvasRenderingContext2D) {
+    async draw(context: CanvasRenderingContext2D) {
         context.save();
 
         context.globalAlpha = 0;

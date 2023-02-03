@@ -72,7 +72,7 @@ export class RecText implements IDrawable {
         this._position.set(x, y, z);
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    async draw(context: CanvasRenderingContext2D) {
         this.update(context);
 
         this._rectangle.draw(context);

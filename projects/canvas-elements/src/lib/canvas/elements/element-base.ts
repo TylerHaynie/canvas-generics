@@ -178,7 +178,7 @@ export class ElementBase implements IDrawable  {
         return this.shape.position;
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    async draw(context: CanvasRenderingContext2D) {
         this.styleElement();
         this._shape.draw(context);
 

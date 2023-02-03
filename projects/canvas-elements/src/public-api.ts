@@ -1,4 +1,4 @@
-export * from './lib/canvas/canvas-wrapper';
+export * from './lib/canvas/canvas-engine';
 export * from './lib/canvas/elements/element-base';
 export * from './lib/canvas/elements/element-properties/resize-property';
 export * from './lib/canvas/elements/shapes/element-circle';
@@ -37,6 +37,7 @@ export * from './lib/canvas/utilities/pattern-utility';
 export * from './lib/canvas/utilities/random-utility';
 export * from './lib/canvas/utilities/raycast-utility';
 export * from './lib/quadtree/quad-tree';
+export * from './lib/canvas/models/interfaces/icanvas-component';
 export * from './lib/canvas/models/interfaces/idrawable';
 export * from './lib/canvas/models/interfaces/itickable';
 export * from './lib/canvas/models/interfaces/iupdateable';

@@ -1,8 +1,8 @@
 export class WindowManager {
-    private context: CanvasRenderingContext2D;
+    private canvas: HTMLCanvasElement;
 
-    constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
+    constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
         this.registerEvents();
     }
 
@@ -11,7 +11,7 @@ export class WindowManager {
     }
 
     public setCursorStyle(style: string){
-        this.context.canvas.style.cursor = style;
+        this.canvas.style.cursor = style;
     }
 
     private registerEvents() {
@@ -22,11 +22,11 @@ export class WindowManager {
 
     private fitCanvasToContainer() {
         // Make it visually fill the positioned parent
-        this.context.canvas.style.width = '100%';
-        this.context.canvas.style.height = '100%';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
 
         // ...then set the internal size to match
-        this.context.canvas.width = this.context.canvas.offsetWidth;
-        this.context.canvas.height = this.context.canvas.offsetHeight;
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
     }
 }

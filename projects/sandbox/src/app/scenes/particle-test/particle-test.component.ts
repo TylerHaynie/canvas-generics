@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import {
-  CanvasWrapper, RandomUtility, ColorUtility,
+  CanvasEngine, RandomUtility, ColorUtility,
   QuadTree, FadableParticle, Vector, Boundary,
   MOUSE_EVENT_TYPE, MouseData, Color, Rectangle, Size,
   GradientUtility, Bounds, Velocity, QuadVector, IUpdateable
@@ -14,7 +14,7 @@ import {
 export class ParticleTestComponent implements AfterViewInit, IUpdateable {
   @ViewChild('c') canvasRef: ElementRef;
 
-  private _cw: CanvasWrapper;
+  private _cw: CanvasEngine;
   private _foregroundGradient: CanvasGradient;
   private _random: RandomUtility = new RandomUtility();
   private _color: ColorUtility = new ColorUtility;

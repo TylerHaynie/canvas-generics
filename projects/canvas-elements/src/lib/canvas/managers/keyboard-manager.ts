@@ -3,7 +3,7 @@ import { CanvasEvent } from "../events/canvas-event";
 import { KeyboardData } from "../events/event-data";
 
 export class KeyboardManager {
-    private context: CanvasRenderingContext2D;
+    private element: HTMLElement;
 
     private keysDown: string[] = [];
     private controlKeyPressed: boolean = false;
@@ -18,15 +18,13 @@ export class KeyboardManager {
         this.keyboardEventData.subscribe(on, callback);
     }
 
-    constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
+    constructor(e: HTMLElement) {
+        this.element = e;
         this.registerEvents();
     }
 
     private registerEvents() {
-        let cv = this.context.canvas;
-
-        cv.onkeydown = (e: KeyboardEvent) => {
+        this.element.onkeydown = (e: KeyboardEvent) => {
             if (!this.propagateEvents) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -43,7 +41,7 @@ export class KeyboardManager {
             this.fireEvent(eventData);
         };
 
-        cv.onkeyup = (e: KeyboardEvent) => {
+        this.element.onkeyup = (e: KeyboardEvent) => {
             if (!this.propagateEvents) {
                 e.preventDefault();
                 e.stopPropagation();

@@ -98,7 +98,7 @@ export class ParticleBase implements IDrawable {
         this.shape.setPosition(nx, ny, this.shape.position.z);
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    async draw(context: CanvasRenderingContext2D) {
         if (this.alive && this.shape) {
             this.shape.draw(context);
         }

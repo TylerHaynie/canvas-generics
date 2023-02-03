@@ -14,7 +14,7 @@ export class Circle extends ShapeBase implements IDrawable {
         this._radius = 10;
     }
 
-    public draw(context: CanvasRenderingContext2D, ) {
+    async draw(context: CanvasRenderingContext2D, ) {
         context.save();
         context.beginPath();
         context.globalAlpha = 0;

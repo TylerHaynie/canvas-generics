@@ -129,7 +129,7 @@ export class Rectangle extends ShapeBase implements IDrawable {
         super(position);
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    async draw(context: CanvasRenderingContext2D) {
         context.save();
 
         // create rectangle path

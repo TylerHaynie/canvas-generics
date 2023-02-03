@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { CanvasWrapper, Color, ElementCircle, ElementRect, LineStyle, MouseData, Size, UI_EVENT_TYPE, Vector } from 'canvas-elements';
+import { CanvasEngine, Color, ElementCircle, ElementRect, LineStyle, MouseData, Size, UI_EVENT_TYPE, Vector } from 'canvas-elements';
 
 @Component({
   selector: 'app-element-test',
@@ -8,7 +8,7 @@ import { CanvasWrapper, Color, ElementCircle, ElementRect, LineStyle, MouseData,
 })
 export class ElementTestComponent implements AfterViewInit {
   @ViewChild('c') canvasRef: ElementRef;
-  private cw: CanvasWrapper;
+  private cw: CanvasEngine;
 
   // moving
   private isDragging = false;
