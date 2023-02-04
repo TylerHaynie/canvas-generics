@@ -36,7 +36,6 @@ export class CanvasEngine {
     // context
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
-    private _offscreen: OffscreenCanvas;
 
     // control
     private _pauseKey: string[] = ['Escape'];
@@ -300,8 +299,6 @@ export class CanvasEngine {
         performance.clearMarks();
         performance.clearMeasures();
     }
-
-    // TODO: Add grid and mouse to render manager for drawing
 
     private drawGrid(): void {
         if (this._enableGrid) {

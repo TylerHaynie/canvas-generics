@@ -17,8 +17,6 @@ export class MovementTestComponent implements AfterViewInit, ICanvasComponent {
   private _numUtil: RandomUtility = new RandomUtility();
   private _colorUtil: ColorUtility = new ColorUtility();
 
-  private offscreenCanvas: OffscreenCanvas;
-
   // inputs
   private testCubeCount: number = 5;
 
@@ -28,41 +26,6 @@ export class MovementTestComponent implements AfterViewInit, ICanvasComponent {
     var renderCanvas = this.canvasRef.nativeElement as HTMLCanvasElement;
     this.engine = new CanvasEngine(renderCanvas, this);
     this.engine.start();
-    // this.buildCanvasWorker(renderCanvas);
-  }
-
-  public buildCanvasWorker(canvas: HTMLCanvasElement) {
-    let script = this._renderer2.createElement('script');
-    script.type = `text/javascript`;
-    script.text = `
-      onmessage = (e) => {
-        console.log("in message script");
-        if (e.data.canvas != null) {
-          self.postMessage(e);
-        }
-      };
-      `;
-
-    this._renderer2.appendChild(this._document.body, script);
-
-    if (script != null) {
-      var blob = new Blob([script.textContent], { type: "text/javascript" })
-      var worker = new Worker(window.URL.createObjectURL(blob));
-
-      worker.onmessage = (e) => this.workerMessageReceived(e);
-
-      this.offscreenCanvas = canvas.transferControlToOffscreen();
-      worker.postMessage({ canvas: this.offscreenCanvas }, [this.offscreenCanvas]);
-    }
-  }
-
-  public workerMessageReceived(e: MessageEvent) {
-    console.log("Worker received message: " + e.data);
-
-    if (e.data.canvas != null) {
-      this.engine = new CanvasEngine(e.data.canvas, this);
-      this.engine.start();
-    }
   }
 
   // called when engine starts
