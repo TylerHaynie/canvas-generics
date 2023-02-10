@@ -3,7 +3,7 @@ import { AfterViewInit, Component, ElementRef, Inject, Renderer2, ViewChild } fr
 import {
   CanvasEngine, Color, ColorUtility,
   ICanvasComponent, RandomUtility, Rectangle,
-  Size, Vector
+  Size, Vertex
 } from 'canvas-elements';
 
 @Component({
@@ -49,7 +49,7 @@ export class MovementTestComponent implements AfterViewInit, ICanvasComponent {
         this._numUtil.randomNumberBetween(50, 300),
         this._numUtil.randomNumberBetween(50, 300));
 
-      let pos = new Vector(
+      let pos = new Vertex(
         this._numUtil.randomNumberBetween(0, this.engine.canvasWidth - size.width),
         this._numUtil.randomNumberBetween(0, this.engine.canvasHeight - size.height),
         this._numUtil.randomNumberBetween(1, 10));

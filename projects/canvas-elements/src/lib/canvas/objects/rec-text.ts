@@ -6,7 +6,7 @@ import { Size } from '../models/size';
 import { Rectangle } from '../shapes/rectangle';
 import { TextOptions } from '../shapes/text/models';
 import { TextObject } from '../shapes/text/text-object';
-import { Vector } from './vector';
+import { Vertex } from './vertex';
 
 export class RecTextOptions {
     textColor: Color = new Color('#eee');
@@ -58,10 +58,10 @@ export class RecText implements IDrawable {
     private _textObject: TextObject;
     public get textObject() { return this._textObject; }
 
-    private _position: Vector;
-    public get position(): Vector { return this._position; }
+    private _position: Vertex;
+    public get position(): Vertex { return this._position; }
 
-    constructor(pos: Vector, size: Size, text: TextOptions | string, options?: RecTextOptions) {
+    constructor(pos: Vertex, size: Size, text: TextOptions | string, options?: RecTextOptions) {
         this._position = pos;
         this._size = size;
         this._text = typeof text === 'string' ? new TextOptions(<string>text) : text;
@@ -97,7 +97,7 @@ export class RecText implements IDrawable {
         this._textObject = t;
     }
 
-    private createText(pos: Vector, options: TextOptions, recTextOptions: RecTextOptions) {
+    private createText(pos: Vertex, options: TextOptions, recTextOptions: RecTextOptions) {
         let t = new TextObject(pos, options);
         t.color = recTextOptions.textColor;
 
@@ -120,7 +120,7 @@ export class RecText implements IDrawable {
         return t;
     }
 
-    private createRectangle(context: CanvasRenderingContext2D, pos: Vector, size: Size, options: RecTextOptions) {
+    private createRectangle(context: CanvasRenderingContext2D, pos: Vertex, size: Size, options: RecTextOptions) {
 
         // create the rectangle (this could auto size to text width if we want)
         let rec = new Rectangle(pos);

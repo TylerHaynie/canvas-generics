@@ -5,7 +5,7 @@ import { Color } from '../models/color';
 import { IDrawable } from '../models/interfaces/idrawable';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
-import { Vector } from '../objects/vector';
+import { Vertex } from '../objects/vertex';
 import { Circle } from '../shapes/circle';
 import { Rectangle } from '../shapes/rectangle';
 import { ResizeProperty } from './element-properties/resize-property';
@@ -80,7 +80,7 @@ export class ElementBase implements IDrawable  {
     public set isDragging(v: boolean) { this._dragging = v; }
     public get isDragging(): boolean { return this._dragging; }
 
-    private dragOffset: Vector = new Vector(0, 0, 0);
+    private dragOffset: Vertex = new Vertex(0, 0, 0);
 
     // event
     private _eventType: UI_EVENT_TYPE;

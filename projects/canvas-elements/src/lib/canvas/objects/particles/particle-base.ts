@@ -6,7 +6,7 @@ import { Circle } from '../../shapes/circle';
 import { Rectangle } from '../../shapes/rectangle';
 import { RandomUtility } from '../../utilities/random-utility';
 import { Bounds } from '../bounds';
-import { Vector } from '../vector';
+import { Vertex } from '../vertex';
 
 export class ParticleBase implements IDrawable {
     private velocity: Velocity;
@@ -21,7 +21,7 @@ export class ParticleBase implements IDrawable {
         this.velocity = v;
     }
 
-    setPosition(p: Vector) {
+    setPosition(p: Vertex) {
         this.shape.setPosition(p.x, p.y, p.z);
     }
 

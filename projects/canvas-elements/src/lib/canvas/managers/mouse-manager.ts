@@ -1,16 +1,16 @@
 import { MOUSE_EVENT_TYPE } from '../events/canvas-enums';
 import { CanvasEvent } from '../events/canvas-event';
 import { MouseData } from '../events/event-data';
-import { Vector } from '../objects/vector';
+import { Vertex } from '../objects/vertex';
 
 export class MouseManager {
     public get mouseOnCanvas(): boolean { return this._mouseOnCanvas; }
-    public get mousePosition(): Vector { return this._mousePosition; }
+    public get mousePosition(): Vertex { return this._mousePosition; }
 
     private element: HTMLElement;
 
-    private _mousePosition: Vector;
-    private _translatedPosition: Vector;
+    private _mousePosition: Vertex;
+    private _translatedPosition: Vertex;
     private _mouseOnCanvas: boolean = false;
     private _scrollingDirection: string = 'none';
     private _primaryMousePosition: string = 'up';
@@ -129,6 +129,6 @@ export class MouseManager {
     }
 
     private setMousePosition(x: number, y: number): void {
-        this._mousePosition ? this._mousePosition.set(x, y, 0) : this._mousePosition = new Vector(x, y, 0);
+        this._mousePosition ? this._mousePosition.set(x, y, 0) : this._mousePosition = new Vertex(x, y, 0);
     }
 }

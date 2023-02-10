@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Vector, CanvasEngine, Rectangle, QuadTree, Circle, RandomUtility, Boundary, MOUSE_EVENT_TYPE, MouseData, Color, Size, Line, LineSegment, LineStyle, QuadVector } from 'canvas-elements';
+import { Vertex, CanvasEngine, Rectangle, QuadTree, Circle, RandomUtility, Boundary, MOUSE_EVENT_TYPE, MouseData, Color, Size, Line, LineSegment, LineStyle, QuadVector } from 'canvas-elements';
 
 interface Ray {
-  a: Vector;
-  b: Vector;
+  a: Vertex;
+  b: Vertex;
 }
 
 @Component({
@@ -22,7 +22,7 @@ export class RayTestComponent implements AfterViewInit {
 
   // mouse
   private mouseOnCanvas: boolean = false;
-  private mousePosition: Vector;
+  private mousePosition: Vertex;
 
   constructor() { }
 
@@ -61,7 +61,7 @@ export class RayTestComponent implements AfterViewInit {
   }
 
   setFocalPoint() {
-    let p = new Vector(this.cw.canvasWidth / 2, this.cw.canvasHeight / 2);
+    let p = new Vertex(this.cw.canvasWidth / 2, this.cw.canvasHeight / 2);
     this.focalPoint = new Circle(p);
     this.focalPoint.radius = 4;
     this.focalPoint.color.setShade('lime');

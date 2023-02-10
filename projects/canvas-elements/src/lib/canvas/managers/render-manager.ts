@@ -49,6 +49,10 @@ export class RenderManager {
         return this.drawables[index];
     }
 
+    // This needs to execute on a worker thread
+    // 1. start worker
+    // 2. draw to an offscreen canvas
+    // 3. once all drawing operations are done, copy offscreen canvas to render canvas for display
     render(context: CanvasRenderingContext2D) {
         this._drawCalls = 0;
 

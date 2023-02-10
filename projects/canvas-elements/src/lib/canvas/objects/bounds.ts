@@ -1,5 +1,5 @@
 import { Size } from '../models/size';
-import { Vector } from './vector';
+import { Vertex } from './vertex';
 
 export class Bounds {
     private _x: number;
@@ -14,27 +14,27 @@ export class Bounds {
     private _height: number;
     public get height(): number { return this._height; }
 
-    constructor(v: Vector, size: Size) {
+    constructor(v: Vertex, size: Size) {
         this._x = v.x;
         this._y = v.y;
         this._width = size.width;
         this._height = size.height;
     }
 
-    public get topLeft(): Vector {
-        return new Vector(this._x, this._y);
+    public get topLeft(): Vertex {
+        return new Vertex(this._x, this._y);
     }
 
-    public get topRight(): Vector {
-        return new Vector(this._x + this._width, this._y);
+    public get topRight(): Vertex {
+        return new Vertex(this._x + this._width, this._y);
     }
 
-    public get bottomLeft(): Vector {
-        return new Vector(this._x, this._y + this._height);
+    public get bottomLeft(): Vertex {
+        return new Vertex(this._x, this._y + this._height);
     }
 
-    public get bottomRight(): Vector {
-        return new Vector(this._x + this._width, this._y + this._height);
+    public get bottomRight(): Vertex {
+        return new Vertex(this._x + this._width, this._y + this._height);
     }
 
     // public get topLength(): number {

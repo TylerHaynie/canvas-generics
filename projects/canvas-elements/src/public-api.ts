@@ -19,7 +19,7 @@ export * from './lib/canvas/models/velocity';
 export * from './lib/canvas/objects/bounds';
 export * from './lib/canvas/objects/connection-objects';
 export * from './lib/canvas/objects/rec-text';
-export * from './lib/canvas/objects/vector';
+export * from './lib/canvas/objects/vertex';
 export * from './lib/canvas/objects/particles/particle-base';
 export * from './lib/canvas/objects/particles/fadable-particle';
 export * from './lib/canvas/shapes/circle';

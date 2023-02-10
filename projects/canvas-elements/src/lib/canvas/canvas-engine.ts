@@ -68,24 +68,10 @@ export class CanvasEngine {
         constructor(canvas: HTMLCanvasElement, component: ICanvasComponent) {
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
-
-        // this.setupManagers();
-        // this.setupUtilities();
-        // this.registerEvents();
-        // this.setupCanvas();
-        // this._windowManager.fit();
         this.setup();
 
         this.components.push(component);
     }
-
-    // exists in a script to start
-    // onmessage = (ev) => {
-    //     if (ev.data.msg === 'offscreen') {
-    //         this._context = ev.data.canvas.getContext('2d');
-    //         this.start();
-    //     }
-    // }
 
     public setup(){
         this.setupManagers();

@@ -1,15 +1,15 @@
 import { Color } from '../models/color';
 import { LineStyle } from '../models/line-style';
 import { Shadow } from '../models/shadow';
-import { Vector } from '../objects/vector';
+import { Vertex } from '../objects/vertex';
 import { v4 as uuidv4 } from 'uuid';
 
 export class ShapeBase {
     private _id: string = uuidv4();
     public get id(): string { return this._id; }
 
-    private _position: Vector;
-    public get position(): Vector { return this._position; }
+    private _position: Vertex;
+    public get position(): Vertex { return this._position; }
     public setPosition(x: number, y: number, z: number) {
         this._position.set(Math.fround(x), Math.fround(y), Math.fround(z));
     }
@@ -44,7 +44,7 @@ export class ShapeBase {
         this._shadow = v;
     }
 
-    constructor(position: Vector) {
+    constructor(position: Vertex) {
         this._position = position;
         this._color = new Color();
     }

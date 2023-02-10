@@ -1,11 +1,11 @@
-import { Vector } from '../objects/vector';
+import { Vertex } from '../objects/vertex';
 
 export class RayCastUtility {
     constructor() { }
 
-    lineIntersects(pa: Vector, pb: Vector, pc: Vector, pd: Vector) {
-        let r = new Vector(pb.x - pa.x, pb.y - pa.y);
-        let s = new Vector(pd.x - pc.x, pd.y - pc.y);
+    lineIntersects(pa: Vertex, pb: Vertex, pc: Vertex, pd: Vertex) {
+        let r = new Vertex(pb.x - pa.x, pb.y - pa.y);
+        let s = new Vertex(pd.x - pc.x, pd.y - pc.y);
 
         let d = r.x * s.y - r.y * s.x;
         let u = ((pc.x - pa.x) * r.y - (pc.y - pa.y) * r.x) / d;
@@ -13,7 +13,7 @@ export class RayCastUtility {
 
         if (u >= 0 && u <= 1) {
             if (t >= 0 && t <= 1) {
-                return new Vector(
+                return new Vertex(
                     pa.x + t * r.x,
                     pa.y + t * r.y
                 );
