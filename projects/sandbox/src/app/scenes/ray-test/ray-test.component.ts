@@ -77,8 +77,8 @@ export class RayTestComponent implements AfterViewInit {
     for (let x = 0; x < 50; x++) {
       let p = this._random.randomVectorInBounds(this.cw.canvasWidth, this.cw.canvasHeight);
       let r = new Rectangle(p);
-      r.size.setSize(50, 50);
-      r.color.setShade('#888');
+      // r.size.setSize(50, 50);
+      // r.color.setShade('#888');
 
       this.squares.push(r);
     }

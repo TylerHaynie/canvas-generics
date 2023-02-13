@@ -9,7 +9,7 @@ export class Vertex {
     public get value(): vec3 { return this._vertex; }
 
     constructor(x: number, y: number, z: number = 0) {
-        this.setValues(x, y, z);
+        this._vertex = vec3.fromValues(x, y, z);
     }
 
     public scaleBy(scaleAmount: number): void {
@@ -26,5 +26,9 @@ export class Vertex {
 
     public set(vector: Vertex): void {
         vec3.set(this._vertex, vector.x, vector.y, vector.z);
+    }
+
+    private setVertIfNotSet(){
+
     }
 }

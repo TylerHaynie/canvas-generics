@@ -69,7 +69,7 @@ export class RecText implements IDrawable {
     }
 
     public setPosition(x: number, y: number, z: number) {
-        this._position.set(x, y, z);
+        this._position.setValues(x, y, z);
     }
 
     async draw(context: CanvasRenderingContext2D) {

@@ -13,17 +13,15 @@ export class Polygon implements IIdentifiable {
 
     public get id(): string { return this._id; }
     public get position(): Vertex { return this._origin; }
+    public get edges(): Edge[] { return this._edges; }
+    public get faces(): Face[] { return this._faces; }
 
     constructor(position: Vertex) {
-        this._origin.set(position);
+        this._origin = position;
     }
 
     public addVertex(vertex: Vertex): number {
         this._vertices.push(vertex);
-
-        if (this._vertices.length > 1)
-            this.createEdge(this._vertices.length - 2, this._vertices.length - 1);
-
         return this._vertices.length - 1;
     }
 
@@ -62,6 +60,10 @@ export class Polygon implements IIdentifiable {
         // this.moveVertices();
         this._origin.set(vector);
     }
+
+    // public scale(scaleBy: Vertex){
+
+    // }
 
     // // when the position changes, move all verticies by the position delta
     // private moveVerticies(direction: Vertex, distance: number): void {

@@ -193,7 +193,7 @@ export class CanvasEngine {
     }
 
     private tickPhysics() {
-        // cache components and tick them
+
     }
 
     private render(): void {
@@ -203,7 +203,7 @@ export class CanvasEngine {
 
         this.saveContext();
         this.drawGrid();
-        this.renderManager.render(this._context);
+        this.renderManager.renderPolygons(this._context);
         this.restoreContext();
 
         this.trackMousePosition();
@@ -211,7 +211,7 @@ export class CanvasEngine {
 
         performance.mark(this.drawEndMarker);
         performance.measure(this.drawMeasureName, this.drawStartMarker, this.drawEndMarker)
-        this.drawDebug();
+        // this.drawDebug();
     }
 
     private renderPauseMenu(): void {
@@ -258,7 +258,7 @@ export class CanvasEngine {
 
         // object count
         this._context.fillText('objects     : ', rightEdge - edgeOffset, horzGap * 4);
-        this._context.fillText(`${this._renderManager.shapeCount.toString()}`, rightEdge - valueOffset, horzGap * 4);
+        this._context.fillText(`${this._renderManager.polygonCount.toString()}`, rightEdge - valueOffset, horzGap * 4);
 
         // draw calls
         this._context.fillText('draw calls  : ', rightEdge - edgeOffset, horzGap * 5);

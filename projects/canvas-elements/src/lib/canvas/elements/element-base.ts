@@ -230,7 +230,7 @@ export class ElementBase implements IDrawable  {
         let dx = e.mousePosition.x - elementPosition.x;
         let dy = e.mousePosition.y - elementPosition.y;
 
-        this.dragOffset.set(dx, dy, 0);
+        this.dragOffset.setValues(dx, dy, 0);
     }
 
     private dragElement(e: MouseData) {

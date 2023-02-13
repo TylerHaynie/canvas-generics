@@ -5,7 +5,7 @@ export class Color {
         return this._shade;
     }
 
-    private _alpha: number = 1;
+    public _alpha: number = 1;
     public get alpha(): number { return this._alpha; }
 
     constructor(shade: string | CanvasGradient | CanvasPattern = '#888') {

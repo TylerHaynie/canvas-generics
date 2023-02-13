@@ -11,7 +11,7 @@ export class ShapeBase {
     private _position: Vertex;
     public get position(): Vertex { return this._position; }
     public setPosition(x: number, y: number, z: number) {
-        this._position.set(Math.fround(x), Math.fround(y), Math.fround(z));
+        this._position.setValues(Math.fround(x), Math.fround(y), Math.fround(z));
     }
 
     private _color: Color;

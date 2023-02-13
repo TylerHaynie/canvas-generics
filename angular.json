@@ -13,6 +13,7 @@
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/canvas-elements/tsconfig.lib.json",
+            "webWorkerTsConfig": "projects/canvas-elements/tsconfig.worker.json",
             "project": "projects/canvas-elements/ng-package.json"
           },
           "configurations": {

@@ -1,150 +1,128 @@
-import { IDrawable } from '../models/interfaces/idrawable';
-import { Circle } from '../shapes/circle';
-import { Rectangle } from '../shapes/rectangle';
-
-class RenderObjectReference {
-    private _posZ: number;
-    private _index: number = -1;
-    private _shapeId: string = '';
-    public get id(): string { return this._shapeId; }
-    public get renderIndex(): number { return this._index }
-    public get zPosition(): number { return this._posZ }
-
-    constructor(index: number, shapeId: string, zPosition: number) {
-        this._index = index;
-        this._shapeId = shapeId;
-        this._posZ = zPosition;
-    }
-}
+import { Polygon } from '../geometry/polygon';
+import { CanvasPolygonRender } from '../render/canvas-polygon-render';
+import { PolygonRenderReference } from '../render/polygon-render-reference';
+import { CanvasShader } from '../render/shaders/canvas-api/canvas-shader';
 
 export class RenderManager {
     private _drawCalls: number = 0;
+    private _needsSort: boolean = false;
 
-    private needsSort: boolean = false;
-    private drawables: IDrawable[] = [];
-    private shapeReferences: RenderObjectReference[] = [];
+    private _polygons: Polygon[] = [];
+    private _polyRenderRefs: PolygonRenderReference[] = [];
 
-    public get shapeCount(): number { return this.drawables.length; }
+    public get polygonCount(): number { return this._polygons.length; }
     public get drawCalls(): number { return this._drawCalls; }
 
-    addShape(shape: Rectangle | Circle): RenderObjectReference {
-        var newIndex = this.drawables.length;
-        var objRef = new RenderObjectReference(newIndex, shape.id, shape.position.z);
+    private _polyRender: CanvasPolygonRender = new CanvasPolygonRender();
 
-        this.drawables.push(shape);
-        this.shapeReferences.push(objRef);
-        this.needsSort = true;
+    private _zDepthMin = 1;
+    private _zDepthMax = 11;
 
-        return objRef;
+    private _renderWorker: Worker;
+
+    constructor() {
+        // let blob = new Blob([this.getWorkerBody()], { type: 'application/javascript' });
+        // this._renderWorker = new Worker(URL.createObjectURL(blob));
+
+        // this._renderWorker.onmessage = (e) => this.handleWorkerMessage(e);
     }
 
-    getShapeById(id: string) {
-        var ref = this.shapeReferences.find(c => c.id === id);
-        if (ref != null)
-            return this.drawables[ref.renderIndex];
+    addPolygon(polygon: Polygon, shader: CanvasShader): PolygonRenderReference {
+        let newIndex = this._polygons.length;
+        let polyRef = new PolygonRenderReference(newIndex, polygon.id, shader);
+
+        this._polygons.push(polygon);
+        this._polyRenderRefs.push(polyRef);
+        this._needsSort = true;
+
+        return polyRef;
     }
 
-    getShapeByIndex(index: number) {
-        if (index < 0) return null;
-        return this.drawables[index];
+    getPolygonById(id: string): Polygon | undefined {
+        let ref = this._polyRenderRefs.find(c => c.polygonId === id);
+        if (ref == null) return undefined;
+
+        return this._polygons[ref.polygonIndex];
+    }
+
+    getPolygonByIndex(index: number): Polygon | undefined {
+        if (index < 0) return undefined;
+        return this._polygons[index];
+    }
+
+    getPolygonByRenderRef(renderRef: PolygonRenderReference): Polygon | undefined {
+        if (renderRef == undefined || renderRef.polygonIndex < 0) return undefined;
+        return this._polygons[renderRef.polygonIndex];
     }
 
     // This needs to execute on a worker thread
     // 1. start worker
     // 2. draw to an offscreen canvas
     // 3. once all drawing operations are done, copy offscreen canvas to render canvas for display
-    render(context: CanvasRenderingContext2D) {
+    renderPolygons(context: CanvasRenderingContext2D) {
         this._drawCalls = 0;
 
-        if (this.needsSort) {
-            this.shapeReferences.sort((a, b) => b.zPosition - a.zPosition);
-            this.needsSort = false;
+        if (this._needsSort) {
+            this._polyRenderRefs.sort((a, b) => this._polygons[b.polygonIndex].position.z - this._polygons[a.polygonIndex].position.z);
+            this._needsSort = false;
         }
 
-        for (const ref of this.shapeReferences) {
-            this.drawables[ref.renderIndex].draw(context);
-            this._drawCalls += 1;
+        for (let i = 0; i < this._polyRenderRefs.length; i++) {
+            let alpha = 1.0 - (this._polygons[this._polyRenderRefs[i].polygonIndex].position.z - this._zDepthMin) / (this._zDepthMax - this._zDepthMin);
+            this._polyRenderRefs[i].shader.edgeColor.setAlpha(alpha);
+            this._polyRenderRefs[i].shader.faceColor.setAlpha(alpha);
+
+            // this._polyRender.drawSingle(context, poly, ref);
         }
+
+        for (let i = 0; i < this._polyRenderRefs.length; i++) {
+            this._polyRender.drawSingle(context, this._polygons[this._polyRenderRefs[i].polygonIndex], this._polyRenderRefs[i]);
+        }
+
+        // this._polyRender.drawMany(context, this._polygons, this._polyRenderRefs);
+
+        // let offscreen = new OffscreenCanvas(context.canvas.width, context.canvas.height);
+        // let message = {
+        //     canvas: offscreen,
+        //     polyRender: this._polyRender,
+        //     polygons: this._polygons,
+        //     references: this._polyReferences,
+        //     zDepthMax: this._zDepthMax,
+        //     zDepthMIn: this._zDepthMin
+        // }
+
+        // this._renderWorker.postMessage(message, [offscreen]);
     }
+
+    // private handleWorkerMessage(e) {
+    //     console.log(`page got message:`, e);
+    // }
+
+    // private getWorkerBody(): string {
+    //     return `
+    //     self.onmessage = function (e) {
+    //         console.log('Rendering', e.data);
+
+    //         offscreen = new OffscreenCanvas(e.data.canvas.width, e.data.canvas.height);
+    //         ctx = offscreen.getContext('2d');
+
+    //         for (let i = 0; i < e.data.references.length; i++) {
+    //             var ref = e.data.references[i];
+    //             var poly = e.data.polygons[ref.polygonIndex];
+
+    //             console.log('Working on poly', e.data.poly);
+
+    //             // TODO: apply to a plane at the zdepth, not the polygons. increase alpha as you go deeper
+    //             let alpha = 1.0 - (poly.getPosition().z - e.data.zDepthMin) / (e.data.zDepthMax - e.data.zDepthMin);
+    //             ref.shader.edgeColor.setAlpha(alpha);
+    //             ref.shader.faceColor.setAlpha(alpha);
+
+    //             e.data.polyRender.draw(ctx, poly, ref.shader);
+    //         }
+
+    //         var image = offscreen.transferToImageBitmap();
+    //         self.postMessage({ image: image }, [image]);
+    //     };
+    //     `;
+    // }
 }
-
-
-
-//// Something like this with a worker thread...
-// export class RenderManagerWithWorker {
-//     private _drawCalls: number = 0;
-
-//     private needsSort: boolean = false;
-//     private drawables: IDrawable[] = [];
-//     private shapeReferences: RenderObjectReference[] = [];
-//     private _renderWorker: Worker;
-//     private _workerContext: CanvasRenderingContext2D;
-//     private _canvas: HTMLCanvasElement;
-//     private _offscreenCanvas: OffscreenCanvas;
-
-//     public get shapeCount(): number { return this.drawables.length; }
-//     public get drawCalls(): number { return this._drawCalls; }
-
-//     constructor(canvas: HTMLCanvasElement) {
-//         this.buildWorker();
-//     }
-
-//     private buildWorker(): void {
-//         var blob = new Blob(["self.onmessage = function(event) { postMessage(event.data); }"], { type: 'application/javascript' });
-//         this._renderWorker = new Worker(URL.createObjectURL(blob));
-//         this._renderWorker.onmessage = (e) => this.onWorkerMessage(e)
-//     }
-
-//     private buildRender(canvas: HTMLCanvasElement): void {
-//         this._canvas = canvas;
-//         this._offscreenCanvas = this._canvas.transferControlToOffscreen();
-//     }
-
-//     addShape(shape: Rectangle | Circle): RenderObjectReference {
-//         var newIndex = this.drawables.length;
-//         var objRef = new RenderObjectReference(newIndex, shape.id, shape.position.z);
-
-//         this.drawables.push(shape);
-//         this.shapeReferences.push(objRef);
-//         this.needsSort = true;
-
-//         return objRef;
-//     }
-
-//     getShapeById(id: string) {
-//         var ref = this.shapeReferences.find(c => c.id === id);
-//         if (ref != null)
-//             return this.drawables[ref.renderIndex];
-//     }
-
-//     getShapeByIndex(index: number) {
-//         if (index < 0) return null;
-//         return this.drawables[index];
-//     }
-
-//     render() {
-//         this._drawCalls = 0;
-
-//         this._renderWorker.postMessage(
-//             this._offscreenCanvas,
-//             [this._offscreenCanvas]
-//         );
-//     }
-
-//     private onWorkerMessage(e: MessageEvent<any>) {
-//         console.log(e.data);
-
-//         this._workerContext = (<HTMLCanvasElement>e.data).getContext('2d');
-
-//         if (this.needsSort) {
-//             this.shapeReferences.sort((a, b) => b.zPosition - a.zPosition);
-//             this.needsSort = false;
-//         }
-
-//         for (const ref of this.shapeReferences) {
-//             this.drawables[ref.renderIndex].draw(this._workerContext);
-//             this._drawCalls += 1;
-//         }
-//     }
-
-//}
