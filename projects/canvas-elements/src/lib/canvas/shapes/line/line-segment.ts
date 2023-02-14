@@ -1,9 +1,9 @@
-import { Vector } from '../../objects/vector';
+import { Vertex } from '../../objects/vertex';
 
 export class LineSegment {
 
-    public get points(): Vector[] { return this._points; }
-    private _points: Vector[] = [];
+    public get points(): Vertex[] { return this._points; }
+    private _points: Vertex[] = [];
 
     private _fillSegment: boolean = false;
     public get fillSegment(): boolean { return this._fillSegment; }
@@ -12,21 +12,21 @@ export class LineSegment {
         // isDirty = true;
     }
 
-    constructor(startPoint?: Vector) {
+    constructor(startPoint?: Vertex) {
         if (startPoint) { this._points.push(startPoint); }
     }
 
-    addPoint(point: Vector) {
+    addPoint(point: Vertex) {
         this._points.push(point);
     }
 
-    addPoints(points: Vector[]) {
+    addPoints(points: Vertex[]) {
         points.forEach(point => {
             this._points.push(point);
         });
     }
 
-    removePoint(point: Vector) {
+    removePoint(point: Vertex) {
         let i = this._points.indexOf(point);
         this._points.splice(i, 1);
     }

@@ -3,7 +3,7 @@
 import { UI_EVENT_TYPE, MOUSE_STATE } from '../../events/canvas-enums';
 import { MouseData } from '../../events/event-data';
 import { Size } from '../../models/size';
-import { Vector } from '../../objects/vector';
+import { Vertex } from '../../objects/vertex';
 import { Rectangle } from '../../shapes/rectangle';
 import { ElementBase } from '../element-base';
 import { ResizeProperty } from '../element-properties/resize-property';
@@ -18,7 +18,7 @@ export class ElementRect extends ElementBase {
         this.buildMenus();
     }
 
-    constructor(position: Vector) {
+    constructor(position: Vertex) {
         super();
         this.setupBaseElement(position);
         this.on(UI_EVENT_TYPE.MOVE, (e: MouseData) => {
@@ -26,7 +26,7 @@ export class ElementRect extends ElementBase {
         });
     }
 
-    private setupBaseElement(position: Vector) {
+    private setupBaseElement(position: Vertex) {
         let r = new Rectangle(position);
         this.shape = r;
     }

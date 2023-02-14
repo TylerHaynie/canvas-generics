@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { CanvasEngine, Color, ElementCircle, ElementRect, LineStyle, MouseData, Size, UI_EVENT_TYPE, Vector } from 'canvas-elements';
+import { CanvasEngine, Color, ElementCircle, ElementRect, LineStyle, MouseData, Size, UI_EVENT_TYPE, Vertex } from 'canvas-elements';
 
 @Component({
   selector: 'app-element-test',
@@ -12,7 +12,7 @@ export class ElementTestComponent implements AfterViewInit {
 
   // moving
   private isDragging = false;
-  private dragOffset: Vector = new Vector(0, 0);
+  private dragOffset: Vertex = new Vertex(0, 0);
 
   constructor() { }
 

@@ -1,17 +1,17 @@
 export class WindowManager {
-    private canvas: HTMLCanvasElement;
+    private _canvas: HTMLCanvasElement;
 
     constructor(canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
+        this._canvas = canvas;
         this.registerEvents();
     }
 
-    public fit(){
+    public fit() {
         this.fitCanvasToContainer();
     }
 
-    public setCursorStyle(style: string){
-        this.canvas.style.cursor = style;
+    public setCursorStyle(style: string) {
+        this._canvas.style.cursor = style;
     }
 
     private registerEvents() {
@@ -22,11 +22,11 @@ export class WindowManager {
 
     private fitCanvasToContainer() {
         // Make it visually fill the positioned parent
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
+        this._canvas.style.width = '100%';
+        this._canvas.style.height = '100%';
 
         // ...then set the internal size to match
-        this.canvas.width = this.canvas.offsetWidth;
-        this.canvas.height = this.canvas.offsetHeight;
+        this._canvas.width = this._canvas.offsetWidth;
+        this._canvas.height = this._canvas.offsetHeight;
     }
 }

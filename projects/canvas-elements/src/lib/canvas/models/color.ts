@@ -1,4 +1,3 @@
-// this will eventually be a shader or part of one
 export class Color {
     private _shade: string | CanvasGradient | CanvasPattern;
     public get shade(): string | CanvasGradient | CanvasPattern {
@@ -17,6 +16,6 @@ export class Color {
     }
 
     setAlpha(alpha: number): void {
-        this._alpha = alpha;
+        this._alpha = Math.fround(alpha);
     }
 }

@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import {
   CanvasEngine, RandomUtility, ColorUtility,
-  QuadTree, FadableParticle, Vector, Boundary,
+  QuadTree, FadableParticle, Vertex, Boundary,
   MOUSE_EVENT_TYPE, MouseData, Color, Rectangle, Size,
   GradientUtility, Bounds, Velocity, QuadVector, IUpdateable
 } from 'canvas-elements';
