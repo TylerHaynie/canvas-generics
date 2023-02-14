@@ -8,6 +8,11 @@ import { ICanvasComponent } from './models/interfaces/icanvas-component';
 import { HelperUtility } from './utilities/helper-utility';
 
 export class CanvasEngine {
+    // canvas
+    private _canvas: HTMLCanvasElement;
+    public get canvasWidth() { return this._canvas.width; }
+    public get canvasHeight() { return this._canvas.height; }
+
     // game loop
     private loopDelta: number = 0;
     private previousTime: number = 0;
@@ -28,15 +33,6 @@ export class CanvasEngine {
     public get keyboardManager() { return this._keyboardManager; }
     public get renderManager() { return this._renderManager; }
 
-    public get canvasWidth() { return this._context.canvas.width; }
-    public get canvasHeight() { return this._context.canvas.height; }
-
-    public set trackMouse(v: boolean) { this._trackMouse = v; }
-
-    // context
-    private _canvas: HTMLCanvasElement;
-    private _context: CanvasRenderingContext2D;
-
     // control
     private _pauseKey: string[] = ['Escape'];
     private _frameForwardKeys: string[] = ['>', '.'];
@@ -47,6 +43,7 @@ export class CanvasEngine {
     private _gridAsBackground: boolean = false;
     private _enableGrid: boolean = true;
     private _trackMouse: boolean = true;
+    public set trackMouse(v: boolean) { this._trackMouse = v; }
 
     // utils
     private helperUtility: HelperUtility;
@@ -67,9 +64,9 @@ export class CanvasEngine {
     // constructor(context: CanvasRenderingContext2D, component: ICanvasComponent) {
         constructor(canvas: HTMLCanvasElement, component: ICanvasComponent) {
         this._canvas = canvas;
-        this._context = this._canvas.getContext('2d');
+        // this._offscreenCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+        // this._context = this._canvas.getContext('2d');
         this.setup();
-
         this.components.push(component);
     }
 
@@ -87,13 +84,13 @@ export class CanvasEngine {
         this.gameLoop();
     }
 
-    private saveContext() {
-        this._context.save();
-    }
+    // private saveContext() {
+    //     this._context.save();
+    // }
 
-    private restoreContext() {
-        this._context.restore();
-    }
+    // private restoreContext() {
+    //     this._context.restore();
+    // }
 
     private canvasComponentStartup() {
         for (const component of this.components) {
@@ -112,11 +109,11 @@ export class CanvasEngine {
         this._keyboardManager = new KeyboardManager(this._canvas);
 
         // rendering
-        this._renderManager = new RenderManager();
+        this._renderManager = new RenderManager(this._canvas);
     }
 
     private setupUtilities() {
-        this.helperUtility = new HelperUtility(this._context);
+        // this.helperUtility = new HelperUtility(this._context);
     }
 
     private registerEvents() {
@@ -155,9 +152,9 @@ export class CanvasEngine {
     }
 
     private setupCanvas() {
-        this._context.canvas.tabIndex = 1000; // canvas needs a tabindex so we can listen for keyboard events
-        this._context.canvas.style.outline = 'none'; // removing the focus outline
-        this._context.imageSmoothingEnabled = false;
+        this._canvas.tabIndex = 1000; // canvas needs a tabindex so we can listen for keyboard events
+        this._canvas.style.outline = 'none'; // removing the focus outline
+        // this._context.imageSmoothingEnabled = false;
     }
 
     private gameLoop() {
@@ -184,11 +181,11 @@ export class CanvasEngine {
             this.frameStep = false;
         }
 
-        if (this.paused) {
-            this.renderPauseMenu();
-        }
+        // if (this.paused) {
+        //     // this.renderPauseMenu();
+        // }
 
-        this.frameCount += 1;
+        // this.frameCount += 1;
         requestAnimationFrame(() => this.gameLoop());
     }
 
@@ -199,112 +196,110 @@ export class CanvasEngine {
     private render(): void {
         performance.mark(this.drawStartMarker);
 
-        this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
+        // this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
 
-        this.saveContext();
-        this.drawGrid();
-        this.renderManager.renderPolygons(this._context);
-        this.restoreContext();
+        // this.drawGrid();
+        this.renderManager.renderPolygons();
 
-        this.trackMousePosition();
-        this.drawMouse();
+        // this.trackMousePosition();
+        // this.drawMouse();
 
         performance.mark(this.drawEndMarker);
         performance.measure(this.drawMeasureName, this.drawStartMarker, this.drawEndMarker)
         // this.drawDebug();
     }
 
-    private renderPauseMenu(): void {
-        this.saveContext();
-        this._context.fillStyle = 'red';
-        this._context.font = '25px courier new';
-        this._context.fillText(`-- PAUSED --`, (this.canvasWidth / 2) - 95, 50);
-        this.restoreContext();
-    }
+    // private renderPauseMenu(): void {
+    //     this.saveContext();
+    //     this._context.fillStyle = 'red';
+    //     this._context.font = '25px courier new';
+    //     this._context.fillText(`-- PAUSED --`, (this.canvasWidth / 2) - 95, 50);
+    //     this.restoreContext();
+    // }
 
-    private drawDebug() {
-        var edgeOffset: number = 245;
-        var valueOffset: number = edgeOffset / 1.9;
-        var horzGap: number = 15;
+    // private drawDebug() {
+    //     var edgeOffset: number = 245;
+    //     var valueOffset: number = edgeOffset / 1.9;
+    //     var horzGap: number = 15;
 
-        this._context.fillStyle = 'yellow';
-        this._context.font = '14px courier new';
+    //     this._context.fillStyle = 'yellow';
+    //     this._context.font = '14px courier new';
 
-        const rightEdge = this._context.canvas.width;
+    //     const rightEdge = this._context.canvas.width;
 
-        // background
-        this.saveContext();
-        this._context.fillStyle = 'black';
-        this._context.globalAlpha = 0.75;
-        this._context.fillRect(rightEdge - edgeOffset - horzGap, 0, 275, 200);
-        this.restoreContext();
+    //     // background
+    //     this.saveContext();
+    //     this._context.fillStyle = 'black';
+    //     this._context.globalAlpha = 0.75;
+    //     this._context.fillRect(rightEdge - edgeOffset - horzGap, 0, 275, 200);
+    //     this.restoreContext();
 
-        // runtime
-        let time = this.runTime / 1000;
-        let timeLabel = time > 1 && time < 60 ? 's' : time > 60 && time < 3600 ? 'm' : time > 3600 ? 'h' : 'ms';
-        time = time > 60 ? time / 60 : time;
+    //     // runtime
+    //     let time = this.runTime / 1000;
+    //     let timeLabel = time > 1 && time < 60 ? 's' : time > 60 && time < 3600 ? 'm' : time > 3600 ? 'h' : 'ms';
+    //     time = time > 60 ? time / 60 : time;
 
-        this._context.fillText(`runtime     : `, rightEdge - edgeOffset, horzGap);
-        this._context.fillText(`${(time).toFixed(2).toString()}(${timeLabel})`, rightEdge - valueOffset, horzGap);
+    //     this._context.fillText(`runtime     : `, rightEdge - edgeOffset, horzGap);
+    //     this._context.fillText(`${(time).toFixed(2).toString()}(${timeLabel})`, rightEdge - valueOffset, horzGap);
 
-        // delta
-        this._context.fillText(`frame delta : `, rightEdge - edgeOffset, horzGap * 2);
-        this._context.fillText(`${this.loopDelta.toFixed(2).toString()}(ms)`, rightEdge - valueOffset, horzGap * 2);
+    //     // delta
+    //     this._context.fillText(`frame delta : `, rightEdge - edgeOffset, horzGap * 2);
+    //     this._context.fillText(`${this.loopDelta.toFixed(2).toString()}(ms)`, rightEdge - valueOffset, horzGap * 2);
 
-        // fps
-        this._context.fillText(`fps         : `, rightEdge - edgeOffset, horzGap * 3);
-        this._context.fillText(`${this.fps.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 3);
+    //     // fps
+    //     this._context.fillText(`fps         : `, rightEdge - edgeOffset, horzGap * 3);
+    //     this._context.fillText(`${this.fps.toFixed(2).toString()}`, rightEdge - valueOffset, horzGap * 3);
 
 
-        // object count
-        this._context.fillText('objects     : ', rightEdge - edgeOffset, horzGap * 4);
-        this._context.fillText(`${this._renderManager.polygonCount.toString()}`, rightEdge - valueOffset, horzGap * 4);
+    //     // object count
+    //     this._context.fillText('objects     : ', rightEdge - edgeOffset, horzGap * 4);
+    //     this._context.fillText(`${this._renderManager.polygonCount.toString()}`, rightEdge - valueOffset, horzGap * 4);
 
-        // draw calls
-        this._context.fillText('draw calls  : ', rightEdge - edgeOffset, horzGap * 5);
-        this._context.fillText(`${this._renderManager.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 5);
+    //     // draw calls
+    //     this._context.fillText('draw calls  : ', rightEdge - edgeOffset, horzGap * 5);
+    //     this._context.fillText(`${this._renderManager.drawCalls.toString()}`, rightEdge - valueOffset, horzGap * 5);
 
-        // draw rate
-        let drawMeasure = performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName);
-        this._context.fillText('draw time   : ', rightEdge - edgeOffset, horzGap * 6);
-        this._context.fillText(`${drawMeasure ? drawMeasure.duration.toFixed(2) : ''}(ms)`, rightEdge - valueOffset, horzGap * 6);
+    //     // draw rate
+    //     let drawMeasure = performance.getEntriesByType("measure").find(f => f.name == this.drawMeasureName);
+    //     this._context.fillText('draw time   : ', rightEdge - edgeOffset, horzGap * 6);
+    //     this._context.fillText(`${drawMeasure ? drawMeasure.duration.toFixed(2) : ''}(ms)`, rightEdge - valueOffset, horzGap * 6);
 
-        // mouse
-        this._context.fillText('mouse       : ', rightEdge - edgeOffset, horzGap * 7);
-        var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
-        this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 7);
+    //     // mouse
+    //     this._context.fillText('mouse       : ', rightEdge - edgeOffset, horzGap * 7);
+    //     var mouseText: string = this._mouseManager.mousePosition ? `x: ${this.currentMouseData.mousePosition.x} y: ${this.currentMouseData.mousePosition.y}` : `unavailable`
+    //     this._context.fillText(mouseText, rightEdge - valueOffset, horzGap * 7);
 
-        // screen
-        this._context.fillText('canvas size : ', rightEdge - edgeOffset, horzGap * 8);
-        this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 8);
+    //     // screen
+    //     this._context.fillText('canvas size : ', rightEdge - edgeOffset, horzGap * 8);
+    //     this._context.fillText(`w: ${this._context.canvas.width} h: ${this._context.canvas.height}`, rightEdge - valueOffset, horzGap * 8);
 
-        // keydown
-        this._context.fillText('keydown     : ', rightEdge - edgeOffset, horzGap * 9);
-        this._context.fillText(`${this.debugCurrentKeyDown}`, rightEdge - valueOffset, horzGap * 9);
+    //     // keydown
+    //     this._context.fillText('keydown     : ', rightEdge - edgeOffset, horzGap * 9);
+    //     this._context.fillText(`${this.debugCurrentKeyDown}`, rightEdge - valueOffset, horzGap * 9);
 
-        performance.clearMarks();
-        performance.clearMeasures();
-    }
+    //     performance.clearMarks();
+    //     performance.clearMeasures();
+    // }
 
-    private drawGrid(): void {
-        if (this._enableGrid) {
-            this.helperUtility.getGrid('rgba(30, 30, 30, .80)', 30).draw(this._context);
-        }
-    }
+    // private drawGrid(): void {
+    //     if (this._enableGrid) {
+    //         this.helperUtility.getGrid('rgba(30, 30, 30, .80)', 30).draw(this._context);
+    //     }
+    // }
 
-    private trackMousePosition() {
-        if (this._mouseManager.mouseOnCanvas) {
-            if (this._trackMouse) {
-                this.helperUtility.trackMouse(this._mouseManager.mousePosition, 'rgba(255, 255, 255, .80)').draw(this._context);
-            }
-        }
-    }
+    // private trackMousePosition() {
+    //     if (this._mouseManager.mouseOnCanvas) {
+    //         if (this._trackMouse) {
+    //             this.helperUtility.trackMouse(this._mouseManager.mousePosition, 'rgba(255, 255, 255, .80)').draw(this._context);
+    //         }
+    //     }
+    // }
 
-    private drawMouse() {
-        if (this._mouseManager.mouseOnCanvas) {
-            this.helperUtility.drawMouse(this._mouseManager.mousePosition, this.currentMouseData.uiMouseState);
-        }
-    }
+    // private drawMouse() {
+    //     if (this._mouseManager.mouseOnCanvas) {
+    //         this.helperUtility.drawMouse(this._mouseManager.mousePosition, this.currentMouseData.uiMouseState);
+    //     }
+    // }
 
     private handleKeyDown(kData: KeyboardData) {
         if (this._pauseKey.includes(kData.latestKeyDown)) this.togglePause();

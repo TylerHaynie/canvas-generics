@@ -3,9 +3,9 @@ import { vec3 } from 'gl-matrix';
 export class Vertex {
     private _vertex: vec3;
 
-    public get x() { return <number>this._vertex[0]; }
-    public get y() { return <number>this._vertex[1]; }
-    public get z() { return <number>this._vertex[2]; }
+    public get x() { return this._vertex[0]; }
+    public get y() { return this._vertex[1]; }
+    public get z() { return this._vertex[2]; }
     public get value(): vec3 { return this._vertex; }
 
     constructor(x: number, y: number, z: number = 0) {
@@ -26,9 +26,5 @@ export class Vertex {
 
     public set(vector: Vertex): void {
         vec3.set(this._vertex, vector.x, vector.y, vector.z);
-    }
-
-    private setVertIfNotSet(){
-
     }
 }

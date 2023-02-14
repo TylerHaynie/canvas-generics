@@ -18,7 +18,7 @@ export class PolygonTestComponent implements AfterViewInit, ICanvasComponent {
   private _myPolyReferences: PolygonRenderReference[] = [];
 
   // inputs
-  private testCubeCount: number = 1000;
+  private testCubeCount: number = 10000;
 
   constructor() { }
 
@@ -44,11 +44,11 @@ export class PolygonTestComponent implements AfterViewInit, ICanvasComponent {
   }
 
   private createTestPoly() {
-    let testShader = new CanvasShader();
-    testShader.edgeColor.setShade("#ff0000");
-    testShader.faceColor.setShade("#333");
-
     for (let i = 0; i < this.testCubeCount; i++) {
+      let testShader = new CanvasShader();
+      testShader.edgeColor.setShade("#ff0000");
+      testShader.faceColor.setShade("#333");
+
       let size = new Vertex(
         this._numUtil.randomNumberBetween(10, 50),
         this._numUtil.randomNumberBetween(10, 50));

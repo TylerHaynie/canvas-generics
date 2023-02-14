@@ -4,6 +4,9 @@ import { PolygonRenderReference } from '../render/polygon-render-reference';
 import { CanvasShader } from '../render/shaders/canvas-api/canvas-shader';
 
 export class RenderManager {
+    private _bitmapContext: ImageBitmapRenderingContext;
+    private _context: CanvasRenderingContext2D;
+
     private _drawCalls: number = 0;
     private _needsSort: boolean = false;
 
@@ -13,18 +16,17 @@ export class RenderManager {
     public get polygonCount(): number { return this._polygons.length; }
     public get drawCalls(): number { return this._drawCalls; }
 
-    private _polyRender: CanvasPolygonRender = new CanvasPolygonRender();
+    private _polyRender: CanvasPolygonRender;
 
     private _zDepthMin = 1;
     private _zDepthMax = 11;
 
-    private _renderWorker: Worker;
+    private _readyForFrameRender: boolean = true;
 
-    constructor() {
-        // let blob = new Blob([this.getWorkerBody()], { type: 'application/javascript' });
-        // this._renderWorker = new Worker(URL.createObjectURL(blob));
-
-        // this._renderWorker.onmessage = (e) => this.handleWorkerMessage(e);
+    constructor(canvas: HTMLCanvasElement) {
+        this._bitmapContext = canvas.getContext('bitmaprenderer');
+        //this._context = canvas.getContext('2d');
+        this._polyRender = new CanvasPolygonRender(canvas, (image) => this.renderComplete(image));
     }
 
     addPolygon(polygon: Polygon, shader: CanvasShader): PolygonRenderReference {
@@ -55,11 +57,7 @@ export class RenderManager {
         return this._polygons[renderRef.polygonIndex];
     }
 
-    // This needs to execute on a worker thread
-    // 1. start worker
-    // 2. draw to an offscreen canvas
-    // 3. once all drawing operations are done, copy offscreen canvas to render canvas for display
-    renderPolygons(context: CanvasRenderingContext2D) {
+    renderPolygons() {
         this._drawCalls = 0;
 
         if (this._needsSort) {
@@ -68,61 +66,24 @@ export class RenderManager {
         }
 
         for (let i = 0; i < this._polyRenderRefs.length; i++) {
-            let alpha = 1.0 - (this._polygons[this._polyRenderRefs[i].polygonIndex].position.z - this._zDepthMin) / (this._zDepthMax - this._zDepthMin);
+            let poly = this._polygons[this._polyRenderRefs[i].polygonIndex];
+            let alpha = 1 - (poly.position.z - this._zDepthMin) / (this._zDepthMax - this._zDepthMin);
+
             this._polyRenderRefs[i].shader.edgeColor.setAlpha(alpha);
             this._polyRenderRefs[i].shader.faceColor.setAlpha(alpha);
-
-            // this._polyRender.drawSingle(context, poly, ref);
         }
 
-        for (let i = 0; i < this._polyRenderRefs.length; i++) {
-            this._polyRender.drawSingle(context, this._polygons[this._polyRenderRefs[i].polygonIndex], this._polyRenderRefs[i]);
+        if (this._readyForFrameRender) {
+            this._readyForFrameRender = false;
+            this._polyRender.drawPolygonsWorker(this._polygons, this._polyRenderRefs);
         }
 
-        // this._polyRender.drawMany(context, this._polygons, this._polyRenderRefs);
-
-        // let offscreen = new OffscreenCanvas(context.canvas.width, context.canvas.height);
-        // let message = {
-        //     canvas: offscreen,
-        //     polyRender: this._polyRender,
-        //     polygons: this._polygons,
-        //     references: this._polyReferences,
-        //     zDepthMax: this._zDepthMax,
-        //     zDepthMIn: this._zDepthMin
-        // }
-
-        // this._renderWorker.postMessage(message, [offscreen]);
+        // this._polyRender.drawMany(this._context, this._polygons, this._polyRenderRefs);
     }
 
-    // private handleWorkerMessage(e) {
-    //     console.log(`page got message:`, e);
-    // }
+    renderComplete(image: ImageBitmap): void {
+        this._bitmapContext.transferFromImageBitmap(image);
+        this._readyForFrameRender = true;
 
-    // private getWorkerBody(): string {
-    //     return `
-    //     self.onmessage = function (e) {
-    //         console.log('Rendering', e.data);
-
-    //         offscreen = new OffscreenCanvas(e.data.canvas.width, e.data.canvas.height);
-    //         ctx = offscreen.getContext('2d');
-
-    //         for (let i = 0; i < e.data.references.length; i++) {
-    //             var ref = e.data.references[i];
-    //             var poly = e.data.polygons[ref.polygonIndex];
-
-    //             console.log('Working on poly', e.data.poly);
-
-    //             // TODO: apply to a plane at the zdepth, not the polygons. increase alpha as you go deeper
-    //             let alpha = 1.0 - (poly.getPosition().z - e.data.zDepthMin) / (e.data.zDepthMax - e.data.zDepthMin);
-    //             ref.shader.edgeColor.setAlpha(alpha);
-    //             ref.shader.faceColor.setAlpha(alpha);
-
-    //             e.data.polyRender.draw(ctx, poly, ref.shader);
-    //         }
-
-    //         var image = offscreen.transferToImageBitmap();
-    //         self.postMessage({ image: image }, [image]);
-    //     };
-    //     `;
-    // }
+    }
 }
