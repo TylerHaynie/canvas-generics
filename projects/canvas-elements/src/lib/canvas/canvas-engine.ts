@@ -1,11 +1,14 @@
-import { KEYBOARD_EVENT_TYPE, MOUSE_EVENT_TYPE } from './events/canvas-enums';
-import { KeyboardData, MouseData } from './events/event-data';
-import { KeyboardManager } from './managers/keyboard-manager';
-import { MouseManager } from './managers/mouse-manager';
-import { RenderManager } from './managers/render-manager';
-import { WindowManager } from './managers/window-manager';
-import { ICanvasComponent } from './models/interfaces/icanvas-component';
-import { HelperUtility } from './utilities/helper-utility';
+import { ENGINE_EVENT_TYPE, KEYBOARD_EVENT_TYPE, MOUSE_EVENT_TYPE } from './engine/events/canvas-enums';
+import { CanvasEvent } from './engine/events/canvas-event';
+import { EngineEventData, KeyboardEventData, MouseEventData } from './engine/events/event-data';
+import { KeyboardManager } from './engine/managers/keyboard-manager';
+import { MouseManager } from './engine/managers/mouse-manager';
+import { RenderManager } from './engine/managers/render-manager';
+import { WindowManager } from './engine/managers/window-manager';
+import { ArrayUtility } from './engine/utilities/array-utility';
+import { ICanvasComponent } from './engine/interfaces/canvas-component';
+import { ICanvasSystem } from "./engine/interfaces/canvas-system";
+
 
 export class CanvasEngine {
     // canvas
@@ -45,9 +48,6 @@ export class CanvasEngine {
     private _trackMouse: boolean = true;
     public set trackMouse(v: boolean) { this._trackMouse = v; }
 
-    // utils
-    private helperUtility: HelperUtility;
-
     // managers
     private _mouseManager: MouseManager;
     private _renderManager: RenderManager;
@@ -55,46 +55,88 @@ export class CanvasEngine {
     private _windowManager: WindowManager;
 
     // canvas components
-    private components: ICanvasComponent[] = [];
+    private _components: ICanvasComponent[] = [];
+    private _systems: ICanvasSystem[] = [];
 
     // mouse
-    private currentMouseData: MouseData;
+    private currentMouseData: MouseEventData;
 
-    // TODO: probably needs to be a singleton or need to figure out a different way to register components.
-    // constructor(context: CanvasRenderingContext2D, component: ICanvasComponent) {
-        constructor(canvas: HTMLCanvasElement, component: ICanvasComponent) {
-        this._canvas = canvas;
-        // this._offscreenCanvas = new OffscreenCanvas(canvas.width, canvas.height);
-        // this._context = this._canvas.getContext('2d');
-        this.setup();
-        this.components.push(component);
+    // engine events
+    private _engineEvent = new CanvasEvent<EngineEventData>();
+    on(on: ENGINE_EVENT_TYPE, callback: (e: EngineEventData) => void) {
+        this._engineEvent.subscribe(on, callback);
     }
 
-    public setup(){
+    constructor(canvas: HTMLCanvasElement) {
+        this._canvas = canvas;
+        this.setup();
+    }
+
+    public setup() {
         this.setupManagers();
         this.setupUtilities();
         this.registerEvents();
         this.setupCanvas();
-        this._windowManager.fit();
-        this._windowManager.setCursorStyle('none');
     }
 
-    public start() {
+    public registerComponents(components: ICanvasComponent[]) {
+        this._components.push(...components);
+    }
+
+    public registerSystems(systems: ICanvasSystem[]) {
+        // TODO: Check for existing system of same type
+        this._systems.push(...systems);
+    }
+
+    public getComponent(componentName) {
+        return ArrayUtility.findTypeInArray(componentName, this._components);
+    }
+
+    public getSystem(systemName) {
+        return ArrayUtility.findTypeInArray(systemName, this._systems);
+    }
+
+    public async start() {
+        this._windowManager.fit();
+        this._windowManager.setCursorStyle('default');
+
+        // register systems
+        await this.fireSystemRegistration();
+        this.canvasSystemStartup();
+
+        // register components
+        await this.fireComponentRegistration();
         this.canvasComponentStartup();
+
+        // start render loop
         this.gameLoop();
     }
 
-    // private saveContext() {
-    //     this._context.save();
-    // }
+    private async fireSystemRegistration() {
+        let event = new EngineEventData();
+        event.eventType = ENGINE_EVENT_TYPE.REGISTER_SYSTEMS;
+        event.engine = this;
 
-    // private restoreContext() {
-    //     this._context.restore();
-    // }
+        await this._engineEvent.fireEvent(event.eventType, event);
+    }
+
+    private async fireComponentRegistration() {
+        let event = new EngineEventData();
+        event.eventType = ENGINE_EVENT_TYPE.REGISTER_COMPONENTS;
+        event.engine = this;
+
+        await this._engineEvent.fireEvent(event.eventType, event);
+    }
+
+    private canvasSystemStartup() {
+        for (const system of this._systems) {
+            system.startup(this);
+        }
+    }
 
     private canvasComponentStartup() {
-        for (const component of this.components) {
-            component.startup();
+        for (const component of this._components) {
+            component.startup(this);
         }
     }
 
@@ -117,44 +159,22 @@ export class CanvasEngine {
     }
 
     private registerEvents() {
-        this.registerMouseEvents();
         this.registerKeyboardEvents();
     }
 
-    // This is needed for the element base to set mouse state
-    // This connects element base to mouse. probably needs to change.
-    private registerMouseEvents() {
-        this._mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
-            this.currentMouseData = e;
-        });
-
-        this._mouseManager.on(MOUSE_EVENT_TYPE.DOWN, (e: MouseData) => {
-            this.currentMouseData = e;
-        });
-
-        this._mouseManager.on(MOUSE_EVENT_TYPE.UP, (e: MouseData) => {
-            this.currentMouseData = e;
-        });
-
-        this._mouseManager.on(MOUSE_EVENT_TYPE.OUT, (e: MouseData) => {
-            this.currentMouseData = e;
-        });
-    }
-
     private registerKeyboardEvents() {
-        this._keyboardManager.on(KEYBOARD_EVENT_TYPE.KEY_DOWN, (e: KeyboardData) => {
+        this._keyboardManager.on(KEYBOARD_EVENT_TYPE.KEY_DOWN, (e: KeyboardEventData) => {
             this.handleKeyDown(e);
         });
 
-        this._keyboardManager.on(KEYBOARD_EVENT_TYPE.KEY_UP, (e: KeyboardData) => {
+        this._keyboardManager.on(KEYBOARD_EVENT_TYPE.KEY_UP, (e: KeyboardEventData) => {
             this.handleKeyUp(e);
         });
     }
 
     private setupCanvas() {
-        this._canvas.tabIndex = 1000; // canvas needs a tabindex so we can listen for keyboard events
-        this._canvas.style.outline = 'none'; // removing the focus outline
-        // this._context.imageSmoothingEnabled = false;
+        this._canvas.tabIndex = 1000;           // canvas needs a tabindex so we can listen for keyboard events
+        this._canvas.style.outline = 'none';    // removing the focus outline
     }
 
     private gameLoop() {
@@ -162,20 +182,27 @@ export class CanvasEngine {
         this.loopDelta = currentTime - this.previousTime;
         this.previousTime = currentTime;
 
-        this.fpsTick += this.loopDelta;
-        if (this.fpsTick >= 1000) {
-            this.fps = this.frameCount;
-            this.fpsTick = 0;
-            this.frameCount = 0;
-        }
+        // this.fpsTick += this.loopDelta;
+        // if (this.fpsTick >= 1000) {
+        //     this.fps = this.frameCount;
+        //     this.fpsTick = 0;
+        //     this.frameCount = 0;
+        // }
+
+        // systems always tick
+        this._systems.forEach(component => {
+            component.tick(this.loopDelta);
+        });
 
         if (!this.paused || this.frameStep) {
             this.runTime += this.loopDelta;
 
-            //TODO: render at target framerate, tick physics at much higher rate
-            this.tickPhysics();
+            // tick components
+            this._components.forEach(component => {
+                component.tick(this.loopDelta);
+            });
 
-            // TODO: render at 30, 60, 90, 120, 144, etc. fps
+            // TODO: tick at 30, 60, 90, 120, 144, etc.
             this.render();
 
             this.frameStep = false;
@@ -189,15 +216,8 @@ export class CanvasEngine {
         requestAnimationFrame(() => this.gameLoop());
     }
 
-    private tickPhysics() {
-
-    }
-
     private render(): void {
         performance.mark(this.drawStartMarker);
-
-        // this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
-
         // this.drawGrid();
         this.renderManager.renderPolygons();
 
@@ -301,14 +321,14 @@ export class CanvasEngine {
     //     }
     // }
 
-    private handleKeyDown(kData: KeyboardData) {
+    private handleKeyDown(kData: KeyboardEventData) {
         if (this._pauseKey.includes(kData.latestKeyDown)) this.togglePause();
         if (this._frameForwardKeys.includes(kData.latestKeyDown)) this.frameStep = !this.frameStep;
 
         this.debugCurrentKeyDown = kData.keyQueue.join(',');
     }
 
-    private handleKeyUp(kData: KeyboardData) {
+    private handleKeyUp(kData: KeyboardEventData) {
         this.debugCurrentKeyDown = kData.keyQueue.join(',');
     }
 
