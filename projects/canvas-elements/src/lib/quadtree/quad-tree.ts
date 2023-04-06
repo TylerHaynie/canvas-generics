@@ -1,8 +1,3 @@
-import { LineStyle } from "../canvas/models/line-style";
-import { Size } from "../canvas/models/size";
-import { Vector2D } from "../canvas/objects/vector";
-import { Rectangle } from "../canvas/shapes/rectangle";
-
 export class QuadVector {
     x: number;
     y: number;
@@ -82,9 +77,9 @@ export class QuadTree {
     bottomLeft: QuadTree;
     bottomRight: QuadTree;
 
-    constructor(b: Boundary, c: number) {
-        this.boundary = b;
-        this.capicity = c;
+    constructor(boundary: Boundary, capicity: number) {
+        this.boundary = boundary;
+        this.capicity = capicity;
     }
 
     insert(p: QuadVector) {
@@ -230,21 +225,21 @@ export class QuadTree {
         this.isDivided = false;
     }
 
-    debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .20) {
-        let p = new Vector2D(this.boundary.x, this.boundary.y);
-        let rect = new Rectangle(p);
-        rect.size.setSize(this.boundary.width, this.boundary.height);
-        rect.outline = new LineStyle(color, lineWidth);
-        rect.outline.setShade(color);
-        rect.outline.setAlpha(alpha);
-        rect.color.setAlpha(0);
-        rect.draw(context);
+    // debugQuad(context: CanvasRenderingContext2D, color: string = '#777', alpha: number = 1, lineWidth: number = .20) {
+    //     let p = new Vector(this.boundary.x, this.boundary.y);
+    //     let rect = new Rectangle(p);
+    //     rect.size.setSize(this.boundary.width, this.boundary.height);
+    //     rect.outline = new LineStyle(color, lineWidth);
+    //     rect.outline.setShade(color);
+    //     rect.outline.setAlpha(alpha);
+    //     rect.color.setAlpha(0);
+    //     rect.draw(context);
 
-        if (this.isDivided) {
-            this.topLeft.debugQuad(context, color, alpha, lineWidth);
-            this.topRight.debugQuad(context, color, alpha, lineWidth);
-            this.bottomLeft.debugQuad(context, color, alpha, lineWidth);
-            this.bottomRight.debugQuad(context, color, alpha, lineWidth);
-        }
-    }
+    //     if (this.isDivided) {
+    //         this.topLeft.debugQuad(context, color, alpha, lineWidth);
+    //         this.topRight.debugQuad(context, color, alpha, lineWidth);
+    //         this.bottomLeft.debugQuad(context, color, alpha, lineWidth);
+    //         this.bottomRight.debugQuad(context, color, alpha, lineWidth);
+    //     }
+    // }
 }

@@ -1,171 +1,173 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Vector2D, CanvasWrapper, Rectangle, QuadTree, Circle, RandomUtility, Boundary, MOUSE_EVENT_TYPE, MouseData, Color, Size, Line, LineSegment, LineStyle, QuadVector } from 'canvas-elements';
+// import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+// import { Vector, CanvasEngine, Rectangle, QuadTree, RandomUtility, Boundary, MOUSE_EVENT_TYPE, MouseEventData, Color, Line, LineSegment, LineStyle, QuadVector } from 'canvas-elements';
 
-interface Ray {
-  a: Vector2D;
-  b: Vector2D;
-}
+// interface Ray {
+//   a: Vector;
+//   b: Vector;
+// }
 
-@Component({
-  selector: 'app-ray-test',
-  templateUrl: './ray-test.component.html',
-  styleUrls: ['./ray-test.component.css']
-})
-export class RayTestComponent implements AfterViewInit {
-  @ViewChild('c') canvasRef: ElementRef;
-  private cw: CanvasWrapper;
+// @Component({
+//   selector: 'app-ray-test',
+//   templateUrl: './ray-test.component.html',
+//   styleUrls: ['./ray-test.component.css']
+// })
+// export class RayTestComponent implements AfterViewInit {
+//   @ViewChild('c') canvasRef: ElementRef;
+//   private cw: CanvasEngine;
 
-  private squares: Rectangle[] = [];
-  private qtSquares: QuadTree;
-  private focalPoint: Circle;
-  private _random: RandomUtility = new RandomUtility();
+//   private squares: Rectangle[] = [];
+//   private qtSquares: QuadTree;
+//   private focalPoint: Circle;
 
-  // mouse
-  private mouseOnCanvas: boolean = false;
-  private mousePosition: Vector2D;
+//   // mouse
+//   private mouseOnCanvas: boolean = false;
+//   private mousePosition: Vector;
 
-  constructor() { }
+//   constructor() { }
 
-  ngAfterViewInit() {
-    this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'), () => { this.draw(); });
+//   ngAfterViewInit() {
+//     // this.cw = new CanvasWrapper((this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d'));
 
-    this.cw.panZoomManager.minScale = 1;
-    this.cw.panZoomManager.panningAllowed = false;
-    this.cw.panZoomManager.scalingAllowed = false;
-    this.cw.gridAsBackground = true;
+//     // this.cw.panZoomManager.minScale = 1;
+//     // this.cw.panZoomManager.panningAllowed = false;
+//     // this.cw.panZoomManager.scalingAllowed = false;
+//     // this.cw.gridAsBackground = true;
 
-    let b: Boundary = new Boundary(0, 0, 0, this.cw.width, this.cw.height, 0);
-    this.qtSquares = new QuadTree(b, 1);
+//     // let b: Boundary = new Boundary(0, 0, 0, this.cw.width, this.cw.height, 0);
+//     // this.qtSquares = new QuadTree(b, 1);
 
-    this.registerEvents();
+//     // this.registerEvents();
 
-    this.setFocalPoint();
-    this.generateSquares();
+//     // this.setFocalPoint();
+//     // this.generateSquares();
 
-    // start the draw loop
-    this.cw.start();
-  }
+//     // // this.cw.addToTick(this);
+//     // this.cw.addToDraw(this);
 
-  private registerEvents() {
-    this.cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseData) => {
-      this.mouseChanged(e);
-    });
-  }
+//     // // start the draw loop
+//     // this.cw.start();
+//   }
 
-  private mouseChanged(e: MouseData) {
-    this.mouseOnCanvas = e.mouseOnCanvas;
-    this.mousePosition = e.mousePosition;
-  }
+//   private registerEvents() {
+//     this.cw.mouseManager.on(MOUSE_EVENT_TYPE.MOVE, (e: MouseEventData) => {
+//       this.mouseChanged(e);
+//     });
+//   }
 
-  setFocalPoint() {
-    let p = new Vector2D(this.cw.width / 2, this.cw.height / 2);
-    this.focalPoint = new Circle(p);
-    this.focalPoint.radius = 4;
-    this.focalPoint.color.setShade('lime');
-  }
+//   private mouseChanged(e: MouseEventData) {
+//     this.mouseOnCanvas = e.mouseOnCanvas;
+//     this.mousePosition = e.mousePosition;
+//   }
 
-  draw() {
-    this.cw.saveContext();
-    this.doSomething();
-    this.cw.restoreContext();
-  }
+//   setFocalPoint() {
+//     let p = new Vector(this.cw.canvasWidth / 2, this.cw.canvasHeight / 2);
+//     this.focalPoint = new Circle(p);
+//     this.focalPoint.radius = 4;
+//     this.focalPoint.color.setShade('lime');
+//   }
 
-  generateSquares() {
-    for (let x = 0; x < 50; x++) {
-      let p = this._random.randomVectorInBounds(this.cw.width, this.cw.height);
-      let r = new Rectangle(p);
-      r.size.setSize(50, 50);
-      r.color.setShade('#888');
+//   draw() {
+//     // this.cw.saveContext();
+//     // this.doSomething();
+//     // this.cw.restoreContext();
+//   }
 
-      this.squares.push(r);
-    }
-  }
+//   generateSquares() {
+//     for (let x = 0; x < 50; x++) {
+//       let p = RandomUtility.randomVectorInBounds(this.cw.canvasWidth, this.cw.canvasHeight);
+//       let r = new Rectangle(p);
+//       // r.size.setSize(50, 50);
+//       // r.color.setShade('#888');
 
-  doSomething() {
-    this.drawSquares();
-    this.castRay();
-  }
+//       this.squares.push(r);
+//     }
+//   }
 
-  drawSquares() {
-    this.qtSquares.reset(this.cw.width, this.cw.height);
+//   doSomething() {
+//     this.drawSquares();
+//     this.castRay();
+//   }
 
-    this.squares.forEach(rect => {
-      rect.draw(this.cw.drawingContext);
-      let quadData = new QuadVector(rect.position.x, rect.position.y, 0, rect);
-      this.qtSquares.insert(quadData);
-    });
-  }
+//   drawSquares() {
+//     // this.qtSquares.reset(this.cw.width, this.cw.height);
 
-  castRay() {
-    if (!this.mouseOnCanvas) { return; }
+//     // this.squares.forEach(rect => {
+//     //   rect.draw(this.cw.drawingContext);
+//     //   let quadData = new QuadVector(rect.position.x, rect.position.y, 0, rect);
+//     //   this.qtSquares.insert(quadData);
+//     // });
+//   }
 
-    // draw the source
-    this.focalPoint.draw(this.cw.drawingContext);
+//   castRay() {
+//     // if (!this.mouseOnCanvas) { return; }
 
-    // define line
-    let line = new Line();
-    line.style.setShade('rgba(0, 255, 0, 1)');
-    line.style.width = .25;
+//     // // draw the source
+//     // this.focalPoint.draw(this.cw.drawingContext);
 
-    let seg = new LineSegment(this.focalPoint.position);
+//     // // define line
+//     // let line = new Line();
+//     // line.style.setShade('rgba(0, 255, 0, 1)');
+//     // line.style.width = .25;
 
-    let range = this.mousePosition.distanceTo(this.focalPoint.position);
-    let p = new Vector2D(this.focalPoint.position.x - range, this.focalPoint.position.y - range);
+//     // let seg = new LineSegment(this.focalPoint.position);
 
-    // draw light range
-    let lr = new Rectangle(p);
-    lr.size.setSize(range * 2, range * 2);
-    lr.color = undefined;
-    let ls = new LineStyle();
-    ls.width = .25;
-    ls.setShade('yellow');
-    lr.outline = ls;
+//     // let range = this.mousePosition.distanceTo(this.focalPoint.position);
+//     // let p = new Vector(this.focalPoint.position.x - range, this.focalPoint.position.y - range);
 
-    lr.draw(this.cw.drawingContext);
+//     // // draw light range
+//     // let lr = new Rectangle(p);
+//     // lr.size.setSize(range * 2, range * 2);
+//     // lr.color = undefined;
+//     // let ls = new LineStyle();
+//     // ls.width = .25;
+//     // ls.setShade('yellow');
+//     // lr.outline = ls;
 
-    // search quad tree along line.
-    // simplify results until you have the closest
+//     // lr.draw(this.cw.drawingContext);
 
-    let b = new Boundary(this.focalPoint.position.x - range, this.focalPoint.position.y - range, 0, range * 2, range * 2, 0);
-    let results = this.qtSquares.searchBoundary(b);
+//     // // search quad tree along line.
+//     // // simplify results until you have the closest
 
-    // draw light range
-    let debugREct = new Rectangle(new Vector2D(b.x, b.y));
-    debugREct.size.setSize(b.width, b.height);
-    debugREct.color = undefined;
-    let dls = new LineStyle();
-    dls.width = .25;
-    dls.setShade('red');
-    debugREct.outline = dls;
-    debugREct.draw(this.cw.drawingContext);
+//     // let b = new Boundary(this.focalPoint.position.x - range, this.focalPoint.position.y - range, 0, range * 2, range * 2, 0);
+//     // let results = this.qtSquares.searchBoundary(b);
 
-    results.forEach(square => {
-      let r = <Rectangle>square.data;
-      r.color.setShade('pink');
-    });
+//     // // draw light range
+//     // let debugREct = new Rectangle(new Vector(b.x, b.y));
+//     // debugREct.size.setSize(b.width, b.height);
+//     // debugREct.color = undefined;
+//     // let dls = new LineStyle();
+//     // dls.width = .25;
+//     // dls.setShade('red');
+//     // debugREct.outline = dls;
+//     // debugREct.draw(this.cw.drawingContext);
 
-    // TODO: add squares to quadtree and search only where needed.
-    // if ray intersects quad boundry, add that area to a search array then loop it all at once
-    this.squares.forEach(square => {
-      let intersection = square.lineIntersects({ p1: this.focalPoint.position, p2: this.mousePosition });
-      if (intersection) {
-        // add points to create line
-        seg.addPoint(intersection);
+//     // results.forEach(square => {
+//     //   let r = <Rectangle>square.data;
+//     //   r.color.setShade('pink');
+//     // });
 
-        let ip = new Circle(intersection);
-        ip.radius = 4;
-        ip.color.setShade('red');
+//     // // TODO: add squares to quadtree and search only where needed.
+//     // // if ray intersects quad boundry, add that area to a search array then loop it all at once
+//     // this.squares.forEach(square => {
+//     //   let intersection = square.lineIntersects({ p1: this.focalPoint.position, p2: this.mousePosition });
+//     //   if (intersection) {
+//     //     // add points to create line
+//     //     seg.addPoint(intersection);
 
-        ip.draw(this.cw.drawingContext);
-      }
-    });
+//     //     let ip = new Circle(intersection);
+//     //     ip.radius = 4;
+//     //     ip.color.setShade('red');
 
-    // add segments to the line
-    line.addSegment(seg);
+//     //     ip.draw(this.cw.drawingContext);
+//     //   }
+//     // });
 
-    // draw the line
-    line.draw(this.cw.drawingContext);
-  }
+//     // // add segments to the line
+//     // line.addSegment(seg);
 
-  //#region close
-}
+//     // // draw the line
+//     // line.draw(this.cw.drawingContext);
+//   }
+
+//   //#region close
+// }

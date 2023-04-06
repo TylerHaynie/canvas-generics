@@ -5,14 +5,8 @@
 }
 
 html,
-body, canvas {
+body {
   background-color: #151515;
   width: 100%;
   height: 100%;
-  background-color: #151515;
-}
-
-canvas {
-  background-color: #151515;
-  cursor: none;
 }

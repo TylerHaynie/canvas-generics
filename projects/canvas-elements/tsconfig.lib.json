@@ -6,10 +6,13 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": [],
+    "types": [
+
+    ],
     "lib": [
       "dom",
-      "ES2020"
+      "ES2020",
+      "WebWorker"
     ],
   },
 }
