@@ -1,10 +1,10 @@
 import {
   CanvasEngine, CanvasShader, ICanvasComponent,
-  PolygonRenderReference, RandomUtility, Vector, Rectangle
+  PolyRenderReference, RandomUtility, Vector, Rectangle
 } from 'canvas-elements';
 
 export class RandomRectanglesComponent implements ICanvasComponent {
-  private _references: PolygonRenderReference[] = [];
+  private _references: PolyRenderReference[] = [];
   private _zDepthMin = 1;
   private _zDepthMax = 11;
 
@@ -42,7 +42,7 @@ export class RandomRectanglesComponent implements ICanvasComponent {
 
   private applyAlphaZ(engine: CanvasEngine) {
     for (let i = 0; i < this._references.length; i++) {
-      let poly = engine.renderManager.getPolygonByIndex(this._references[i].polygonIndex);
+      let poly = engine.renderManager.getPolygonByIndex(this._references[i].polyIndex);
       let alpha = 1 - (poly.position.z - this._zDepthMin) / (this._zDepthMax - this._zDepthMin);
 
       this._references[i].shader.edgeColor.setAlpha(alpha);

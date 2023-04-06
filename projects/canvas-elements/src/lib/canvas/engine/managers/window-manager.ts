@@ -1,8 +1,10 @@
 export class WindowManager {
     private _canvas: HTMLCanvasElement;
+    private _pixelRatio: number = 1;
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
+        this._pixelRatio = window.devicePixelRatio || 1;
         this.registerEvents();
     }
 
@@ -26,7 +28,7 @@ export class WindowManager {
         this._canvas.style.height = '100%';
 
         // set the internal size to match
-        this._canvas.width = this._canvas.offsetWidth;
-        this._canvas.height = this._canvas.offsetHeight;
+        this._canvas.width = this._canvas.offsetWidth * this._pixelRatio;
+        this._canvas.height = this._canvas.offsetHeight * this._pixelRatio;
     }
 }

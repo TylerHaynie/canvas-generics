@@ -3,17 +3,17 @@ import { CanvasEngine, ICanvasSystem, Vector, KeyboardManager, CanvasEvent } fro
 export class InputSystem implements ICanvasSystem {
   private _keyboardManager: KeyboardManager;
 
-  // y-axis
-  public posY: string = 'KeyW';
-  public negY: string = 'KeyS';
-
   // x-axis
-  public posX: string = 'KeyD';
-  public negX: string = 'KeyA';
+  public movePositiveX: string = 'KeyD';
+  public moveNegativeX: string = 'KeyA';
+
+  // y-axis
+  public movePositiveY: string = 'KeyW';
+  public moveNegativeY: string = 'KeyS';
 
   // z-axis
-  public posZ: string = undefined;
-  public negZ: string = undefined;
+  public movePositiveZ: string = undefined;
+  public moveNegativeZ: string = undefined;
 
   private _movementEvent = new CanvasEvent<Vector>();
   on(on: 'input', callback: (e: Vector) => void) {
@@ -25,13 +25,13 @@ export class InputSystem implements ICanvasSystem {
   }
 
   async tick(delta: number) {
-    let movement = this.checkForMovement();
+    let movement = this.getMovementDirection();
     if (movement.isNotZero) {
       this._movementEvent.fireEvent('input', movement);
     }
   }
 
-  private checkForMovement(): Vector {
+  private getMovementDirection(): Vector {
     let movementVector = new Vector(0, 0, 0);
 
     let keys = this._keyboardManager.currentKeys;
@@ -41,22 +41,22 @@ export class InputSystem implements ICanvasSystem {
     let keyCount = keys.length;
     let movementAmount = 1 / keyCount;
 
-    if (this.posY && keys.find(f => f == this.posY))
+    if (this.movePositiveY && keys.find(key => key == this.movePositiveY))
       movementVector.addValues(0, -movementAmount, 0);
 
-    if (this.negY && keys.find(f => f == this.negY))
+    if (this.moveNegativeY && keys.find(key => key == this.moveNegativeY))
       movementVector.addValues(0, movementAmount, 0);
 
-    if (this.negX && keys.find(f => f == this.negX))
+    if (this.moveNegativeX && keys.find(key => key == this.moveNegativeX))
       movementVector.addValues(-movementAmount, 0, 0);
 
-    if (this.posX && keys.find(f => f == this.posX))
+    if (this.movePositiveX && keys.find(key => key == this.movePositiveX))
       movementVector.addValues(movementAmount, 0, 0);
 
-    if (this.posZ && keys.find(f => f == this.posZ))
+    if (this.movePositiveZ && keys.find(key => key == this.movePositiveZ))
       movementVector.addValues(0, 0, movementAmount);
 
-    if (this.negZ && keys.find(f => f == this.negZ))
+    if (this.moveNegativeZ && keys.find(key => key == this.moveNegativeZ))
       movementVector.addValues(0, 0, -movementAmount);
 
     return movementVector;

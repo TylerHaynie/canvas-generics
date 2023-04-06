@@ -15,7 +15,7 @@ export class Vector {
         this._vector = this.roundedVec(x, y, z);
     }
 
-    public setValues(x: number, y: number, z: number): void {
+    public setValues(x: number, y: number, z: number = 0): void {
         vec3.set(this._vector, Math.fround(x), Math.fround(y), Math.fround(z));
     }
 
@@ -27,7 +27,7 @@ export class Vector {
         vec3.add(this._vector, this._vector, vector.value);
     }
 
-    public addValues(x: number, y: number, z: number) {
+    public addValues(x: number, y: number, z: number = 0) {
         vec3.add(this._vector, this._vector, this.roundedVec(x, y, z));
     }
 
@@ -39,8 +39,6 @@ export class Vector {
         vec3.multiply(this._vector, this._vector, this.roundedVec(amount, amount, amount));
     }
 
-
-
     public distanceTo(target: Vector): number {
         return vec3.dist(this._vector, target.value);
     }
@@ -50,7 +48,7 @@ export class Vector {
         return new Vector(vec[0], vec[1], vec[2]);
     }
 
-    private roundedVec(x: number, y: number, z: number): vec3 {
+    private roundedVec(x: number, y: number, z: number = 0): vec3 {
         return vec3.fromValues(Math.fround(x), Math.fround(y), Math.fround(z))
     }
 }

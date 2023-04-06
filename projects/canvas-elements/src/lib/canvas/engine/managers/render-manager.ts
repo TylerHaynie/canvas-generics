@@ -1,8 +1,8 @@
 import { RENDER_EVENT_TYPE } from '../events/canvas-enums';
 import { RenderEventData } from '../events/event-data';
 import { Polygon } from '../geometry/polygon';
-import { CanvasPolygonRender } from '../render/canvas-polygon-render';
-import { PolygonRenderReference } from '../render/polygon-render-reference';
+import { PolygonRender } from '../render/polygon-render';
+import { PolyRenderReference } from '../render/poly-render-reference';
 import { CanvasShader } from '../render/shaders/basic/canvas-shader';
 
 export class RenderManager {
@@ -13,12 +13,12 @@ export class RenderManager {
     private _needsSort: boolean = false;
 
     private _polygons: Polygon[] = [];
-    private _polyRenderRefs: PolygonRenderReference[] = [];
+    private _polyRenderRefs: PolyRenderReference[] = [];
 
     public get polygonCount(): number { return this._polygons.length; }
     public get drawCalls(): number { return this._drawCalls; }
 
-    private _polyRender: CanvasPolygonRender;
+    private _polyRender: PolygonRender;
 
     private _previousRenderComplete: boolean = true;
 
@@ -29,18 +29,16 @@ export class RenderManager {
     }
 
     private registerRenderers(canvas): void {
-        this._polyRender = new CanvasPolygonRender(canvas);
-        this._polyRender.on(
-            RENDER_EVENT_TYPE.RENDER_COMPLETE,
-            (e: RenderEventData) => this.renderComplete(e)
-        );
+        this._polyRender = new PolygonRender(canvas);
+        this._polyRender.on(RENDER_EVENT_TYPE.RENDER_COMPLETE,
+            (e: RenderEventData) => this.renderComplete(e));
     }
 
-    addPolygon(polygon: Polygon, shader: CanvasShader = undefined): PolygonRenderReference {
+    addPolygon(polygon: Polygon, shader: CanvasShader = undefined): PolyRenderReference {
         if (!shader) shader = new CanvasShader();
 
         let newIndex = this._polygons.length;
-        let polyRef = new PolygonRenderReference(newIndex, polygon.id, shader);
+        let polyRef = new PolyRenderReference(newIndex, polygon.id, shader);
 
         this._polygons.push(polygon);
         this._polyRenderRefs.push(polyRef);
@@ -50,10 +48,10 @@ export class RenderManager {
     }
 
     getPolygonById(id: string): Polygon | undefined {
-        let ref = this._polyRenderRefs.find(c => c.polygonId === id);
+        let ref = this._polyRenderRefs.find(c => c.polyId === id);
         if (ref == null) return undefined;
 
-        return this._polygons[ref.polygonIndex];
+        return this._polygons[ref.polyIndex];
     }
 
     getPolygonByIndex(index: number): Polygon | undefined {
@@ -61,18 +59,19 @@ export class RenderManager {
         return this._polygons[index];
     }
 
-    getPolygonByRenderRef(renderRef: PolygonRenderReference): Polygon | undefined {
-        if (renderRef == undefined || renderRef.polygonIndex < 0) return undefined;
-        return this._polygons[renderRef.polygonIndex];
+    getPolygonByRenderRef(renderRef: PolyRenderReference): Polygon | undefined {
+        if (renderRef == undefined || renderRef.polyIndex < 0) return undefined;
+        return this._polygons[renderRef.polyIndex];
     }
 
     renderPolygons() {
         if (this._needsSort) {
             this._polyRenderRefs.sort((a, b) =>
-                this._polygons[b.polygonIndex].position.z - this._polygons[a.polygonIndex].position.z);
+                this._polygons[b.polyIndex].position.z - this._polygons[a.polyIndex].position.z);
             this._needsSort = false;
         }
 
+        // web worker
         if (this._previousRenderComplete) {
             this._previousRenderComplete = false;
             this._polyRender.drawUsingOffscreen(this._polygons, this._polyRenderRefs);

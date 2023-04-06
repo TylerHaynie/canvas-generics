@@ -1,6 +1,6 @@
 import { CanvasEngine } from '../../canvas-engine';
 import { Vector } from '../geometry/vector';
-import { MOUSE_STATE, MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, KEYBOARD_EVENT_TYPE, RENDER_EVENT_TYPE, ENGINE_EVENT_TYPE } from './canvas-enums';
+import { MOUSE_STATE, MOUSE_EVENT_TYPE, PAN_ZOOM_EVENT_TYPE, KEYBOARD_EVENT_TYPE, RENDER_EVENT_TYPE, ENGINE_EVENT_TYPE, GAMEPAD_EVENT_TYPE } from './canvas-enums';
 
 export class EngineEventData {
     eventType: ENGINE_EVENT_TYPE;
@@ -28,6 +28,10 @@ export class KeyboardEventData {
     shiftDown: boolean;
     altDown: boolean;
     hasKeyDown: Boolean;
+}
+
+export class GamepadEventData {
+    eventType: GAMEPAD_EVENT_TYPE;
 }
 
 export class RenderEventData {

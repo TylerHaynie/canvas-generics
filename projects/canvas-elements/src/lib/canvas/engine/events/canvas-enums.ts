@@ -29,6 +29,11 @@ export enum KEYBOARD_EVENT_TYPE {
     KEY_UP = 'key_up',
 }
 
+export enum GAMEPAD_EVENT_TYPE {
+    PRESSED = 'pressed',
+    RELEASED = 'released'
+}
+
 export enum RENDER_EVENT_TYPE {
     RENDER_COMPLETE = 'render_complete',
 }

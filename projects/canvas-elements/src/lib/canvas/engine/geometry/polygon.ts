@@ -58,18 +58,18 @@ export class Polygon implements IIdentifiable {
 
     public moveTo(targetPosition: Vector): void {
         let direction = this._origin.directionTo(targetPosition);
-        this.moveVectors(direction);
-        this._origin.add(direction);
+        this.moveSelf(direction);
     }
 
     public moveBy(amount: Vector): void {
-        this.moveVectors(amount);
-        this._origin.add(amount);
+        this.moveSelf(amount);
     }
 
-    private moveVectors(direction: Vector): void {
+    private moveSelf(movement: Vector): void {
         for (let i = 0; i < this._vectors.length; i++) {
-            this._vectors[i].add(direction);
+            this._vectors[i].add(movement);
         }
+
+        this._origin.add(movement);
     }
 }

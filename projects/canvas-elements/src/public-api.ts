@@ -36,10 +36,14 @@ export * from './lib/canvas/engine/geometry/face';
 export * from './lib/canvas/engine/geometry/polygon';
 export * from './lib/canvas/engine/geometry/basic-polygons/rectangle';
 export * from './lib/canvas/engine/render/shaders/basic/canvas-shader';
-export * from './lib/canvas/engine/render/polygon-render-reference';
+export * from './lib/canvas/engine/render/poly-render-reference';
+
 
 export * from './lib/canvas/engine/interfaces/canvas-component';
 export * from './lib/canvas/engine/interfaces/canvas-system';
 
 // systems
 export * from './lib/canvas/engine/systems/input-system';
+
+// components
+export * from './lib/canvas/engine/components/table-component';

@@ -4,9 +4,9 @@ import { RenderEventData } from "../events/event-data";
 import { Edge } from "../geometry/edge";
 import { Face } from "../geometry/face";
 import { Polygon } from "../geometry/polygon";
-import { PolygonRenderReference } from "./polygon-render-reference";
+import { PolyRenderReference } from "./poly-render-reference";
 
-export class CanvasPolygonRender {
+export class PolygonRender {
     private _renderWorker: Worker;
     private _canvas: HTMLCanvasElement;
 
@@ -25,7 +25,7 @@ export class CanvasPolygonRender {
         this._renderWorker.postMessage({ action: 'init' });
     }
 
-    drawUsingOffscreen(polygons: Polygon[], renderReferences: PolygonRenderReference[]) {
+    drawUsingOffscreen(polygons: Polygon[], renderReferences: PolyRenderReference[]) {
         let message = {
             width: this._canvas.width,
             height: this._canvas.height,
@@ -38,29 +38,40 @@ export class CanvasPolygonRender {
     }
 
     // on main thread
-    drawMany(context: CanvasRenderingContext2D, polygons: Polygon[], renderReferences: PolygonRenderReference[]) {
+    drawMany(context: CanvasRenderingContext2D, polygons: Polygon[], renderReferences: PolyRenderReference[]) {
         for (let i = 0; i < renderReferences.length; i++) {
-            let polygon = polygons[renderReferences[i].polygonIndex];
+            let polygon = polygons[renderReferences[i].polyIndex];
             this.drawSingle(context, polygon, renderReferences[i]);
         }
     }
 
     // on main thread
-    drawSingle(context: CanvasRenderingContext2D, polygon: Polygon, renderReference: PolygonRenderReference) {
+    drawSingle(context: CanvasRenderingContext2D, polygon: Polygon, renderReference: PolyRenderReference) {
         context.save();
 
         if (renderReference.shader.drawFace) {
             this.drawFaces(context, polygon);
-            context.globalAlpha = renderReference.shader.faceColor.alpha;
-            context.fillStyle = renderReference.shader.faceColor.shade;
+            if (renderReference.shader.faceColor.shade == 'transparent')
+                context.globalAlpha = 0;
+            else {
+                context.globalAlpha = renderReference.shader.faceColor.alpha;
+                context.fillStyle = renderReference.shader.faceColor.shade;
+            }
+
             context.fill();
         }
 
         if (renderReference.shader.drawEdge) {
             if (!renderReference.shader.drawFace) this.drawEdges(context, polygon);
             context.lineWidth = renderReference.shader.edgeWidth;
-            context.globalAlpha = renderReference.shader.edgeColor.alpha;
-            context.strokeStyle = renderReference.shader.edgeColor.shade;
+
+            if (renderReference.shader.edgeColor.shade == 'transparent')
+                context.globalAlpha = 0;
+            else {
+                context.globalAlpha = renderReference.shader.edgeColor.alpha;
+                context.strokeStyle = renderReference.shader.edgeColor.shade;
+            }
+
             context.stroke();
         }
 
@@ -189,16 +200,26 @@ export class CanvasPolygonRender {
 
             if (renderReference._shader.drawFace) {
                 drawFaces(polygon);
-                ctx.globalAlpha = renderReference._shader.faceColor._alpha;
-                ctx.fillStyle = renderReference._shader.faceColor._shade;
+                if (renderReference._shader.faceColor.shade == 'transparent')
+                    context.globalAlpha = 0;
+                else {
+                    ctx.globalAlpha = renderReference._shader.faceColor._alpha;
+                    ctx.fillStyle = renderReference._shader.faceColor._shade;
+                }
                 ctx.fill();
             }
 
             if (renderReference._shader.drawEdge) {
                 if (!renderReference._shader.drawFace) drawEdges(polygon);
                 ctx.lineWidth = renderReference._shader.edgeWidth;
-                ctx.globalAlpha = renderReference._shader.edgeColor._alpha;
-                ctx.strokeStyle = renderReference._shader.edgeColor._shade;
+
+                if (renderReference._shader.edgeColor.shade == 'transparent')
+                    context.globalAlpha = 0;
+                else {
+                    ctx.globalAlpha = renderReference._shader.edgeColor._alpha;
+                    ctx.strokeStyle = renderReference._shader.edgeColor._shade;
+                }
+
                 ctx.stroke();
             }
 
