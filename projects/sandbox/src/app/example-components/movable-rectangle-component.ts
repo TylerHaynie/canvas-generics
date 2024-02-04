@@ -1,11 +1,11 @@
 import {
   CanvasEngine, Vector, Rectangle, MouseManager,
   MOUSE_EVENT_TYPE, MouseEventData, CanvasShader,
-  ICanvasComponent, InputSystem
+  ICanvasComponent, InputSystem, Polygon
 } from 'canvas-elements';
 
-export class MovableRectangleComponent implements ICanvasComponent {
-  private _rectangle: Rectangle;
+export class MovablePolygonComponent implements ICanvasComponent {
+  private _poly: Polygon;
   private _movementSpeed: number = 0.5;
 
   private _hasMovement: boolean = false;
@@ -31,23 +31,23 @@ export class MovableRectangleComponent implements ICanvasComponent {
   }
 
   private buildTestRectangle(engine: CanvasEngine) {
-    this._rectangle = new Rectangle(new Vector(100, 100), new Vector(50, 50));
+    this._poly = new Rectangle(new Vector(100, 100), new Vector(50, 50));
     let shader = new CanvasShader();
     shader.edgeColor.setShade("#00ffff");
     shader.faceColor.setShade("#ff0000");
-    engine.renderManager.addPolygon(this._rectangle, shader);
+    engine.renderManager.addPolygon(this._poly, shader);
   }
 
   private applyMovement(delta: number): void {
     if (this._hasMovement && this._movement.isNotZero) {
       this._movement.multiplyBy(this._movementSpeed);
       this._movement.multiplyBy(delta);
-      this._rectangle.moveBy(this._movement);
+      this._poly.moveBy(this._movement);
       this._hasMovement = false;
     }
 
     if (this._hasTargetPosition) {
-      this._rectangle.moveTo(this._targetPosition);
+      this._poly.moveTo(this._targetPosition);
       this._hasTargetPosition = false;
     }
   }

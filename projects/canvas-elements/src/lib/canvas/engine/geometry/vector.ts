@@ -31,6 +31,14 @@ export class Vector {
         vec3.add(this._vector, this._vector, this.roundedVec(x, y, z));
     }
 
+    public subtract(vector: Vector) {
+        vec3.subtract(this._vector, this._vector, vector.value);
+    }
+
+    public subtractValues(x: number, y: number, z: number = 0) {
+        vec3.subtract(this._vector, this._vector, this.roundedVec(x, y, z));
+    }
+
     public scaleBy(scaleAmount: number): void {
         vec3.scale(this._vector, this._vector, scaleAmount);
     }

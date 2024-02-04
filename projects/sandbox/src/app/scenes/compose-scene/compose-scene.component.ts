@@ -4,7 +4,7 @@ import {
   ENGINE_EVENT_TYPE, EngineEventData,
   ICanvasSystem, TableComponent, InputSystem
 } from 'canvas-elements';
-import { MovableRectangleComponent } from '../../example-components/movable-rectangle-component';
+import { MovablePolygonComponent } from '../../example-components/movable-rectangle-component';
 import { RandomRectanglesComponent } from '../../example-components/random-rectangles-component';
 
 @Component({
@@ -20,7 +20,7 @@ export class ComposeSceneComponent implements AfterViewInit {
   ];
 
   private _components: ICanvasComponent[] = [
-    // new MovableRectangleComponent(),
+    new MovablePolygonComponent(),
     new RandomRectanglesComponent(),
     // new TableComponent()
   ];

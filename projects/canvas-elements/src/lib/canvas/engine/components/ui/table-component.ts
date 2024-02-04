@@ -1,9 +1,9 @@
-import { CanvasEngine } from "../../canvas-engine";
-import { Rectangle } from "../geometry/basic-polygons/rectangle";
-import { Vector } from "../geometry/vector";
-import { ICanvasComponent } from "../interfaces/canvas-component";
-import { RenderManager } from "../managers/render-manager";
-import { CanvasShader } from "../render/shaders/basic/canvas-shader";
+import { CanvasEngine } from "../../../canvas-engine";
+import { Rectangle } from "../../geometry/basic-polygons/rectangle";
+import { Vector } from "../../geometry/vector";
+import { ICanvasComponent } from "../../interfaces/canvas-component";
+import { RenderManager } from "../../managers/render-manager";
+import { CanvasShader } from "../../render/shaders/basic/canvas-shader";
 
 export class TableCell {
     private _rowIndex: number = -1;

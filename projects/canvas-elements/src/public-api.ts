@@ -41,9 +41,10 @@ export * from './lib/canvas/engine/render/poly-render-reference';
 
 export * from './lib/canvas/engine/interfaces/canvas-component';
 export * from './lib/canvas/engine/interfaces/canvas-system';
+export * from './lib/canvas/engine/interfaces/canvas-scene';
 
 // systems
 export * from './lib/canvas/engine/systems/input-system';
 
 // components
-export * from './lib/canvas/engine/components/table-component';
+export * from './lib/canvas/engine/components/ui/table-component';

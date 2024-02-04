@@ -64,6 +64,10 @@ export class RenderManager {
         return this._polygons[renderRef.polyIndex];
     }
 
+    // sortZ(): void {
+    //     this._needsSort = true;
+    // }
+
     renderPolygons() {
         if (this._needsSort) {
             this._polyRenderRefs.sort((a, b) =>

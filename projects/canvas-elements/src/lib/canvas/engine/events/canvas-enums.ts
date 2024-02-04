@@ -11,6 +11,7 @@ export enum MOUSE_STATE {
 export enum ENGINE_EVENT_TYPE {
     REGISTER_COMPONENTS = 'register_components',
     REGISTER_SYSTEMS = 'register_systems',
+    REGISTER_SCENES = 'register_scenes',
     STARTUP = 'startup',
     TICK = 'tick',
     UPDATE = 'update',

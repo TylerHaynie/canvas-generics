@@ -8,15 +8,40 @@ export class RandomRectanglesComponent implements ICanvasComponent {
   private _zDepthMin = 1;
   private _zDepthMax = 11;
 
+  private _engine: CanvasEngine;
+
   public rectangleCount: number = 500;
+  private _moveBy = new Vector(0, 0, .01);
+  private _resetPosition = new Vector(0, 0, 0);
 
   async startup(engine: CanvasEngine) {
+    this._engine = engine;
+
+    this._resetPosition = new Vector(0, 0, 0);
     this.createRandomPolys(engine);
     this.applyAlphaZ(engine);
   }
 
   async tick(delta: number) {
+    // for (let index = 0; index < this._references.length; index++) {
+    //   let poly = this._engine.renderManager.getPolygonByIndex(this._references[index].polyIndex);
 
+    //   if(poly.position.z < this._zDepthMin){
+    //     poly.position.add(this._moveBy);
+    //   }
+
+    //   if(poly.position.z > this._zDepthMax){
+    //     poly.position.subtract(this._moveBy);
+    //   }
+
+    //   if(poly.position.z < this._zDepthMax && poly.position.z > this._zDepthMin){
+
+    //   }
+
+    //   let alpha = 1 - (poly.position.z - this._zDepthMin) / (this._zDepthMax - this._zDepthMin);
+    //   this._references[index].shader.edgeColor.setAlpha(alpha);
+    //   this._references[index].shader.faceColor.setAlpha(alpha);
+    // }
   }
 
   private createRandomPolys(engine: CanvasEngine) {

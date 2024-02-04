@@ -3,11 +3,13 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { ComposeSceneComponent } from './scenes/compose-scene/compose-scene.component';
+import { SpriteLoaderComponent } from './scenes/sprite-loader/sprite-loader.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ComposeSceneComponent
+    ComposeSceneComponent,
+    SpriteLoaderComponent
   ],
   imports: [
     BrowserModule

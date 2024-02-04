@@ -185,10 +185,12 @@ export class PolygonRender {
             let totalDraws = 0;
             if(polyRefs && polygons){
                 for (let i = 0; i < polyRefs.length; i++) {
-                    let polygon = polygons[polyRefs[i]._index];
                     let ref = polyRefs[i];
-                    drawSingle(polygon, ref);
-                    totalDraws = i+1;
+                    if(ref._isVisible){
+                        let polygon = polygons[ref._index];
+                        drawSingle(polygon, ref);
+                        totalDraws = i+1;
+                    }
                 }
             }
 

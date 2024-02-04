@@ -9,6 +9,7 @@ import { ArrayUtility } from './engine/utilities/array-utility';
 import { ICanvasComponent } from './engine/interfaces/canvas-component';
 import { ICanvasSystem } from "./engine/interfaces/canvas-system";
 import { GamepadManager } from './engine/managers/gamepad-manager';
+import { ICanvasScene } from './engine/interfaces/canvas-scene';
 
 export class CanvasEngine {
     // canvas
@@ -49,9 +50,10 @@ export class CanvasEngine {
     private _gamepadManager: GamepadManager;
     private _windowManager: WindowManager;
 
-    // canvas components
+    // engine parts
     private _components: ICanvasComponent[] = [];
     private _systems: ICanvasSystem[] = [];
+    private _scenes: ICanvasScene[] = [];
 
     // engine events
     private _engineEvent = new CanvasEvent<EngineEventData>();
@@ -70,6 +72,7 @@ export class CanvasEngine {
     }
 
     public registerComponents(components: ICanvasComponent[]) {
+        // TODO: Check for existing component of same type
         this._components.push(...components);
     }
 
@@ -78,12 +81,17 @@ export class CanvasEngine {
         this._systems.push(...systems);
     }
 
-    public findComponent(componentName) {
-        return ArrayUtility.findTypeInArray(componentName, this._components);
+    public registerScenes(scenes: ICanvasScene[]) {
+        // TODO: Check for existing scenes of same type
+        this._scenes.push(...scenes);
     }
 
-    public findSystem(systemName) {
-        return ArrayUtility.findTypeInArray(systemName, this._systems);
+    public findComponent(componentType) {
+        return ArrayUtility.findTypeInArray(componentType, this._components);
+    }
+
+    public findSystem(systemType) {
+        return ArrayUtility.findTypeInArray(systemType, this._systems);
     }
 
     public async start() {
@@ -97,6 +105,12 @@ export class CanvasEngine {
         // register components
         await this.fireComponentRegistration();
         this.canvasComponentStartup();
+
+        // register components
+        await this.fireSceneRegistration();
+
+        // startup
+        await this.fireStartup();
 
         // start render loop
         this.gameLoop();
@@ -113,6 +127,22 @@ export class CanvasEngine {
     private async fireComponentRegistration() {
         let event = new EngineEventData();
         event.eventType = ENGINE_EVENT_TYPE.REGISTER_COMPONENTS;
+        event.engine = this;
+
+        await this._engineEvent.fireEvent(event.eventType, event);
+    }
+
+    private async fireSceneRegistration() {
+        let event = new EngineEventData();
+        event.eventType = ENGINE_EVENT_TYPE.REGISTER_SCENES;
+        event.engine = this;
+
+        await this._engineEvent.fireEvent(event.eventType, event);
+    }
+
+    private async fireStartup() {
+        let event = new EngineEventData();
+        event.eventType = ENGINE_EVENT_TYPE.STARTUP;
         event.engine = this;
 
         await this._engineEvent.fireEvent(event.eventType, event);
@@ -165,8 +195,8 @@ export class CanvasEngine {
         // }
 
         // systems always tick
-        this._systems.forEach(component => {
-            component.tick(this.loopDelta);
+        this._systems.forEach(system => {
+            system.tick(this.loopDelta);
         });
 
         if (!this.paused || this.frameStep) {
@@ -179,7 +209,6 @@ export class CanvasEngine {
 
             // TODO: tick at 30, 60, 90, 120, 144, etc.
             this.render();
-
             this.frameStep = false;
         }
 
